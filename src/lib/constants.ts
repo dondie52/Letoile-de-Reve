@@ -1,3 +1,5 @@
+import { withBase } from "@/lib/paths";
+
 export const BRAND = {
   name: "L’étoile de Rêve",
   tagline: "The Star of Dreams",
@@ -28,7 +30,7 @@ export const ROOMS = [
     label: "Living room",
     index: "01",
     description: "Warm light, considered textures and a calm space to unwind.",
-    src: "/assets/images/living-room.webp",
+    src: withBase("/assets/images/living-room.webp"),
     alt: "Living room at L’étoile de Rêve with warm lighting and refined furnishings",
   },
   {
@@ -36,7 +38,7 @@ export const ROOMS = [
     label: "Bedroom",
     index: "02",
     description: "A restful private suite designed for deep comfort.",
-    src: "/assets/images/bedroom.webp",
+    src: withBase("/assets/images/bedroom.webp"),
     alt: "Bedroom suite at L’étoile de Rêve designed for restful comfort",
   },
   {
@@ -44,7 +46,7 @@ export const ROOMS = [
     label: "Kitchen",
     index: "03",
     description: "Fully equipped for effortless everyday living.",
-    src: "/assets/images/kitchen.webp",
+    src: withBase("/assets/images/kitchen.webp"),
     alt: "Fully equipped kitchen at L’étoile de Rêve",
   },
   {
@@ -52,7 +54,7 @@ export const ROOMS = [
     label: "Bathroom",
     index: "04",
     description: "Clean, modern finishes with a spa-like sense of calm.",
-    src: "/assets/images/bathroom.webp",
+    src: withBase("/assets/images/bathroom.webp"),
     alt: "Modern bathroom at L’étoile de Rêve with spa-like finishes",
   },
 ] as const;
@@ -80,14 +82,15 @@ export const AMENITIES = [
   },
 ] as const;
 
+/** Public asset URLs — already include basePath for GitHub Pages. */
 export const ASSETS = {
-  logoWide: "/assets/images/logo-wide.webp",
-  logoPortrait: "/assets/images/logo-portrait.webp",
-  livingRoom: "/assets/images/living-room.webp",
-  bedroom: "/assets/images/bedroom.webp",
-  kitchen: "/assets/images/kitchen.webp",
-  bathroom: "/assets/images/bathroom.webp",
-  entranceMat: "/assets/images/entrance-mat.webp",
-  heroVideo: "/assets/videos/hero-tour.mp4",
-  lifestyleVideo: "/assets/videos/lifestyle-tour.mp4",
+  logoWide: withBase("/assets/images/logo-wide.webp"),
+  logoPortrait: withBase("/assets/images/logo-portrait.webp"),
+  livingRoom: withBase("/assets/images/living-room.webp"),
+  bedroom: withBase("/assets/images/bedroom.webp"),
+  kitchen: withBase("/assets/images/kitchen.webp"),
+  bathroom: withBase("/assets/images/bathroom.webp"),
+  entranceMat: withBase("/assets/images/entrance-mat.webp"),
+  heroVideo: withBase("/assets/videos/hero-tour.mp4"),
+  lifestyleVideo: withBase("/assets/videos/lifestyle-tour.mp4"),
 } as const;

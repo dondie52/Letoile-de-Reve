@@ -25,6 +25,18 @@ npm run build
 npm start
 ```
 
+## GitHub Pages
+
+Static export deploys via GitHub Actions to:
+
+**https://dondie52.github.io/Letoile-de-Reve/**
+
+```bash
+npm run build:pages
+```
+
+In the repo: **Settings → Pages → Source: GitHub Actions**.
+
 ## Assets
 
 Place property media in:

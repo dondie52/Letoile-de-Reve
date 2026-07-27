@@ -5,9 +5,10 @@ import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ASSETS, FACEBOOK_REELS } from "@/lib/constants";
+import { ASSETS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
 import { kenBurns, prefersReducedMotion } from "@/lib/motion";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,8 @@ export function VideoExperience() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [useFallback, setUseFallback] = useState(!LIFESTYLE_VIDEO);
   const [playing, setPlaying] = useState(Boolean(LIFESTYLE_VIDEO));
+
+  useScrollReveal(sectionRef);
 
   useEffect(() => {
     if (!LIFESTYLE_VIDEO) return;
@@ -130,26 +133,34 @@ export function VideoExperience() {
     >
       <div className="section-pad mx-auto grid max-w-[1400px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div ref={textRef} className="relative z-10 max-w-xl">
-          <h2 id="experience-heading" className="heading-lg mb-6 text-ivory">
+          <h2
+            id="experience-heading"
+            data-reveal
+            data-reveal-group="experience"
+            className="heading-lg mb-6 text-ivory"
+          >
             More than a stay. A feeling.
           </h2>
-          <p className="body-lg">
+          <p data-reveal data-reveal-group="experience" className="body-lg">
             Arrive, settle in and enjoy a home where style, convenience and
             privacy come naturally.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            {FACEBOOK_REELS.map((reel) => (
-              <a
-                key={reel.href}
-                href={reel.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary"
-              >
-                {reel.label}
-              </a>
-            ))}
-          </div>
+          <p
+            data-reveal
+            data-reveal-group="experience"
+            className="body-lg mt-5 text-pretty"
+          >
+            Every stay is prepared before you arrive — fresh linen, a stocked
+            kitchen and quiet rooms that let the day slow down.
+          </p>
+          <a
+            data-reveal
+            data-reveal-group="experience"
+            href="#book"
+            className="btn btn-secondary mt-9 w-fit"
+          >
+            Check your dates
+          </a>
         </div>
 
         <div ref={mediaWrapRef} className="relative mx-[-1.25rem] sm:mx-0">

@@ -70,6 +70,81 @@ export function todayISO(): string {
 }
 
 /**
+ * Reveals every `[data-reveal]` descendant as it enters the viewport.
+ * Elements sharing a `data-reveal-group` value animate as one staggered set.
+ * Distances and durations shorten on phones where travel reads as lag.
+ */
+export function initScrollReveal(root: HTMLElement): gsap.Context | null {
+  const targets = Array.from(
+    root.querySelectorAll<HTMLElement>("[data-reveal]"),
+  );
+  if (!targets.length) return null;
+
+  if (prefersReducedMotion()) {
+    gsap.set(targets, { opacity: 1, y: 0, clearProps: "filter" });
+    return null;
+  }
+
+  const mobile = isMobileViewport();
+  const y = mobile ? 18 : 34;
+  const duration = mobile ? 0.72 : 0.95;
+  const stagger = mobile ? 0.07 : 0.1;
+
+  const groups = new Map<string, HTMLElement[]>();
+  targets.forEach((el, i) => {
+    const key = el.dataset.revealGroup ?? `solo-${i}`;
+    const bucket = groups.get(key);
+    if (bucket) bucket.push(el);
+    else groups.set(key, [el]);
+  });
+
+  return gsap.context(() => {
+    groups.forEach((elements) => {
+      gsap.set(elements, { opacity: 0, y, filter: "blur(4px)" });
+      gsap.to(elements, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration,
+        stagger,
+        ease: ARRIVE_EASE,
+        scrollTrigger: {
+          trigger: elements[0],
+          start: mobile ? "top 88%" : "top 82%",
+          once: true,
+        },
+        onComplete: () => gsap.set(elements, { clearProps: "filter" }),
+      });
+    });
+  }, root);
+}
+
+/** Scroll-linked vertical drift; softer on phones to protect frame rate. */
+export function parallax(
+  target: gsap.TweenTarget | null | undefined,
+  trigger: Element,
+  amount = 60,
+): gsap.core.Tween | null {
+  if (!target || prefersReducedMotion()) return null;
+  const distance = isMobileViewport() ? amount * 0.45 : amount;
+
+  return gsap.fromTo(
+    target,
+    { y: distance / 2 },
+    {
+      y: -distance / 2,
+      ease: SCRUB_EASE,
+      scrollTrigger: {
+        trigger,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      },
+    },
+  );
+}
+
+/**
  * Slow cinematic Ken Burns on a still photo — scale + gentle pan.
  * Returns the timeline (or null when reduced motion / missing target).
  */

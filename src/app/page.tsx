@@ -13,6 +13,13 @@ const VideoExperience = dynamic(
     })),
   { ssr: true },
 );
+const StayMoments = dynamic(
+  () =>
+    import("@/components/StayMoments").then((m) => ({
+      default: m.StayMoments,
+    })),
+  { ssr: true },
+);
 const Amenities = dynamic(
   () =>
     import("@/components/Amenities").then((m) => ({ default: m.Amenities })),
@@ -44,6 +51,7 @@ export default function Home() {
         <BrandStory />
         <ApartmentShowcase />
         <VideoExperience />
+        <StayMoments />
         <Amenities />
         <Location />
         <BookingFinale />

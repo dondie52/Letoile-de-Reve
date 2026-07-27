@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AMENITIES } from "@/lib/constants";
-import { prefersReducedMotion } from "@/lib/motion";
+import { isMobileViewport, prefersReducedMotion } from "@/lib/motion";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,30 +62,37 @@ function AmenityIcon({ index }: { index: number }) {
 export function Amenities() {
   const sectionRef = useRef<HTMLElement>(null);
 
+  useScrollReveal(sectionRef);
+
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
     if (prefersReducedMotion()) return;
 
     const items = section.querySelectorAll<HTMLElement>("[data-amenity]");
+    const mobile = isMobileViewport();
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        items,
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.1,
-          duration: 0.85,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 70%",
-            toggleActions: "play none none reverse",
+      items.forEach((item, i) => {
+        gsap.fromTo(
+          item,
+          { opacity: 0, y: mobile ? 18 : 28, filter: "blur(4px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: mobile ? 0.7 : 0.9,
+            delay: mobile ? 0 : (i % 3) * 0.06,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: item,
+              start: mobile ? "top 90%" : "top 85%",
+              once: true,
+            },
+            onComplete: () => gsap.set(item, { clearProps: "filter" }),
           },
-        },
-      );
+        );
+      });
     }, section);
 
     return () => ctx.revert();
@@ -99,9 +107,22 @@ export function Amenities() {
     >
       <div className="section-pad mx-auto max-w-[1400px]">
         <div className="mb-16 max-w-2xl">
-          <h2 id="amenities-heading" className="heading-lg text-ivory">
+          <h2
+            id="amenities-heading"
+            data-reveal
+            data-reveal-group="amenities-intro"
+            className="heading-lg text-ivory"
+          >
             Everything considered.
           </h2>
+          <p
+            data-reveal
+            data-reveal-group="amenities-intro"
+            className="body-lg mt-5 text-pretty"
+          >
+            The details you would otherwise have to arrange yourself are already
+            handled.
+          </p>
         </div>
 
         <ul className="amenities-grid border-t border-gold/25">

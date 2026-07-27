@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ASSETS, BRAND, NAV_LINKS } from "@/lib/constants";
+import { ASSETS, BRAND, FACEBOOK_REELS, NAV_LINKS } from "@/lib/constants";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -43,6 +43,17 @@ export function Footer() {
                 Facebook
               </a>
             ) : null}
+            {FACEBOOK_REELS.map((reel) => (
+              <a
+                key={reel.href}
+                href={reel.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-gold-400"
+              >
+                {reel.label}
+              </a>
+            ))}
           </div>
         </div>
 

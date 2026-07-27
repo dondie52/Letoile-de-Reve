@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ASSETS } from "@/lib/constants";
+import { ASSETS, FACEBOOK_REELS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
 import { prefersReducedMotion } from "@/lib/motion";
 
@@ -155,16 +155,27 @@ export function VideoExperience() {
 
       <div className="section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] items-end py-24 sm:py-28">
         <div ref={textRef} className="max-w-lg pb-8">
-          <h2
-            id="experience-heading"
-            className="heading-lg text-ivory"
-          >
+          <h2 id="experience-heading" className="heading-lg text-ivory">
             Arrive.
             <br />
             Exhale.
             <br />
             Stay a while.
           </h2>
+          <p className="meta mt-8 text-ivory/55">Watch on Facebook</p>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+            {FACEBOOK_REELS.map((reel) => (
+              <a
+                key={reel.href}
+                href={reel.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline text-[0.9375rem] text-ivory/80 transition hover:text-gold-400"
+              >
+                {reel.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>

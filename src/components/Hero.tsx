@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
@@ -11,20 +11,12 @@ import {
   ARRIVE_EASE,
   heroIntroDelay,
   prefersReducedMotion,
-  todayISO,
 } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const EYEBROW = "LUXURY APARTMENT · PHAKALANE";
 const HERO_VIDEO = TOUR_VIDEO.hero;
-
-function nextDayISO(iso: string): string {
-  const d = new Date(`${iso}T12:00:00`);
-  d.setDate(d.getDate() + 1);
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
-}
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -32,13 +24,9 @@ export function Hero() {
   const veilRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  /* No video path → photo only (avoids HEAD/GET 404s) */
   const [useFallback, setUseFallback] = useState(!HERO_VIDEO);
   const [playing, setPlaying] = useState(Boolean(HERO_VIDEO));
-  const minDate = useMemo(() => todayISO(), []);
-  const [arrival, setArrival] = useState("");
-  const [departure, setDeparture] = useState("");
-  const [guests, setGuests] = useState("2");
-  const checkOutMin = arrival ? nextDayISO(arrival) : minDate;
 
   useEffect(() => {
     if (!HERO_VIDEO) return;
@@ -49,6 +37,7 @@ export function Hero() {
     return () => video.removeEventListener("error", onError);
   }, []);
 
+  /* Pause looping video when the hero leaves the viewport */
   useEffect(() => {
     const section = sectionRef.current;
     const video = videoRef.current;
@@ -80,27 +69,29 @@ export function Hero() {
     const lines = content.querySelectorAll<HTMLElement>("[data-hero-line]");
     const scrollHint = content.querySelector<HTMLElement>("[data-hero-scroll]");
     const scrollStem = scrollHint?.querySelector<HTMLElement>("[data-scroll-stem]");
-    const panel = content.querySelector<HTMLElement>("[data-hero-panel]");
 
     const ctx = gsap.context(() => {
       if (reduced) {
-        gsap.set([lines, scrollHint, panel, media, veil], { clearProps: "all" });
+        gsap.set([lines, scrollHint, media, veil], {
+          clearProps: "all",
+        });
         gsap.set(lines, { opacity: 1, y: 0, clipPath: "none", filter: "none" });
-        gsap.set([scrollHint, panel], { opacity: 1, y: 0 });
+        gsap.set(scrollHint, { opacity: 1, y: 0 });
         gsap.set(media, { scale: 1, filter: "none" });
         gsap.set(veil, { opacity: 0 });
         return;
       }
 
-      gsap.set(media, { scale: 1.06, filter: "blur(8px)" });
+      /* Dawn under the stars — veil clears, type unveils, cue breathes */
+      gsap.set(media, { scale: 1.1, filter: "blur(10px)" });
       gsap.set(veil, { opacity: 1 });
       gsap.set(lines, {
         opacity: 0,
-        y: 28,
+        y: 36,
         clipPath: "inset(110% 0 0 0)",
-        filter: "blur(4px)",
+        filter: "blur(6px)",
       });
-      gsap.set([scrollHint, panel], { opacity: 0, y: 16 });
+      gsap.set(scrollHint, { opacity: 0, y: 12 });
       if (scrollStem) gsap.set(scrollStem, { scaleY: 0, transformOrigin: "top center" });
 
       const intro = gsap.timeline({
@@ -119,14 +110,22 @@ export function Hero() {
         .to(
           media,
           {
-            scale: 1.02,
+            scale: 1.04,
             filter: "blur(0px)",
-            duration: 1.3,
+            duration: 1.35,
             onComplete: () => media.classList.remove("is-animating"),
           },
           0,
         )
-        .to(veil, { opacity: 0, duration: 1.15, ease: "power2.inOut" }, 0.08)
+        .to(
+          veil,
+          {
+            opacity: 0,
+            duration: 1.2,
+            ease: "power2.inOut",
+          },
+          0.1,
+        )
         .to(
           lines,
           {
@@ -134,36 +133,49 @@ export function Hero() {
             y: 0,
             clipPath: "inset(0% 0 0 0)",
             filter: "blur(0px)",
-            duration: 0.9,
-            stagger: 0.1,
+            duration: 0.95,
+            stagger: 0.11,
           },
-          0.3,
+          0.35,
         )
         .to(
-          [scrollHint, panel],
+          scrollHint,
           {
             opacity: 1,
             y: 0,
             duration: 0.7,
             onComplete: () => scrollHint?.classList.add("is-ready"),
           },
-          "-=0.2",
+          "-=0.25",
         );
 
       if (scrollStem) {
         intro.to(
           scrollStem,
-          { scaleY: 1, duration: 0.7, ease: "power2.out" },
-          "-=0.4",
+          { scaleY: 1, duration: 0.75, ease: "power2.out" },
+          "-=0.45",
         );
       }
 
+      /* Scroll continuity — settle into the residence */
       gsap.to(media, {
         scale: 1,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(content, {
+        opacity: 0.35,
+        y: -36,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "center top",
           end: "bottom top",
           scrub: true,
         },
@@ -185,33 +197,17 @@ export function Hero() {
     }
   };
 
-  const onCheckAvailability = (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      sessionStorage.setItem(
-        "letoile-enquiry",
-        JSON.stringify({
-          arrival,
-          departure,
-          guests,
-          message: guests ? `Guests: ${guests}` : "",
-        }),
-      );
-    } catch {
-      /* ignore quota / private mode */
-    }
-    window.dispatchEvent(new Event("letoile:enquiry-prefill"));
-    document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <section
       id="top"
       ref={sectionRef}
-      className="relative min-h-[100dvh] overflow-hidden bg-pine-950"
+      className="relative min-h-[100dvh] overflow-hidden bg-forest"
       aria-label="Hero"
     >
-      <div ref={mediaRef} className="hero-media absolute inset-0 origin-center">
+      <div
+        ref={mediaRef}
+        className="hero-media absolute inset-0 origin-center"
+      >
         {!useFallback && HERO_VIDEO ? (
           <video
             ref={videoRef}
@@ -233,16 +229,16 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[50%_42%]"
+            className="object-cover"
           />
         )}
         <div
-          className="absolute inset-0 bg-[linear-gradient(105deg,rgba(7,29,21,0.78)_0%,rgba(7,29,21,0.35)_42%,rgba(7,29,21,0.55)_70%,rgba(7,29,21,0.88)_100%)]"
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,21,14,0.55)_0%,rgba(6,21,14,0.32)_38%,rgba(6,21,14,0.78)_72%,rgba(6,21,14,0.95)_100%)]"
           aria-hidden="true"
         />
         <div
           ref={veilRef}
-          className="hero-veil pointer-events-none absolute inset-0 bg-pine-950/70"
+          className="hero-veil pointer-events-none absolute inset-0 bg-forest/70"
           aria-hidden="true"
         />
       </div>
@@ -251,124 +247,58 @@ export function Hero() {
         <button
           type="button"
           onClick={togglePlay}
-          className="absolute right-4 top-[calc(var(--nav-h)+0.75rem)] z-20 inline-flex h-11 w-11 items-center justify-center border border-gold-500/35 bg-pine-950/45 text-ivory backdrop-blur-sm transition hover:border-gold-500 sm:right-8"
+          className="absolute right-4 top-[calc(var(--nav-h)+0.75rem)] z-20 inline-flex h-11 w-11 items-center justify-center border border-gold/35 bg-forest/45 text-ivory backdrop-blur-sm transition hover:border-gold sm:right-8"
           aria-label={playing ? "Pause background video" : "Play background video"}
         >
-          {playing ? <Pause size={15} strokeWidth={1.5} /> : <Play size={15} strokeWidth={1.5} />}
+          {playing ? <Pause size={15} /> : <Play size={15} />}
         </button>
       )}
 
       <div
         ref={contentRef}
-        className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:gap-10"
+        className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end"
       >
-        <div className="max-w-xl">
-          <p data-hero-line className="mb-4 text-[0.8125rem] font-medium tracking-[0.06em] text-gold-400/90">
-            Phakalane, Gaborone
-          </p>
+        <p data-hero-line className="eyebrow mb-4">
+          {EYEBROW}
+        </p>
 
-          <p data-hero-line className="mb-3 font-display text-[clamp(1.55rem,3.2vw,2.15rem)] leading-none tracking-[-0.02em] text-ivory">
-            L’étoile de Rêve
-          </p>
+        <h1
+          data-hero-line
+          className="heading-xl mb-5 max-w-[14ch] text-pretty text-ivory sm:mb-6 sm:max-w-[16ch] lg:max-w-[18ch]"
+        >
+          Your dream stay, written in the stars.
+        </h1>
 
-          <h1
-            data-hero-line
-            className="heading-xl mb-5 max-w-[12ch] text-pretty text-ivory sm:mb-6"
-          >
-            A private stay,
-            <br />
-            beautifully considered.
-          </h1>
+        <p data-hero-line className="body-lg mb-8 text-pretty sm:mb-10">
+          A refined fully furnished retreat in the heart of Phakalane, created
+          for comfort, privacy and effortless living.
+        </p>
 
-          <p data-hero-line className="body-lg mb-8 max-w-[34ch] text-pretty sm:mb-10">
-            Fully furnished luxury living in Phakalane.
-          </p>
-
-          <div data-hero-line className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-            <a href="#book" className="btn btn-primary w-fit">
-              Book your stay
-            </a>
-            <a
-              href="#apartment"
-              className="link-underline meta w-fit text-ivory/75 transition hover:text-gold-400"
-            >
-              Explore the residence
-            </a>
-          </div>
-
-          <a
-            href="#story"
-            data-hero-scroll
-            className="meta mt-10 hidden w-fit flex-col items-start gap-2 text-ivory/60 transition hover:text-gold-400 lg:mt-14 lg:inline-flex"
-          >
-            Continue
-            <span
-              data-scroll-stem
-              className="scroll-stem block h-10 w-px origin-top bg-gradient-to-b from-gold-500 to-transparent"
-              aria-hidden="true"
-            />
+        <div
+          data-hero-line
+          data-hero-actions
+          className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4"
+        >
+          <a href="#book" className="btn btn-primary">
+            Book your stay
+          </a>
+          <a href="#apartment" className="btn btn-secondary">
+            Explore the apartment
           </a>
         </div>
 
-        <form
-          data-hero-panel
-          onSubmit={onCheckAvailability}
-          className="hero-avail mt-10 hidden w-full max-w-sm justify-self-end lg:mt-0 lg:block"
-          aria-label="Check availability"
+        <a
+          href="#story"
+          data-hero-scroll
+          className="meta mt-10 hidden w-fit flex-col items-start gap-2 transition hover:text-gold lg:mt-12 lg:inline-flex"
         >
-          <div className="mb-4 grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="hero-arrival" className="field-label">
-                Arrival
-              </label>
-              <input
-                id="hero-arrival"
-                type="date"
-                min={minDate}
-                value={arrival}
-                onChange={(e) => {
-                  const next = e.target.value;
-                  setArrival(next);
-                  if (departure && next && departure <= next) setDeparture("");
-                }}
-                className="input-field input-date"
-              />
-            </div>
-            <div>
-              <label htmlFor="hero-departure" className="field-label">
-                Departure
-              </label>
-              <input
-                id="hero-departure"
-                type="date"
-                min={checkOutMin}
-                value={departure}
-                onChange={(e) => setDeparture(e.target.value)}
-                className="input-field input-date"
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="hero-guests" className="field-label">
-              Guests
-            </label>
-            <select
-              id="hero-guests"
-              value={guests}
-              onChange={(e) => setGuests(e.target.value)}
-              className="input-field"
-            >
-              {[1, 2, 3, 4].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" className="btn btn-primary w-full">
-            Check availability
-          </button>
-        </form>
+          Scroll to the story
+          <span
+            data-scroll-stem
+            className="scroll-stem block h-10 w-px origin-top bg-gradient-to-b from-gold to-transparent"
+            aria-hidden="true"
+          />
+        </a>
       </div>
     </section>
   );

@@ -6,16 +6,16 @@ import { BrandStory } from "@/components/BrandStory";
 import { ApartmentShowcase } from "@/components/ApartmentShowcase";
 import { Footer } from "@/components/Footer";
 
-const Amenities = dynamic(
-  () =>
-    import("@/components/Amenities").then((m) => ({ default: m.Amenities })),
-  { ssr: true },
-);
 const VideoExperience = dynamic(
   () =>
     import("@/components/VideoExperience").then((m) => ({
       default: m.VideoExperience,
     })),
+  { ssr: true },
+);
+const Amenities = dynamic(
+  () =>
+    import("@/components/Amenities").then((m) => ({ default: m.Amenities })),
   { ssr: true },
 );
 const Location = dynamic(
@@ -43,8 +43,8 @@ export default function Home() {
         <Hero />
         <BrandStory />
         <ApartmentShowcase />
-        <Amenities />
         <VideoExperience />
+        <Amenities />
         <Location />
         <BookingFinale />
       </main>

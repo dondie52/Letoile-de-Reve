@@ -103,7 +103,7 @@ export function Navigation() {
         >
           <a
             href="#top"
-            className="relative z-10 flex shrink-0 items-center justify-self-start"
+            className="relative z-10 flex min-h-11 shrink-0 items-center justify-self-start py-0.5"
             aria-label={`${BRAND.name} home`}
             onClick={() => setOpen(false)}
           >
@@ -128,7 +128,7 @@ export function Navigation() {
                 ) : null}
                 <a
                   href={link.href}
-                  className={`nav-label link-underline py-2 transition-colors ${
+                  className={`nav-label link-underline inline-flex min-h-11 items-center py-2 transition-colors ${
                     active === link.id
                       ? "text-gold"
                       : "text-ivory/80 hover:text-ivory"

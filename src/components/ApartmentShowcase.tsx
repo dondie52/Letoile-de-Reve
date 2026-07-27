@@ -350,7 +350,7 @@ export function ApartmentShowcase() {
 
               <div className="flex flex-1 flex-col gap-4">
                 <ul
-                  className="flex flex-col gap-2"
+                  className="flex flex-col gap-0.5"
                   role="tablist"
                   aria-label="Apartment rooms"
                 >
@@ -362,7 +362,7 @@ export function ApartmentShowcase() {
                         aria-selected={i === active}
                         aria-label={`View ${room.label}`}
                         onClick={() => goToRoom(i)}
-                        className={`nav-label group relative py-1 text-left transition-colors duration-300 ${
+                        className={`room-tab nav-label group relative flex min-h-11 w-full items-center py-3 text-left transition-colors duration-300 ${
                           i === active
                             ? "text-gold"
                             : "text-stone/70 hover:text-ivory"

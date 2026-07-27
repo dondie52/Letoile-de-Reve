@@ -5,7 +5,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gold/20 bg-green">
+    <footer className="border-t border-gold/20 bg-green pb-[env(safe-area-inset-bottom)]">
       <div className="section-pad mx-auto flex max-w-[1400px] flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Image
@@ -18,7 +18,7 @@ export function Footer() {
           <p className="title-sm mb-4 text-ivory/90">
             Luxury apartment in Phakalane
           </p>
-          <div className="contact-line flex flex-col gap-2">
+          <div className="contact-line flex flex-col gap-1">
             <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
               {BRAND.email}
             </a>
@@ -36,21 +36,24 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-start gap-4 sm:items-end">
-          <nav aria-label="Footer" className="nav-label flex flex-wrap gap-x-5 gap-y-2 text-stone">
-            <a href="#story" className="transition hover:text-gold">
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          <nav
+            aria-label="Footer"
+            className="nav-label flex flex-wrap gap-x-2 gap-y-1 text-stone sm:justify-end"
+          >
+            <a href="#story" className="tap-link transition hover:text-gold">
               Story
             </a>
-            <a href="#apartment" className="transition hover:text-gold">
+            <a href="#apartment" className="tap-link transition hover:text-gold">
               Apartment
             </a>
-            <a href="#amenities" className="transition hover:text-gold">
+            <a href="#amenities" className="tap-link transition hover:text-gold">
               Amenities
             </a>
-            <a href="#location" className="transition hover:text-gold">
+            <a href="#location" className="tap-link transition hover:text-gold">
               Location
             </a>
-            <a href="#book" className="transition hover:text-gold">
+            <a href="#book" className="tap-link transition hover:text-gold">
               Book
             </a>
           </nav>

@@ -73,6 +73,7 @@ export const viewport: Viewport = {
   themeColor: "#06150E",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 const jsonLd = {

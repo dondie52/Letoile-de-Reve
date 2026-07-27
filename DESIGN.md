@@ -70,4 +70,6 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 - Amenities: five-item composition with gold separators
 - Scrolled header / mobile book bar: solid `--green` (no content bleed)
 - Desktop nav from `lg` (1024px); hamburger below that
+- Interactive hit areas ≥44×44 (`tap-link`, room tabs, contact lines) while type roles stay quiet
 - Booking form: WhatsApp/Email method toggle, validation alerts, post-submit acknowledgement
+- `viewport-fit: cover` for notched devices

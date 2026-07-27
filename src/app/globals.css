@@ -357,6 +357,46 @@ section[id],
   color: var(--ivory);
 }
 
+/* Touch / coarse-pointer hit areas — visual mark can stay quiet */
+.tap-target {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.tap-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding-block: 0.5rem;
+  padding-inline: 0.35rem;
+}
+
+.contact-line a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 0.45rem;
+}
+
+@media (pointer: coarse) {
+  .nav-label.link-underline {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-block: 0.65rem;
+  }
+
+  .room-tab {
+    min-height: 48px;
+    padding-block: 0.75rem;
+  }
+}
+
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0 100%;

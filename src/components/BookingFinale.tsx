@@ -120,7 +120,7 @@ export function BookingFinale() {
             </p>
           </div>
 
-          <div className="contact-line mb-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center">
+          <div className="contact-line mb-10 flex flex-wrap justify-center gap-x-6 gap-y-1 text-center">
             <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
               {BRAND.email}
             </a>

@@ -570,11 +570,13 @@ section[id],
 
   .btn-primary {
     background: var(--gold-500);
-    color: var(--pine-950);
+    color: #04140e;
+    font-size: 0.875rem;
+    font-weight: 700;
   }
 
   a.btn-primary {
-    color: var(--pine-950);
+    color: #04140e;
   }
 
   .btn-primary:hover {

@@ -13,23 +13,23 @@ export function Footer() {
             alt="L’étoile de Rêve Luxury Apartment"
             width={200}
             height={52}
-            className="mb-5 h-10 w-auto max-w-[180px] object-contain"
+            className="mb-5 h-10 w-auto max-w-none object-contain"
           />
           <p className="title-sm mb-4 text-ivory/90">
             Luxury apartment in Phakalane
           </p>
           <div className="contact-line flex flex-col gap-2">
-            <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
+            <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
               {BRAND.email}
             </a>
-            <a href={`tel:${BRAND.phoneTel}`} className="hover:text-gold">
+            <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-gold">
               {BRAND.phoneDisplay}
             </a>
             <a
               href={`https://${BRAND.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gold"
+              className="transition hover:text-gold"
             >
               {BRAND.website}
             </a>
@@ -43,6 +43,12 @@ export function Footer() {
             </a>
             <a href="#apartment" className="transition hover:text-gold">
               Apartment
+            </a>
+            <a href="#amenities" className="transition hover:text-gold">
+              Amenities
+            </a>
+            <a href="#location" className="transition hover:text-gold">
+              Location
             </a>
             <a href="#book" className="transition hover:text-gold">
               Book

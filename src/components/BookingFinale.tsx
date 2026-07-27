@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
-import { MessageCircle } from "lucide-react";
+import { Check, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { todayISO } from "@/lib/motion";
 
@@ -51,6 +51,7 @@ export function BookingFinale() {
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<FormErrors>({});
   const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
+  const [sentVia, setSentVia] = useState<"email" | "whatsapp" | null>(null);
   const minDate = useMemo(() => todayISO(), []);
 
   const onSubmit = (e: FormEvent) => {
@@ -77,6 +78,7 @@ export function BookingFinale() {
         `Hello, I would like to enquire about staying at L’étoile de Rêve.\n\n${body}`,
       )}`;
       window.open(url, "_blank", "noopener,noreferrer");
+      setSentVia("whatsapp");
       return;
     }
 
@@ -84,6 +86,7 @@ export function BookingFinale() {
       "Enquiry - L’étoile de Rêve",
     )}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
+    setSentVia("email");
   };
 
   return (
@@ -118,181 +121,209 @@ export function BookingFinale() {
           </div>
 
           <div className="contact-line mb-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center">
-            <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
+            <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
               {BRAND.email}
             </a>
-            <a href={`tel:${BRAND.phoneTel}`} className="hover:text-gold">
+            <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-gold">
               {BRAND.phoneDisplay}
             </a>
             <a
               href={`https://${BRAND.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gold"
+              className="transition hover:text-gold"
             >
               {BRAND.website}
             </a>
           </div>
 
-          <form
-            onSubmit={onSubmit}
-            className="mx-auto grid max-w-2xl gap-6"
-            noValidate
-          >
+          {sentVia ? (
             <div
-              className="flex justify-center gap-2"
-              role="group"
-              aria-label="Send via"
+              className="mx-auto max-w-lg text-center"
+              role="status"
+              aria-live="polite"
             >
+              <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center border border-gold/40 text-gold">
+                <Check size={22} aria-hidden="true" />
+              </div>
+              <p className="title-sm mb-3 text-ivory">Enquiry opened</p>
+              <p className="body-lg mx-auto text-pretty">
+                {sentVia === "whatsapp"
+                  ? "Your WhatsApp message is ready to send. We look forward to welcoming you."
+                  : "Your email draft should be open. If nothing appeared, write to us at stay@letoiledereve.com."}
+              </p>
               <button
                 type="button"
-                className={`btn ${method === "whatsapp" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setMethod("whatsapp")}
-                aria-pressed={method === "whatsapp"}
+                className="btn btn-secondary mt-8"
+                onClick={() => {
+                  setSentVia(null);
+                  setErrors({});
+                }}
               >
-                <MessageCircle size={16} aria-hidden="true" />
-                WhatsApp
-              </button>
-              <button
-                type="button"
-                className={`btn ${method === "email" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setMethod("email")}
-                aria-pressed={method === "email"}
-              >
-                Email
+                Send another enquiry
               </button>
             </div>
+          ) : (
+            <form
+              onSubmit={onSubmit}
+              className="mx-auto grid max-w-2xl gap-6"
+              noValidate
+            >
+              <div
+                className="grid grid-cols-2 gap-2 sm:mx-auto sm:inline-grid sm:w-auto"
+                role="group"
+                aria-label="Send via"
+              >
+                <button
+                  type="button"
+                  className={`btn w-full ${method === "whatsapp" ? "btn-primary" : "btn-secondary"}`}
+                  onClick={() => setMethod("whatsapp")}
+                  aria-pressed={method === "whatsapp"}
+                >
+                  <MessageCircle size={16} aria-hidden="true" />
+                  WhatsApp
+                </button>
+                <button
+                  type="button"
+                  className={`btn w-full ${method === "email" ? "btn-primary" : "btn-secondary"}`}
+                  onClick={() => setMethod("email")}
+                  aria-pressed={method === "email"}
+                >
+                  Email
+                </button>
+              </div>
 
-            <div>
-              <label htmlFor="name" className="field-label">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                className="input-field"
-                placeholder="Your full name"
-                autoComplete="name"
-                value={values.name}
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "name-error" : undefined}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, name: e.target.value }))
-                }
-              />
-              {errors.name && (
-                <p id="name-error" className="field-error">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="contact" className="field-label">
-                Email or phone
-              </label>
-              <input
-                id="contact"
-                name="contact"
-                className="input-field"
-                placeholder="Email or phone"
-                autoComplete="email"
-                value={values.contact}
-                aria-invalid={!!errors.contact}
-                aria-describedby={errors.contact ? "contact-error" : undefined}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, contact: e.target.value }))
-                }
-              />
-              {errors.contact && (
-                <p id="contact-error" className="field-error">
-                  {errors.contact}
-                </p>
-              )}
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="checkIn" className="field-label">
-                  Check-in
+                <label htmlFor="name" className="field-label">
+                  Name
                 </label>
                 <input
-                  id="checkIn"
-                  name="checkIn"
-                  type="date"
-                  min={minDate}
+                  id="name"
+                  name="name"
                   className="input-field"
-                  value={values.checkIn}
-                  aria-invalid={!!errors.checkIn}
-                  aria-describedby={errors.checkIn ? "checkin-error" : undefined}
+                  placeholder="Your full name"
+                  autoComplete="name"
+                  value={values.name}
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, checkIn: e.target.value }))
+                    setValues((v) => ({ ...v, name: e.target.value }))
                   }
                 />
-                {errors.checkIn && (
-                  <p id="checkin-error" className="field-error">
-                    {errors.checkIn}
+                {errors.name && (
+                  <p id="name-error" className="field-error" role="alert">
+                    {errors.name}
                   </p>
                 )}
               </div>
+
               <div>
-                <label htmlFor="checkOut" className="field-label">
-                  Check-out
+                <label htmlFor="contact" className="field-label">
+                  Email or phone
                 </label>
                 <input
-                  id="checkOut"
-                  name="checkOut"
-                  type="date"
-                  min={values.checkIn || minDate}
+                  id="contact"
+                  name="contact"
                   className="input-field"
-                  value={values.checkOut}
-                  aria-invalid={!!errors.checkOut}
-                  aria-describedby={
-                    errors.checkOut ? "checkout-error" : undefined
-                  }
+                  placeholder="Email or phone"
+                  autoComplete="email"
+                  value={values.contact}
+                  aria-invalid={!!errors.contact}
+                  aria-describedby={errors.contact ? "contact-error" : undefined}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, checkOut: e.target.value }))
+                    setValues((v) => ({ ...v, contact: e.target.value }))
                   }
                 />
-                {errors.checkOut && (
-                  <p id="checkout-error" className="field-error">
-                    {errors.checkOut}
+                {errors.contact && (
+                  <p id="contact-error" className="field-error" role="alert">
+                    {errors.contact}
                   </p>
                 )}
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="message" className="field-label">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                className="input-field resize-y"
-                placeholder="Tell us about your stay"
-                value={values.message}
-                aria-invalid={!!errors.message}
-                aria-describedby={errors.message ? "message-error" : undefined}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, message: e.target.value }))
-                }
-              />
-              {errors.message && (
-                <p id="message-error" className="field-error">
-                  {errors.message}
-                </p>
-              )}
-            </div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="checkIn" className="field-label">
+                    Check-in
+                  </label>
+                  <input
+                    id="checkIn"
+                    name="checkIn"
+                    type="date"
+                    min={minDate}
+                    className="input-field"
+                    value={values.checkIn}
+                    aria-invalid={!!errors.checkIn}
+                    aria-describedby={errors.checkIn ? "checkin-error" : undefined}
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, checkIn: e.target.value }))
+                    }
+                  />
+                  {errors.checkIn && (
+                    <p id="checkin-error" className="field-error" role="alert">
+                      {errors.checkIn}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="checkOut" className="field-label">
+                    Check-out
+                  </label>
+                  <input
+                    id="checkOut"
+                    name="checkOut"
+                    type="date"
+                    min={values.checkIn || minDate}
+                    className="input-field"
+                    value={values.checkOut}
+                    aria-invalid={!!errors.checkOut}
+                    aria-describedby={
+                      errors.checkOut ? "checkout-error" : undefined
+                    }
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, checkOut: e.target.value }))
+                    }
+                  />
+                  {errors.checkOut && (
+                    <p id="checkout-error" className="field-error" role="alert">
+                      {errors.checkOut}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary mt-2 justify-self-center"
-            >
-              {method === "email" ? "Send via email" : "Send via WhatsApp"}
-            </button>
-          </form>
+              <div>
+                <label htmlFor="message" className="field-label">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  className="input-field resize-y"
+                  placeholder="Tell us about your stay"
+                  value={values.message}
+                  aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? "message-error" : undefined}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, message: e.target.value }))
+                  }
+                />
+                {errors.message && (
+                  <p id="message-error" className="field-error" role="alert">
+                    {errors.message}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary mt-2 w-full justify-self-center sm:w-auto"
+              >
+                {method === "email" ? "Send via email" : "Send via WhatsApp"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>

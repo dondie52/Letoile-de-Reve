@@ -38,19 +38,31 @@ export function Navigation() {
     return () => observer.disconnect();
   }, []);
 
+  /* Sticky Book: after hero leaves the upper viewport, hide while booking is in view */
   useEffect(() => {
-    const heroActions = document.querySelector<HTMLElement>("[data-hero-actions]");
-    if (!heroActions) return;
+    const hero = document.getElementById("top");
+    const book = document.getElementById("book");
+    if (!hero) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowMobileBook(!entry.isIntersecting);
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0 },
-    );
+    const update = () => {
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      const pastHero = heroBottom < window.innerHeight * 0.42;
+      let bookInView = false;
+      if (book) {
+        const br = book.getBoundingClientRect();
+        bookInView =
+          br.top < window.innerHeight * 0.7 && br.bottom > window.innerHeight * 0.28;
+      }
+      setShowMobileBook(pastHero && !bookInView);
+    };
 
-    observer.observe(heroActions);
-    return () => observer.disconnect();
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -58,6 +70,15 @@ export function Navigation() {
     return () => {
       document.body.style.overflow = "";
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   const mobileLinks = [
@@ -70,13 +91,13 @@ export function Navigation() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        className={`fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-500 ${
           scrolled || open ? "nav-blur nav-compact" : "bg-transparent"
         }`}
         style={{ ["--nav-h" as string]: `${headerH}px` }}
       >
         <nav
-          className="section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[auto_1fr_auto] md:gap-6"
+          className="section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8"
           aria-label="Primary"
           style={{ height: headerH }}
         >
@@ -84,8 +105,8 @@ export function Navigation() {
             href="#top"
             className="relative z-10 flex shrink-0 items-center justify-self-start"
             aria-label={`${BRAND.name} home`}
+            onClick={() => setOpen(false)}
           >
-            {/* Height-driven lockup only — preserves official aspect ratio */}
             <Image
               src={ASSETS.logoNav}
               alt="L’étoile de Rêve Luxury Apartment"
@@ -96,12 +117,12 @@ export function Navigation() {
             />
           </a>
 
-          <ul className="hidden min-w-0 items-center justify-center gap-1 md:flex">
+          <ul className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
             {NAV_LINKS.map((link, i) => (
               <li key={link.id} className="flex items-center">
                 {i > 0 ? (
                   <span
-                    className="mx-3 h-3 w-px bg-gold/25"
+                    className="mx-3 h-3 w-px bg-gold/25 lg:mx-4"
                     aria-hidden="true"
                   />
                 ) : null}
@@ -120,14 +141,14 @@ export function Navigation() {
           </ul>
 
           <div className="relative z-10 flex items-center justify-self-end">
-            <div className="max-md:hidden">
+            <div className="max-lg:hidden">
               <a href="#book" className="btn btn-primary">
                 Book Now
               </a>
             </div>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center text-ivory md:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center text-ivory transition hover:text-gold lg:hidden"
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -140,7 +161,7 @@ export function Navigation() {
 
         <div
           id="mobile-menu"
-          className={`fixed inset-0 z-0 bg-forest/98 transition-all duration-500 md:hidden ${
+          className={`fixed inset-0 z-0 bg-forest/98 transition-all duration-500 lg:hidden ${
             open
               ? "pointer-events-auto opacity-100"
               : "pointer-events-none opacity-0"
@@ -168,13 +189,13 @@ export function Navigation() {
       </header>
 
       <div
-        className={`mobile-book-bar md:hidden ${showMobileBook ? "is-visible" : ""}`}
-        aria-hidden={!showMobileBook}
+        className={`mobile-book-bar lg:hidden ${showMobileBook && !open ? "is-visible" : ""}`}
+        aria-hidden={!showMobileBook || open}
       >
         <a
           href="#book"
           className="btn btn-primary w-full"
-          tabIndex={showMobileBook ? 0 : -1}
+          tabIndex={showMobileBook && !open ? 0 : -1}
         >
           Book your stay
         </a>

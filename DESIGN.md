@@ -68,3 +68,6 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 - Secondary CTA: gold hairline / ivory text
 - Inputs: bordered fields with visible focus (not low-contrast underline-only)
 - Amenities: five-item composition with gold separators
+- Scrolled header / mobile book bar: solid `--green` (no content bleed)
+- Desktop nav from `lg` (1024px); hamburger below that
+- Booking form: WhatsApp/Email method toggle, validation alerts, post-submit acknowledgement

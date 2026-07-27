@@ -293,9 +293,9 @@ export function Hero() {
         <a
           href="#story"
           data-hero-scroll
-          className="meta mt-10 hidden w-fit flex-col items-start gap-2 transition hover:text-gold md:mt-12 md:inline-flex"
+          className="meta mt-10 hidden w-fit flex-col items-start gap-2 transition hover:text-gold lg:mt-12 lg:inline-flex"
         >
-          Scroll to discover
+          Scroll to the story
           <span
             data-scroll-stem
             className="scroll-stem block h-10 w-px origin-top bg-gradient-to-b from-gold to-transparent"

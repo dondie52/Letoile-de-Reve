@@ -9,7 +9,8 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("");
-  const [showMobileBook, setShowMobileBook] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+  const [coverZoneVisible, setCoverZoneVisible] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 36);
@@ -38,33 +39,52 @@ export function Navigation() {
     return () => observer.disconnect();
   }, []);
 
-  /* Sticky Book: after hero leaves the upper viewport, hide while booking is in view */
+  /* Sticky Book CTA: show after hero, hide over booking section or footer — no layout shift */
   useEffect(() => {
     const hero = document.getElementById("top");
     const book = document.getElementById("book");
-    if (!hero) return;
+    const footer = document.querySelector("footer");
 
-    const update = () => {
-      const heroBottom = hero.getBoundingClientRect().bottom;
-      const pastHero = heroBottom < window.innerHeight * 0.42;
-      let bookInView = false;
-      if (book) {
-        const br = book.getBoundingClientRect();
-        bookInView =
-          br.top < window.innerHeight * 0.7 && br.bottom > window.innerHeight * 0.28;
-      }
-      setShowMobileBook(pastHero && !bookInView);
-    };
+    const heroObserver = hero
+      ? new IntersectionObserver(
+          ([entry]) => {
+            setPastHero(!entry.isIntersecting);
+          },
+          { root: null, threshold: 0, rootMargin: "0px 0px -42% 0px" },
+        )
+      : null;
 
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    const coverTargets = [book, footer].filter(Boolean) as Element[];
+    const coverVisible = new Set<Element>();
+
+    const coverObserver =
+      coverTargets.length > 0
+        ? new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) coverVisible.add(entry.target);
+                else coverVisible.delete(entry.target);
+              });
+              setCoverZoneVisible(coverVisible.size > 0);
+            },
+            {
+              root: null,
+              threshold: 0,
+              rootMargin: "0px 0px -8% 0px",
+            },
+          )
+        : null;
+
+    if (hero && heroObserver) heroObserver.observe(hero);
+    coverTargets.forEach((el) => coverObserver?.observe(el));
+
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      heroObserver?.disconnect();
+      coverObserver?.disconnect();
     };
   }, []);
 
+  const showMobileBook = pastHero && !coverZoneVisible;
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -192,13 +212,15 @@ export function Navigation() {
         className={`mobile-book-bar lg:hidden ${showMobileBook && !open ? "is-visible" : ""}`}
         aria-hidden={!showMobileBook || open}
       >
-        <a
-          href="#book"
-          className="btn btn-primary w-full"
-          tabIndex={showMobileBook && !open ? 0 : -1}
-        >
-          Book your stay
-        </a>
+        <div className="mobile-book-bar-inner">
+          <a
+            href="#book"
+            className="btn btn-primary mobile-book-bar-btn w-full"
+            tabIndex={showMobileBook && !open ? 0 : -1}
+          >
+            Book your stay
+          </a>
+        </div>
       </div>
     </>
   );

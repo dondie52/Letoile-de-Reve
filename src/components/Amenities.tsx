@@ -114,10 +114,10 @@ export function Amenities() {
               <div className="mb-5 text-gold transition-transform duration-500 group-hover:-translate-y-0.5">
                 <AmenityIcon index={i} />
               </div>
-              <h3 className="mb-3 font-display text-2xl text-ivory">
+              <h3 className="title-sm mb-3 text-ivory">
                 {item.title}
               </h3>
-              <p className="body-lg max-w-sm">{item.description}</p>
+              <p className="body-lg">{item.description}</p>
             </li>
           ))}
         </ul>

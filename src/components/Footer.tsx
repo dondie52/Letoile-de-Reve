@@ -15,10 +15,10 @@ export function Footer() {
             height={52}
             className="mb-5 h-10 w-auto max-w-[180px] object-contain"
           />
-          <p className="mb-4 max-w-sm font-display text-lg text-ivory/90">
+          <p className="title-sm mb-4 text-ivory/90">
             Luxury apartment in Phakalane
           </p>
-          <div className="flex flex-col gap-2 text-sm text-stone">
+          <div className="contact-line flex flex-col gap-2">
             <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
               {BRAND.email}
             </a>
@@ -37,7 +37,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-start gap-4 sm:items-end">
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 text-xs uppercase tracking-[0.18em] text-stone">
+          <nav aria-label="Footer" className="nav-label flex flex-wrap gap-x-5 gap-y-2 text-stone">
             <a href="#story" className="transition hover:text-gold">
               Story
             </a>
@@ -48,7 +48,7 @@ export function Footer() {
               Book
             </a>
           </nav>
-          <p className="text-xs tracking-wide text-stone/80">
+          <p className="caption">
             © {year} {BRAND.name}. All rights reserved.
           </p>
         </div>

@@ -123,23 +123,17 @@ export function BrandStory() {
           <h2
             id="story-heading"
             data-story-line
-            className="heading-lg mb-4 text-ivory"
+            className="heading-lg mb-5 text-ivory"
           >
             {BRAND.name}
           </h2>
-          <p
-            data-story-line
-            className="mb-3 font-display text-2xl text-gold sm:text-3xl"
-          >
+          <p data-story-line className="lede mb-4">
             {BRAND.tagline}
           </p>
-          <p
-            data-story-line
-            className="mb-8 text-sm tracking-[0.18em] text-stone"
-          >
+          <p data-story-line className="meta mb-8">
             {BRAND.pronunciation}
           </p>
-          <p data-story-line className="body-lg max-w-[36rem] text-pretty">
+          <p data-story-line className="body-lg text-pretty">
             Named to reflect a vision of creating a luxurious and peaceful
             retreat in Phakalane. Inspired by the elegance of the stars and the
             comfort of home, every detail is designed for a refined stay and a
@@ -174,13 +168,13 @@ export function BrandStory() {
                 className="relative mx-auto h-auto w-[120px] object-contain sm:w-[140px]"
               />
             </div>
-            <p className="mt-8 text-center font-display text-2xl tracking-[0.04em] text-ivory">
+            <p className="title-sm mt-8 text-center text-ivory">
               {BRAND.name}
             </p>
-            <p className="mt-3 text-center text-sm tracking-[0.18em] text-stone">
+            <p className="meta mt-3 text-center">
               {BRAND.pronunciation}
             </p>
-            <p className="mt-2 text-center font-display text-base text-gold/90">
+            <p className="translation mt-2 text-center">
               French for “The Star of Dreams”
             </p>
           </div>

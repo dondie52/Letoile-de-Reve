@@ -23,11 +23,20 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 
 ## Typography
 
-- **Display:** Cormorant Garamond (editorial serif)
-- **Body / UI:** Manrope
-- **Eyebrow:** 0.7rem, uppercase, `letter-spacing: 0.28em`, gold
-- **Hero H1:** `clamp(2.5rem, 7vw, 5.75rem)`, line-height ~0.98, balanced wrap
-- Body measure ~36–38rem / ~65ch
+- **Display:** Cormorant Garamond 400 / 500 (editorial serif)
+- **Body / UI:** Manrope 400 / 500 / 600
+- **Roles**
+  - `.eyebrow` — 0.6875rem, uppercase, `0.28em` tracking, gold (hero only)
+  - `.heading-xl` — hero display: `clamp(2.55rem, 6.8vw, 5.5rem)`, lh `0.98`, tracking `-0.025em`
+  - `.heading-lg` — section titles: `clamp(2.05rem, 4.2vw, 3.55rem)`, lh `1.08`
+  - `.heading-md` — gallery / mid sections: `clamp(1.85rem, 3.2vw, 2.85rem)`
+  - `.title-sm` — room & amenity titles: `clamp(1.45rem, 2.1vw, 1.85rem)`, weight 500
+  - `.lede` — gold display subhead (tagline, location line)
+  - `.body-lg` — primary reading: ≥1.0625rem, lh `1.8`, tracking `0.014em`, measure `65ch`
+  - `.meta` / `.nav-label` — uppercase metadata and navigation
+  - `.contact-line` / `.caption` / `.field-label` / `.field-error` — UI chrome
+- Light-on-dark body uses slightly open tracking and leading; display stays optically tight
+- Body measure ~65ch; avoid arbitrary one-off `text-*` sizes for product roles
 
 ## Layout
 

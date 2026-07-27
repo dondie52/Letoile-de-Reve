@@ -107,7 +107,7 @@ export function Navigation() {
                 ) : null}
                 <a
                   href={link.href}
-                  className={`link-underline py-2 text-[0.7rem] uppercase tracking-[0.2em] transition-colors ${
+                  className={`nav-label link-underline py-2 transition-colors ${
                     active === link.id
                       ? "text-gold"
                       : "text-ivory/80 hover:text-ivory"
@@ -155,7 +155,7 @@ export function Navigation() {
                 href={link.href}
                 tabIndex={open ? 0 : -1}
                 onClick={() => setOpen(false)}
-                className={`font-display text-4xl text-ivory transition-all duration-500 ${
+                className={`nav-drawer-link transition-all duration-500 ${
                   open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
                 }`}
                 style={{ transitionDelay: open ? `${100 + i * 55}ms` : "0ms" }}

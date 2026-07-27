@@ -38,11 +38,11 @@ export function Location() {
           >
             Perfectly placed in Phakalane.
           </h2>
-          <p className="body-lg mb-8 max-w-md text-pretty">
+          <p className="body-lg mb-8 text-pretty">
             A peaceful address in Gaborone with convenient access to everyday
             essentials, dining and key destinations.
           </p>
-          <p className="mb-10 font-display text-xl text-gold">
+          <p className="lede mb-10">
             {BRAND.location}
           </p>
           <a

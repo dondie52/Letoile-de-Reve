@@ -111,13 +111,13 @@ export function BookingFinale() {
             >
               Make {BRAND.name} your next stay.
             </h2>
-            <p className="body-lg mx-auto mt-5 max-w-xl">
+            <p className="body-lg mx-auto mt-5 max-w-xl text-pretty">
               Share your dates and we will respond with availability for your
               dream stay.
             </p>
           </div>
 
-          <div className="mb-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center text-sm tracking-wide text-stone">
+          <div className="contact-line mb-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center">
             <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
               {BRAND.email}
             </a>
@@ -181,7 +181,7 @@ export function BookingFinale() {
                 }
               />
               {errors.name && (
-                <p id="name-error" className="mt-2 text-sm text-[#c45c4a]">
+                <p id="name-error" className="field-error">
                   {errors.name}
                 </p>
               )}
@@ -205,7 +205,7 @@ export function BookingFinale() {
                 }
               />
               {errors.contact && (
-                <p id="contact-error" className="mt-2 text-sm text-[#c45c4a]">
+                <p id="contact-error" className="field-error">
                   {errors.contact}
                 </p>
               )}
@@ -230,7 +230,7 @@ export function BookingFinale() {
                   }
                 />
                 {errors.checkIn && (
-                  <p id="checkin-error" className="mt-2 text-sm text-[#c45c4a]">
+                  <p id="checkin-error" className="field-error">
                     {errors.checkIn}
                   </p>
                 )}
@@ -255,7 +255,7 @@ export function BookingFinale() {
                   }
                 />
                 {errors.checkOut && (
-                  <p id="checkout-error" className="mt-2 text-sm text-[#c45c4a]">
+                  <p id="checkout-error" className="field-error">
                     {errors.checkOut}
                   </p>
                 )}
@@ -280,7 +280,7 @@ export function BookingFinale() {
                 }
               />
               {errors.message && (
-                <p id="message-error" className="mt-2 text-sm text-[#c45c4a]">
+                <p id="message-error" className="field-error">
                   {errors.message}
                 </p>
               )}

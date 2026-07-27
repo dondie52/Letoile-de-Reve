@@ -156,13 +156,13 @@ export function ApartmentShowcase() {
                   style={{ opacity: i === 0 ? 1 : 0 }}
                   aria-hidden={i !== active}
                 >
-                  <p className="mb-3 font-display text-sm tracking-[0.25em] text-gold">
+                  <p className="meta mb-3 text-gold">
                     {room.index} / 04
                   </p>
-                  <p className="mb-3 font-display text-3xl text-ivory">
+                  <p className="title-sm mb-3 text-ivory">
                     {room.label}
                   </p>
-                  <p className="body-lg max-w-md">{room.description}</p>
+                  <p className="body-lg">{room.description}</p>
                 </div>
               ))}
             </div>
@@ -192,7 +192,7 @@ export function ApartmentShowcase() {
                         aria-selected={i === active}
                         aria-label={`View ${room.label}`}
                         onClick={() => goToRoom(i)}
-                        className={`group relative py-1 text-left text-xs uppercase tracking-[0.2em] transition-colors ${
+                        className={`nav-label group relative py-1 text-left transition-colors ${
                           i === active
                             ? "text-gold"
                             : "text-stone/70 hover:text-ivory"
@@ -260,10 +260,10 @@ export function ApartmentShowcase() {
                   className="object-cover"
                 />
               </div>
-              <p className="mb-2 font-display text-sm tracking-[0.25em] text-gold">
+              <p className="meta mb-2 text-gold">
                 {room.index} / 04
               </p>
-              <h3 className="mb-2 font-display text-3xl text-ivory">
+              <h3 className="title-sm mb-2 text-ivory">
                 {room.label}
               </h3>
               <p className="body-lg">{room.description}</p>

@@ -172,14 +172,14 @@ export function Hero() {
 
         <h1
           data-hero-line
-          className="heading-xl mb-5 max-w-[16ch] text-pretty text-ivory sm:mb-6 sm:max-w-[18ch] lg:max-w-[20ch]"
+          className="heading-xl mb-5 max-w-[14ch] text-pretty text-ivory sm:mb-6 sm:max-w-[16ch] lg:max-w-[18ch]"
         >
           Your dream stay, written in the stars.
         </h1>
 
         <p
           data-hero-line
-          className="body-lg mb-8 max-w-[36rem] text-pretty text-ivory/85 sm:mb-10"
+          className="body-lg mb-8 text-pretty sm:mb-10"
         >
           A refined fully furnished retreat in the heart of Phakalane, created
           for comfort, privacy and effortless living.
@@ -201,7 +201,7 @@ export function Hero() {
         <a
           href="#story"
           data-hero-scroll
-          className="mt-10 hidden w-fit flex-col items-start gap-2 text-[0.68rem] uppercase tracking-[0.28em] text-stone transition hover:text-gold md:mt-12 md:inline-flex"
+          className="meta mt-10 hidden w-fit flex-col items-start gap-2 transition hover:text-gold md:mt-12 md:inline-flex"
         >
           Scroll to discover
           <span

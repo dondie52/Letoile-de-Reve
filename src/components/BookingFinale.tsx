@@ -47,12 +47,21 @@ function validate(values: FormState): FormErrors {
   return errors;
 }
 
+function nextDayISO(iso: string): string {
+  const d = new Date(`${iso}T12:00:00`);
+  d.setDate(d.getDate() + 1);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
 export function BookingFinale() {
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<FormErrors>({});
   const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
   const [sentVia, setSentVia] = useState<"email" | "whatsapp" | null>(null);
   const minDate = useMemo(() => todayISO(), []);
+  const checkOutMin = values.checkIn ? nextDayISO(values.checkIn) : minDate;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -246,18 +255,32 @@ export function BookingFinale() {
                   <label htmlFor="checkIn" className="field-label">
                     Check-in
                   </label>
+                  <p id="checkin-hint" className="field-hint">
+                    Select check-in date
+                  </p>
                   <input
                     id="checkIn"
                     name="checkIn"
                     type="date"
                     min={minDate}
-                    className="input-field"
+                    className="input-field input-date"
                     value={values.checkIn}
                     aria-invalid={!!errors.checkIn}
-                    aria-describedby={errors.checkIn ? "checkin-error" : undefined}
-                    onChange={(e) =>
-                      setValues((v) => ({ ...v, checkIn: e.target.value }))
+                    aria-describedby={
+                      errors.checkIn
+                        ? "checkin-hint checkin-error"
+                        : "checkin-hint"
                     }
+                    onChange={(e) => {
+                      const checkIn = e.target.value;
+                      setValues((v) => {
+                        const checkOut =
+                          v.checkOut && checkIn && v.checkOut <= checkIn
+                            ? ""
+                            : v.checkOut;
+                        return { ...v, checkIn, checkOut };
+                      });
+                    }}
                   />
                   {errors.checkIn && (
                     <p id="checkin-error" className="field-error" role="alert">
@@ -269,16 +292,21 @@ export function BookingFinale() {
                   <label htmlFor="checkOut" className="field-label">
                     Check-out
                   </label>
+                  <p id="checkout-hint" className="field-hint">
+                    Select check-out date
+                  </p>
                   <input
                     id="checkOut"
                     name="checkOut"
                     type="date"
-                    min={values.checkIn || minDate}
-                    className="input-field"
+                    min={checkOutMin}
+                    className="input-field input-date"
                     value={values.checkOut}
                     aria-invalid={!!errors.checkOut}
                     aria-describedby={
-                      errors.checkOut ? "checkout-error" : undefined
+                      errors.checkOut
+                        ? "checkout-hint checkout-error"
+                        : "checkout-hint"
                     }
                     onChange={(e) =>
                       setValues((v) => ({ ...v, checkOut: e.target.value }))

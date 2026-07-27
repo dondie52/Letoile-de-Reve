@@ -16,7 +16,13 @@
   --font-display: var(--font-cormorant);
   --font-body: var(--font-manrope);
   --nav-h: 5.5rem;
-  --mobile-cta-h: 4.25rem;
+  /* Fixed mobile booking bar — content height before safe-area */
+  --booking-bar-h: 4.5rem;
+  --booking-bar-offset: calc(
+    var(--booking-bar-h) + env(safe-area-inset-bottom, 0px)
+  );
+  /* Back-compat alias used by hero spacing */
+  --mobile-cta-h: var(--booking-bar-offset);
 }
 
 @theme inline {
@@ -131,7 +137,19 @@ section[id],
 
 @media (max-width: 1023px) {
   body {
-    padding-bottom: var(--mobile-cta-h);
+    /* Reserve space for the fixed booking bar + home indicator — no layout jump when it hides */
+    padding-bottom: var(--booking-bar-offset);
+  }
+
+  .site-footer {
+    /* Body already reserves the CTA offset; keep only natural section rhythm */
+    padding-bottom: clamp(1.25rem, 3vw, 1.75rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-footer {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
   }
 }
 
@@ -225,14 +243,66 @@ section[id],
 .apartment-frame {
   isolation: isolate;
   contain: paint;
+  overflow: hidden;
 }
 
 .apartment-frame [data-room-image] {
   backface-visibility: hidden;
 }
 
-.apartment-frame [data-room-image].is-compositing {
-  will-change: transform, opacity, clip-path;
+.apartment-mobile {
+  min-height: 0;
+  padding-bottom: calc(var(--booking-bar-offset) + clamp(1rem, 3vw, 1.5rem));
+}
+
+.apartment-mobile-card {
+  min-height: 0;
+}
+
+.apartment-mobile-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: min(
+    52svh,
+    calc(100svh - var(--nav-h) - env(safe-area-inset-top, 0px) - var(--booking-bar-offset) - 13rem)
+  );
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.apartment-mobile-controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--forest) 75%, transparent),
+    transparent
+  );
+}
+
+.location-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: min(58svh, calc(100svh - var(--nav-h) - var(--booking-bar-offset) - 6rem));
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .location-media {
+    aspect-ratio: auto;
+    max-height: none;
+    min-height: 78vh;
+  }
 }
 
 /* Below-fold sections — defer layout/paint work until near viewport */
@@ -241,7 +311,17 @@ section[id],
 #location,
 #book {
   content-visibility: auto;
-  contain-intrinsic-size: auto 720px;
+  contain-intrinsic-size: auto 560px;
+}
+
+@media (max-width: 767px) {
+  #location {
+    contain-intrinsic-size: auto 720px;
+  }
+
+  #book {
+    contain-intrinsic-size: auto 900px;
+  }
 }
 
 /* Type roles — size + weight + tracking carry hierarchy together */
@@ -514,7 +594,7 @@ a.btn-primary {
 
 .field-label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
@@ -523,16 +603,30 @@ a.btn-primary {
   color: color-mix(in srgb, var(--ivory) 78%, var(--stone));
 }
 
+.field-hint {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--stone) 92%, var(--ivory));
+}
+
 .input-field {
   width: 100%;
-  background: color-mix(in srgb, var(--forest) 35%, transparent);
-  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  appearance: none;
+  -webkit-appearance: none;
+  background: color-mix(in srgb, var(--forest) 55%, var(--green));
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
   color: var(--ivory);
   font-size: 1rem;
   letter-spacing: 0.02em;
   line-height: 1.5;
   padding: 0.85rem 1rem;
-  min-height: 2.85rem;
+  min-height: 3rem;
+  border-radius: 0;
   transition:
     border-color 0.3s ease,
     background 0.3s ease;
@@ -546,11 +640,60 @@ a.btn-primary {
 .input-field:focus {
   outline: none;
   border-color: var(--gold);
-  background: color-mix(in srgb, var(--green) 55%, transparent);
+  background: color-mix(in srgb, var(--green) 70%, var(--forest));
 }
 
 .input-field[aria-invalid="true"] {
   border-color: var(--danger);
+}
+
+/* Date inputs — Safari, iOS WebView, WhatsApp in-app, Chrome Android */
+.input-date,
+input[type="date"].input-field {
+  color: var(--ivory);
+  background-color: color-mix(in srgb, var(--forest) 55%, var(--green));
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  min-height: 3rem;
+  padding: 0.85rem 1rem;
+  font-size: 16px;
+  line-height: 1.5;
+  color-scheme: dark;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-text-fill-color: var(--ivory);
+  opacity: 1;
+}
+
+.input-date::-webkit-datetime-edit,
+.input-date::-webkit-datetime-edit-fields-wrapper,
+.input-date::-webkit-datetime-edit-text,
+.input-date::-webkit-datetime-edit-month-field,
+.input-date::-webkit-datetime-edit-day-field,
+.input-date::-webkit-datetime-edit-year-field {
+  color: var(--ivory);
+  -webkit-text-fill-color: var(--ivory);
+  padding: 0;
+  opacity: 1;
+}
+
+.input-date:not(:focus):invalid::-webkit-datetime-edit {
+  color: color-mix(in srgb, var(--stone) 90%, var(--ivory));
+  -webkit-text-fill-color: color-mix(in srgb, var(--stone) 90%, var(--ivory));
+}
+
+.input-date::-webkit-calendar-picker-indicator {
+  opacity: 0.9;
+  cursor: pointer;
+  padding: 0.15rem;
+  margin-inline-start: 0.35rem;
+  background-color: transparent;
+  filter: invert(0.85) sepia(0.35) saturate(2.2) hue-rotate(5deg);
+}
+
+.input-date::-webkit-date-and-time-value {
+  text-align: left;
+  color: var(--ivory);
+  -webkit-text-fill-color: var(--ivory);
 }
 
 .amenities-grid {
@@ -602,17 +745,31 @@ a.btn-primary {
   inset-inline: 0;
   bottom: 0;
   z-index: 45;
+  box-sizing: border-box;
+  min-height: var(--booking-bar-offset);
   border-top: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
   background: var(--green);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom));
+  padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
   transform: translateY(100%);
   opacity: 0;
   pointer-events: none;
+  /* Visibility only — reserved body padding prevents layout movement */
   transition:
     transform 0.45s cubic-bezier(0.32, 0.72, 0, 1),
     opacity 0.35s ease;
+}
+
+.mobile-book-bar-inner {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.mobile-book-bar-btn {
+  min-height: 48px;
+  width: 100%;
 }
 
 .mobile-book-bar.is-visible {
@@ -640,10 +797,4 @@ a.btn-primary {
 
 input[type="date"] {
   color-scheme: dark;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.85) sepia(0.3) saturate(2) hue-rotate(5deg);
-  cursor: pointer;
-  opacity: 0.85;
 }

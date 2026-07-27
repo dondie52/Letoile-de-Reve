@@ -32,6 +32,7 @@ export const ROOMS = [
     description: "Warm light, considered textures and a calm space to unwind.",
     src: withBase("/assets/images/living-room.webp"),
     alt: "Living room at L’étoile de Rêve with warm lighting and refined furnishings",
+    objectPosition: "50% 42%",
   },
   {
     id: "bedroom",
@@ -40,6 +41,7 @@ export const ROOMS = [
     description: "A restful private suite designed for deep comfort.",
     src: withBase("/assets/images/bedroom.webp"),
     alt: "Bedroom suite at L’étoile de Rêve designed for restful comfort",
+    objectPosition: "50% 38%",
   },
   {
     id: "kitchen",
@@ -48,6 +50,7 @@ export const ROOMS = [
     description: "Fully equipped for effortless everyday living.",
     src: withBase("/assets/images/kitchen.webp"),
     alt: "Fully equipped kitchen at L’étoile de Rêve",
+    objectPosition: "48% 45%",
   },
   {
     id: "bathroom",
@@ -56,6 +59,7 @@ export const ROOMS = [
     description: "Clean, modern finishes with a spa-like sense of calm.",
     src: withBase("/assets/images/bathroom.webp"),
     alt: "Modern bathroom at L’étoile de Rêve with spa-like finishes",
+    objectPosition: "52% 40%",
   },
 ] as const;
 

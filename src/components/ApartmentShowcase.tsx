@@ -401,7 +401,7 @@ export function ApartmentShowcase() {
       </div>
 
       {/* Mobile dedicated gallery — no desktop pin */}
-      <div className="apartment-mobile section-pad mx-auto max-w-[1400px] py-[clamp(3.5rem,10vw,5rem)] md:hidden">
+      <div className="apartment-mobile section-pad mx-auto max-w-[1400px] pt-[clamp(3.5rem,10vw,5rem)] md:hidden">
         <h2
           id="apartment-heading-mobile"
           className="heading-md mb-[clamp(1.5rem,5vw,2.5rem)] text-ivory"

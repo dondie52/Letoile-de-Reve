@@ -252,6 +252,7 @@ section[id],
 
 .apartment-mobile {
   min-height: 0;
+  padding-bottom: calc(var(--booking-bar-offset) + clamp(1rem, 3vw, 1.5rem));
 }
 
 .apartment-mobile-card {
@@ -261,7 +262,10 @@ section[id],
 .apartment-mobile-media {
   position: relative;
   aspect-ratio: 4 / 5;
-  max-height: 52svh;
+  max-height: min(
+    52svh,
+    calc(100svh - var(--nav-h) - env(safe-area-inset-top, 0px) - var(--booking-bar-offset) - 13rem)
+  );
   width: 100%;
   min-height: 0;
   overflow: hidden;
@@ -287,7 +291,7 @@ section[id],
 .location-media {
   position: relative;
   aspect-ratio: 4 / 5;
-  max-height: 58svh;
+  max-height: min(58svh, calc(100svh - var(--nav-h) - var(--booking-bar-offset) - 6rem));
   min-height: 0;
   width: 100%;
   overflow: hidden;

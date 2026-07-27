@@ -4,17 +4,19 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AMENITIES } from "@/lib/constants";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function AmenityIcon({ index }: { index: number }) {
   const common = {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     viewBox: "0 0 36 36",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.2,
+    strokeWidth: 1.15,
+    className: "amenity-icon",
     "aria-hidden": true as const,
   };
 
@@ -63,25 +65,58 @@ export function Amenities() {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
+    if (prefersReducedMotion()) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-
-    const items = section.querySelectorAll<HTMLElement>("[data-amenity]");
+    const cards = section.querySelectorAll<HTMLElement>("[data-amenity]");
+    const borders = section.querySelectorAll<HTMLElement>("[data-amenity-border]");
+    const icons = section.querySelectorAll<SVGElement>(".amenity-icon");
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        items,
-        { opacity: 0, y: 28 },
+        cards,
+        { opacity: 0, y: 26 },
         {
           opacity: 1,
           y: 0,
           stagger: 0.1,
-          duration: 0.8,
+          duration: 0.95,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
             start: "top 70%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      gsap.fromTo(
+        borders,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left center",
+          stagger: 0.1,
+          duration: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 68%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      gsap.fromTo(
+        icons,
+        { opacity: 0.2 },
+        {
+          opacity: 1,
+          stagger: 0.1,
+          duration: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 68%",
             toggleActions: "play none none reverse",
           },
         },
@@ -95,31 +130,43 @@ export function Amenities() {
     <section
       id="amenities"
       ref={sectionRef}
-      className="relative bg-forest py-24 sm:py-32"
+      className="relative overflow-hidden bg-forest py-24 sm:py-32"
       aria-labelledby="amenities-heading"
     >
-      <div className="section-pad mx-auto max-w-[1400px]">
-        <div className="mb-16 max-w-2xl">
+      <div
+        className="pointer-events-none absolute inset-0 star-field opacity-35"
+        aria-hidden="true"
+      />
+
+      <div className="section-pad relative z-10 mx-auto max-w-[1400px]">
+        <div className="mb-14 max-w-2xl sm:mb-16">
           <p className="eyebrow mb-5">Amenities</p>
           <h2 id="amenities-heading" className="heading-lg text-ivory">
             Everything considered.
           </h2>
         </div>
 
-        <ul className="grid gap-0 border-t border-gold/25 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {AMENITIES.map((item, i) => (
             <li
               key={item.title}
               data-amenity
-              className="group border-b border-gold/25 px-0 py-8 sm:px-6 sm:py-10 lg:[&:nth-child(3n)]:border-r-0 sm:border-r"
+              className={`group relative border border-gold/20 bg-green/25 p-7 transition duration-500 hover:-translate-y-1 hover:border-gold/45 sm:p-8 ${
+                i === 4 ? "sm:col-span-2 lg:col-span-1" : ""
+              }`}
             >
-              <div className="mb-6 text-gold transition-transform duration-500 group-hover:-translate-y-1">
+              <span
+                data-amenity-border
+                className="absolute inset-x-0 top-0 h-px origin-left bg-gold/55"
+                aria-hidden="true"
+              />
+              <div className="mb-6 text-gold transition duration-500 group-hover:text-champagne">
                 <AmenityIcon index={i} />
               </div>
               <h3 className="mb-3 font-display text-2xl text-ivory">
                 {item.title}
               </h3>
-              <p className="body-lg max-w-sm">{item.description}</p>
+              <p className="body-lg max-w-sm text-[0.98rem]">{item.description}</p>
             </li>
           ))}
         </ul>

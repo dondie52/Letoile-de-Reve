@@ -5,6 +5,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, BRAND } from "@/lib/constants";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,36 +16,81 @@ export function BrandStory() {
     const section = sectionRef.current;
     if (!section) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
     const lines = section.querySelectorAll<HTMLElement>("[data-story-line]");
-    const stars = section.querySelectorAll<HTMLElement>("[data-parallax-star]");
-
-    if (reduced) {
-      gsap.set(lines, { opacity: 1, y: 0, filter: "blur(0px)" });
-      return;
-    }
-
-    gsap.set(lines, { opacity: 0, y: 40, filter: "blur(10px)" });
+    const logoWrap = section.querySelector<HTMLElement>("[data-story-logo]");
+    const star = section.querySelector<HTMLElement>("[data-story-star]");
+    const accents = section.querySelectorAll<HTMLElement>("[data-story-accent]");
+    const floatStars = section.querySelectorAll<HTMLElement>("[data-parallax-star]");
 
     const ctx = gsap.context(() => {
+      if (reduced) {
+        gsap.set([lines, logoWrap, accents], { opacity: 1, y: 0, scale: 1 });
+        return;
+      }
+
+      gsap.set(lines, { opacity: 0, y: 32 });
+      gsap.set(logoWrap, { opacity: 0, scale: 0.94 });
+      gsap.set(accents, { opacity: 0 });
+
       gsap.to(lines, {
         opacity: 1,
         y: 0,
-        filter: "blur(0px)",
-        stagger: 0.14,
+        stagger: 0.12,
         duration: 1,
         ease: "power2.out",
         scrollTrigger: {
           trigger: section,
           start: "top 70%",
-          end: "top 25%",
+          end: "top 30%",
           scrub: true,
         },
       });
 
-      stars.forEach((star, i) => {
-        gsap.to(star, {
-          y: i % 2 === 0 ? -60 : -30,
+      gsap.to(logoWrap, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.15,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 65%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      if (star) {
+        gsap.fromTo(
+          star,
+          { rotate: -4 },
+          {
+            rotate: 3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          },
+        );
+      }
+
+      gsap.to(accents, {
+        opacity: 1,
+        stagger: 0.15,
+        duration: 1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 60%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      floatStars.forEach((el, i) => {
+        gsap.to(el, {
+          y: i % 2 === 0 ? -50 : -28,
           ease: "none",
           scrollTrigger: {
             trigger: section,
@@ -66,7 +112,10 @@ export function BrandStory() {
       className="relative overflow-hidden bg-green py-28 sm:py-36"
       aria-labelledby="story-heading"
     >
-      <div className="pointer-events-none absolute inset-0 star-field opacity-60" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 star-field opacity-50"
+        aria-hidden="true"
+      />
       <span
         data-parallax-star
         className="pointer-events-none absolute left-[12%] top-[18%] h-1 w-1 rounded-full bg-gold/70"
@@ -74,16 +123,16 @@ export function BrandStory() {
       />
       <span
         data-parallax-star
-        className="pointer-events-none absolute right-[18%] top-[28%] h-1.5 w-1.5 rounded-full bg-ivory/50"
+        className="pointer-events-none absolute right-[18%] top-[28%] h-1.5 w-1.5 rounded-full bg-ivory/45"
         aria-hidden="true"
       />
       <span
         data-parallax-star
-        className="pointer-events-none absolute bottom-[22%] left-[28%] h-1 w-1 rounded-full bg-gold/50"
+        className="pointer-events-none absolute bottom-[22%] left-[28%] h-1 w-1 rounded-full bg-gold/45"
         aria-hidden="true"
       />
 
-      <div className="section-pad relative z-10 mx-auto grid max-w-[1400px] gap-12 lg:grid-cols-[1fr_0.7fr] lg:items-end">
+      <div className="section-pad relative z-10 mx-auto grid max-w-[1400px] gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <p data-story-line className="eyebrow mb-6">
             Our name
@@ -101,7 +150,10 @@ export function BrandStory() {
           >
             {BRAND.tagline}
           </p>
-          <p data-story-line className="mb-8 text-sm tracking-[0.18em] text-stone">
+          <p
+            data-story-line
+            className="mb-8 text-sm tracking-[0.18em] text-stone"
+          >
             {BRAND.pronunciation}
           </p>
           <p data-story-line className="body-lg max-w-[36rem]">
@@ -112,17 +164,47 @@ export function BrandStory() {
           </p>
         </div>
 
-        <div data-story-line className="relative mx-auto w-full max-w-[280px] lg:mx-0 lg:max-w-xs lg:justify-self-end">
-          <div className="absolute -inset-4 border border-gold/25" aria-hidden="true" />
-          <div className="relative bg-forest/40 px-8 py-10">
-            <Image
-              src={ASSETS.logoFull}
-              alt={`${BRAND.name} logo mark`}
-              width={365}
-              height={424}
-              sizes="(max-width: 768px) 60vw, 280px"
-              className="relative mx-auto h-auto w-full object-contain"
+        <div
+          data-story-logo
+          className="relative mx-auto w-full max-w-[340px] lg:mx-0 lg:justify-self-end"
+        >
+          <div
+            data-story-accent
+            className="absolute -inset-[1px] border border-gold/30"
+            aria-hidden="true"
+          />
+          <div
+            data-story-accent
+            className="absolute inset-3 border border-gold/15"
+            aria-hidden="true"
+          />
+          <div className="relative overflow-hidden bg-forest/50 px-8 py-12 sm:px-10 sm:py-14">
+            <div
+              className="logo-glow pointer-events-none absolute inset-0"
+              aria-hidden="true"
             />
+            <div data-story-star className="relative origin-center">
+              <Image
+                src={ASSETS.logoFull}
+                alt={`${BRAND.name} logo mark`}
+                width={365}
+                height={424}
+                sizes="(max-width: 768px) 70vw, 300px"
+                className="relative mx-auto h-auto w-full max-w-[260px] object-contain"
+              />
+            </div>
+            <p
+              data-story-accent
+              className="mt-8 text-center text-sm tracking-[0.18em] text-stone"
+            >
+              {BRAND.pronunciation}
+            </p>
+            <p
+              data-story-accent
+              className="mt-2 text-center font-display text-base text-gold/90"
+            >
+              French for “The Star of Dreams”
+            </p>
           </div>
         </div>
       </div>

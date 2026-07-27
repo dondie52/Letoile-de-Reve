@@ -48,6 +48,17 @@ export function Footer() {
           <p className="text-xs tracking-wide text-stone/80">
             © {year} {BRAND.name}. All rights reserved.
           </p>
+          <p className="text-xs tracking-[0.18em] uppercase text-stone/70">
+            Designed by{" "}
+            <a
+              href="https://techlabbw.co.bw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold transition hover:text-ivory"
+            >
+              TechLab Botswana
+            </a>
+          </p>
         </div>
       </div>
     </footer>

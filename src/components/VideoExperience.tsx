@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ASSETS } from "@/lib/constants";
+import { ASSETS, FACEBOOK_REELS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
 import { prefersReducedMotion } from "@/lib/motion";
 
@@ -120,6 +120,20 @@ export function VideoExperience() {
             Arrive, settle in and enjoy a home where style, convenience and
             privacy come naturally.
           </p>
+          <p className="meta mt-8 text-stone">Watch on Facebook</p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {FACEBOOK_REELS.map((reel) => (
+              <a
+                key={reel.href}
+                href={reel.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+              >
+                {reel.label}
+              </a>
+            ))}
+          </div>
         </div>
 
         <div ref={mediaWrapRef} className="relative mx-[-1.25rem] sm:mx-0">

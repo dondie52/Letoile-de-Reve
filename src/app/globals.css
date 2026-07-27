@@ -124,6 +124,7 @@ select {
 
 section[id],
 #book,
+#experience,
 #top {
   scroll-margin-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 1rem);
 }

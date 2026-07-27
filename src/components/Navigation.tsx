@@ -103,7 +103,7 @@ export function Navigation() {
         >
           <a
             href="#top"
-            className="relative z-10 flex min-h-11 shrink-0 items-center justify-self-start py-0.5"
+            className="tap-target relative z-10 -ml-1 shrink-0 justify-self-start px-1.5"
             aria-label={`${BRAND.name} home`}
             onClick={() => setOpen(false)}
           >

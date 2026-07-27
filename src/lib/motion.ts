@@ -68,3 +68,52 @@ export function todayISO(): string {
   const day = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${m}-${day}`;
 }
+
+/**
+ * Slow cinematic Ken Burns on a still photo — scale + gentle pan.
+ * Returns the timeline (or null when reduced motion / missing target).
+ */
+export function kenBurns(
+  target: gsap.TweenTarget | null | undefined,
+  options?: {
+    scaleFrom?: number;
+    scaleTo?: number;
+    xPercent?: number;
+    yPercent?: number;
+    duration?: number;
+    delay?: number;
+  },
+): gsap.core.Timeline | null {
+  if (!target || prefersReducedMotion()) return null;
+
+  const scaleFrom = options?.scaleFrom ?? 1.04;
+  const scaleTo = options?.scaleTo ?? 1.12;
+  const xPercent = options?.xPercent ?? -2.5;
+  const yPercent = options?.yPercent ?? 1.5;
+  const duration = options?.duration ?? 18;
+  const delay = options?.delay ?? 0;
+
+  gsap.set(target, {
+    scale: scaleFrom,
+    xPercent: 0,
+    yPercent: 0,
+    transformOrigin: "50% 50%",
+    force3D: true,
+  });
+
+  const tl = gsap.timeline({
+    delay,
+    repeat: -1,
+    yoyo: true,
+    defaults: { ease: "sine.inOut" },
+  });
+
+  tl.to(target, {
+    scale: scaleTo,
+    xPercent,
+    yPercent,
+    duration,
+  });
+
+  return tl;
+}

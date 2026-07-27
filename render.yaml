@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: npx --yes serve@14 out -l tcp://0.0.0.0:$PORT
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION

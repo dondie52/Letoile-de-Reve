@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
+import { todayISO } from "@/lib/motion";
 
 type FormState = {
   name: string;
@@ -38,7 +39,7 @@ function validate(values: FormState): FormErrors {
   if (
     values.checkIn &&
     values.checkOut &&
-    values.checkOut < values.checkIn
+    values.checkOut <= values.checkIn
   ) {
     errors.checkOut = "Check-out must be after check-in.";
   }
@@ -49,13 +50,18 @@ function validate(values: FormState): FormErrors {
 export function BookingFinale() {
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [method, setMethod] = useState<"email" | "whatsapp">("email");
+  const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
+  const minDate = useMemo(() => todayISO(), []);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      const first = Object.keys(nextErrors)[0];
+      document.getElementById(first)?.focus();
+      return;
+    }
 
     const body = [
       `Name: ${values.name}`,
@@ -75,7 +81,7 @@ export function BookingFinale() {
     }
 
     const mailto = `mailto:${BRAND.email}?subject=${encodeURIComponent(
-      "Enquiry — L’étoile de Rêve",
+      "Enquiry - L’étoile de Rêve",
     )}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
   };
@@ -92,35 +98,26 @@ export function BookingFinale() {
       />
 
       <div className="section-pad relative z-10 mx-auto max-w-[1100px]">
-        <div className="relative border border-gold/35 px-6 py-12 sm:px-12 sm:py-16">
+        <div className="booking-panel relative px-6 py-12 sm:px-12 sm:py-16">
           <div
             className="pointer-events-none absolute inset-2 border border-gold/15"
             aria-hidden="true"
           />
 
           <div className="mb-12 text-center">
-            <p className="eyebrow mb-5">Your dream stay is almost here</p>
-            <h2 id="book-heading" className="heading-lg mx-auto max-w-[16ch] text-ivory">
+            <h2
+              id="book-heading"
+              className="heading-lg mx-auto max-w-[16ch] text-ivory"
+            >
               Make {BRAND.name} your next stay.
             </h2>
+            <p className="body-lg mx-auto mt-5 max-w-xl">
+              Share your dates and we will respond with availability for your
+              dream stay.
+            </p>
           </div>
 
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-3">
-            <a href={`mailto:${BRAND.email}`} className="btn btn-primary">
-              Enquire now
-            </a>
-            <a
-              href={BRAND.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary"
-            >
-              <MessageCircle size={16} aria-hidden="true" />
-              WhatsApp
-            </a>
-          </div>
-
-          <div className="mb-12 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center text-sm tracking-wide text-stone">
+          <div className="mb-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-center text-sm tracking-wide text-stone">
             <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
               {BRAND.email}
             </a>
@@ -142,12 +139,20 @@ export function BookingFinale() {
             className="mx-auto grid max-w-2xl gap-6"
             noValidate
           >
-            <p className="text-center text-sm text-stone">
-              Submit opens a prefilled email or WhatsApp message—no account
-              required.
-            </p>
-
-            <div className="flex justify-center gap-2" role="group" aria-label="Send via">
+            <div
+              className="flex justify-center gap-2"
+              role="group"
+              aria-label="Send via"
+            >
+              <button
+                type="button"
+                className={`btn ${method === "whatsapp" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setMethod("whatsapp")}
+                aria-pressed={method === "whatsapp"}
+              >
+                <MessageCircle size={16} aria-hidden="true" />
+                WhatsApp
+              </button>
               <button
                 type="button"
                 className={`btn ${method === "email" ? "btn-primary" : "btn-ghost"}`}
@@ -156,25 +161,17 @@ export function BookingFinale() {
               >
                 Email
               </button>
-              <button
-                type="button"
-                className={`btn ${method === "whatsapp" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setMethod("whatsapp")}
-                aria-pressed={method === "whatsapp"}
-              >
-                WhatsApp
-              </button>
             </div>
 
             <div>
-              <label htmlFor="name" className="sr-only">
+              <label htmlFor="name" className="field-label">
                 Name
               </label>
               <input
                 id="name"
                 name="name"
                 className="input-field"
-                placeholder="Name"
+                placeholder="Your full name"
                 autoComplete="name"
                 value={values.name}
                 aria-invalid={!!errors.name}
@@ -191,7 +188,7 @@ export function BookingFinale() {
             </div>
 
             <div>
-              <label htmlFor="contact" className="sr-only">
+              <label htmlFor="contact" className="field-label">
                 Email or phone
               </label>
               <input
@@ -216,13 +213,14 @@ export function BookingFinale() {
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="checkIn" className="mb-2 block text-xs uppercase tracking-[0.18em] text-stone">
+                <label htmlFor="checkIn" className="field-label">
                   Check-in
                 </label>
                 <input
                   id="checkIn"
                   name="checkIn"
                   type="date"
+                  min={minDate}
                   className="input-field"
                   value={values.checkIn}
                   aria-invalid={!!errors.checkIn}
@@ -238,17 +236,20 @@ export function BookingFinale() {
                 )}
               </div>
               <div>
-                <label htmlFor="checkOut" className="mb-2 block text-xs uppercase tracking-[0.18em] text-stone">
+                <label htmlFor="checkOut" className="field-label">
                   Check-out
                 </label>
                 <input
                   id="checkOut"
                   name="checkOut"
                   type="date"
+                  min={values.checkIn || minDate}
                   className="input-field"
                   value={values.checkOut}
                   aria-invalid={!!errors.checkOut}
-                  aria-describedby={errors.checkOut ? "checkout-error" : undefined}
+                  aria-describedby={
+                    errors.checkOut ? "checkout-error" : undefined
+                  }
                   onChange={(e) =>
                     setValues((v) => ({ ...v, checkOut: e.target.value }))
                   }
@@ -262,7 +263,7 @@ export function BookingFinale() {
             </div>
 
             <div>
-              <label htmlFor="message" className="sr-only">
+              <label htmlFor="message" className="field-label">
                 Message
               </label>
               <textarea
@@ -270,7 +271,7 @@ export function BookingFinale() {
                 name="message"
                 rows={4}
                 className="input-field resize-y"
-                placeholder="Message"
+                placeholder="Tell us about your stay"
                 value={values.message}
                 aria-invalid={!!errors.message}
                 aria-describedby={errors.message ? "message-error" : undefined}
@@ -285,7 +286,10 @@ export function BookingFinale() {
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary mt-2 justify-self-center">
+            <button
+              type="submit"
+              className="btn btn-primary mt-2 justify-self-center"
+            >
               {method === "email" ? "Send via email" : "Send via WhatsApp"}
             </button>
           </form>

@@ -22,6 +22,7 @@ export function Location() {
             alt="Entrance at L’étoile de Rêve featuring branded welcome mat"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
+            loading="lazy"
             className="object-cover"
           />
           <div
@@ -31,11 +32,13 @@ export function Location() {
         </div>
 
         <div className="section-pad flex flex-col justify-center py-20 lg:py-28">
-          <p className="eyebrow mb-5">Location & arrival</p>
-          <h2 id="location-heading" className="heading-lg mb-6 max-w-[12ch] text-ivory">
+          <h2
+            id="location-heading"
+            className="heading-lg mb-6 max-w-[12ch] text-ivory"
+          >
             Perfectly placed in Phakalane.
           </h2>
-          <p className="body-lg mb-8 max-w-md">
+          <p className="body-lg mb-8 max-w-md text-pretty">
             A peaceful address in Gaborone with convenient access to everyday
             essentials, dining and key destinations.
           </p>

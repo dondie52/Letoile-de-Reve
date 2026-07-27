@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { withBase } from "@/lib/paths";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -18,6 +19,7 @@ const manrope = Manrope({
 });
 
 const siteUrl = "https://letoiledereve.com";
+const ogImage = withBase("/assets/images/living-room.webp");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -43,7 +45,7 @@ export const metadata: Metadata = {
       "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
     images: [
       {
-        url: "/assets/images/living-room.webp",
+        url: ogImage,
         width: 1200,
         height: 800,
         alt: "Living room at L’étoile de Rêve luxury apartment",
@@ -55,12 +57,12 @@ export const metadata: Metadata = {
     title: "L’étoile de Rêve | Luxury Apartment in Phakalane, Gaborone",
     description:
       "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
-    images: ["/assets/images/living-room.webp"],
+    images: [ogImage],
   },
   icons: {
-    icon: [{ url: "/icon-32.png", sizes: "32x32", type: "image/png" }],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-    shortcut: "/favicon.ico",
+    icon: [{ url: withBase("/icon-32.png"), sizes: "32x32", type: "image/png" }],
+    apple: [{ url: withBase("/apple-touch-icon.png"), sizes: "180x180" }],
+    shortcut: withBase("/favicon.ico"),
   },
   alternates: {
     canonical: siteUrl,
@@ -88,7 +90,7 @@ const jsonLd = {
     addressRegion: "Gaborone",
     addressCountry: "BW",
   },
-  image: [`${siteUrl}/assets/images/living-room.webp`],
+  image: [`${siteUrl}${withBase("/assets/images/living-room.webp")}`],
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Fully furnished" },
     { "@type": "LocationFeatureSpecification", name: "High-speed Wi-Fi" },

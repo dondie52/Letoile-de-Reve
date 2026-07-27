@@ -9,14 +9,14 @@ export function Footer() {
       <div className="section-pad mx-auto flex max-w-[1400px] flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Image
-            src={ASSETS.logoWide}
-            alt={BRAND.name}
-            width={180}
-            height={44}
-            className="mb-5 h-9 w-auto object-contain"
+            src={ASSETS.logoNav}
+            alt="L’étoile de Rêve Luxury Apartment"
+            width={200}
+            height={52}
+            className="mb-5 h-10 w-auto max-w-[180px] object-contain"
           />
           <p className="mb-4 max-w-sm font-display text-lg text-ivory/90">
-            {BRAND.name} — Luxury Apartment, Phakalane
+            Luxury apartment in Phakalane
           </p>
           <div className="flex flex-col gap-2 text-sm text-stone">
             <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
@@ -37,14 +37,17 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-start gap-4 sm:items-end">
-          <a
-            href="https://www.facebook.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs uppercase tracking-[0.2em] text-stone transition hover:text-gold"
-          >
-            Facebook
-          </a>
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 text-xs uppercase tracking-[0.18em] text-stone">
+            <a href="#story" className="transition hover:text-gold">
+              Story
+            </a>
+            <a href="#apartment" className="transition hover:text-gold">
+              Apartment
+            </a>
+            <a href="#book" className="transition hover:text-gold">
+              Book
+            </a>
+          </nav>
           <p className="text-xs tracking-wide text-stone/80">
             © {year} {BRAND.name}. All rights reserved.
           </p>

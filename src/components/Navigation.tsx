@@ -9,6 +9,7 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("");
+  const [showMobileBook, setShowMobileBook] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 36);
@@ -38,6 +39,21 @@ export function Navigation() {
   }, []);
 
   useEffect(() => {
+    const heroActions = document.querySelector<HTMLElement>("[data-hero-actions]");
+    if (!heroActions) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowMobileBook(!entry.isIntersecting);
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0 },
+    );
+
+    observer.observe(heroActions);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -49,36 +65,38 @@ export function Navigation() {
     { href: "#book", label: "Book Now", id: "book" },
   ] as const;
 
+  const headerH = scrolled ? 76 : 88;
+
   return (
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
           scrolled || open ? "nav-blur nav-compact" : "bg-transparent"
         }`}
+        style={{ ["--nav-h" as string]: `${headerH}px` }}
       >
         <nav
-          className="section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[minmax(150px,210px)_1fr_minmax(150px,210px)]"
+          className="section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[auto_1fr_auto] md:gap-6"
           aria-label="Primary"
-          style={{ height: scrolled ? 76 : 88 }}
+          style={{ height: headerH }}
         >
           <a
             href="#top"
-            className="relative z-10 flex max-h-[58px] items-center justify-self-start"
+            className="relative z-10 flex shrink-0 items-center justify-self-start"
             aria-label={`${BRAND.name} home`}
           >
-            <span className="block h-[48px] w-auto max-w-[140px] sm:h-[52px] sm:max-w-[200px]">
-              <Image
-                src={ASSETS.logoNav}
-                alt="L’étoile de Rêve Luxury Apartment"
-                width={210}
-                height={54}
-                priority
-                className="h-full w-auto max-w-full object-contain object-left"
-              />
-            </span>
+            {/* Height-driven lockup only — preserves official aspect ratio */}
+            <Image
+              src={ASSETS.logoNav}
+              alt="L’étoile de Rêve Luxury Apartment"
+              width={205}
+              height={52}
+              priority
+              className="h-10 w-auto max-w-none object-contain object-left sm:h-[52px]"
+            />
           </a>
 
-          <ul className="hidden items-center justify-center gap-1 md:flex">
+          <ul className="hidden min-w-0 items-center justify-center gap-1 md:flex">
             {NAV_LINKS.map((link, i) => (
               <li key={link.id} className="flex items-center">
                 {i > 0 ? (
@@ -127,12 +145,15 @@ export function Navigation() {
               ? "pointer-events-auto opacity-100"
               : "pointer-events-none opacity-0"
           }`}
+          aria-hidden={!open}
+          {...(!open ? ({ inert: true } as React.HTMLAttributes<HTMLDivElement>) : {})}
         >
           <div className="flex h-full flex-col justify-center gap-7 px-8 pt-20">
             {mobileLinks.map((link, i) => (
               <a
                 key={link.id}
                 href={link.href}
+                tabIndex={open ? 0 : -1}
                 onClick={() => setOpen(false)}
                 className={`font-display text-4xl text-ivory transition-all duration-500 ${
                   open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
@@ -146,8 +167,15 @@ export function Navigation() {
         </div>
       </header>
 
-      <div className="mobile-book-bar md:hidden">
-        <a href="#book" className="btn btn-primary w-full">
+      <div
+        className={`mobile-book-bar md:hidden ${showMobileBook ? "is-visible" : ""}`}
+        aria-hidden={!showMobileBook}
+      >
+        <a
+          href="#book"
+          className="btn btn-primary w-full"
+          tabIndex={showMobileBook ? 0 : -1}
+        >
           Book your stay
         </a>
       </div>

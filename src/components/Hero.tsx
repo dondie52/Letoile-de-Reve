@@ -155,7 +155,7 @@ export function Hero() {
         <button
           type="button"
           onClick={togglePlay}
-          className="absolute right-4 top-[6.25rem] z-20 inline-flex h-11 w-11 items-center justify-center border border-gold/35 bg-forest/45 text-ivory backdrop-blur-sm transition hover:border-gold sm:right-8"
+          className="absolute right-4 top-[calc(var(--nav-h)+0.75rem)] z-20 inline-flex h-11 w-11 items-center justify-center border border-gold/35 bg-forest/45 text-ivory backdrop-blur-sm transition hover:border-gold sm:right-8"
           aria-label={playing ? "Pause background video" : "Play background video"}
         >
           {playing ? <Pause size={15} /> : <Play size={15} />}
@@ -164,28 +164,32 @@ export function Hero() {
 
       <div
         ref={contentRef}
-        className="section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end pb-16 pt-[7.75rem] sm:pb-20 sm:pt-36"
+        className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end"
       >
-        <p data-hero-line className="eyebrow mb-5">
+        <p data-hero-line className="eyebrow mb-4">
           {EYEBROW}
         </p>
 
         <h1
           data-hero-line
-          className="heading-xl mb-6 max-w-[15ch] text-pretty text-ivory sm:max-w-[18ch] lg:max-w-[20ch]"
+          className="heading-xl mb-5 max-w-[16ch] text-pretty text-ivory sm:mb-6 sm:max-w-[18ch] lg:max-w-[20ch]"
         >
           Your dream stay, written in the stars.
         </h1>
 
         <p
           data-hero-line
-          className="body-lg mb-10 max-w-[36rem] text-pretty text-ivory/85"
+          className="body-lg mb-8 max-w-[36rem] text-pretty text-ivory/85 sm:mb-10"
         >
           A refined fully furnished retreat in the heart of Phakalane, created
           for comfort, privacy and effortless living.
         </p>
 
-        <div data-hero-line className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+        <div
+          data-hero-line
+          data-hero-actions
+          className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4"
+        >
           <a href="#book" className="btn btn-primary">
             Book your stay
           </a>
@@ -197,7 +201,7 @@ export function Hero() {
         <a
           href="#story"
           data-hero-scroll
-          className="mt-12 inline-flex w-fit flex-col items-start gap-2 text-[0.62rem] uppercase tracking-[0.28em] text-stone transition hover:text-gold"
+          className="mt-10 hidden w-fit flex-col items-start gap-2 text-[0.68rem] uppercase tracking-[0.28em] text-stone transition hover:text-gold md:mt-12 md:inline-flex"
         >
           Scroll to discover
           <span

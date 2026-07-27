@@ -2,27 +2,32 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS } from "@/lib/constants";
+import { TOUR_VIDEO } from "@/lib/media";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const LIFESTYLE_VIDEO = TOUR_VIDEO.lifestyle;
+
 export function VideoExperience() {
   const sectionRef = useRef<HTMLElement>(null);
+  const mediaWrapRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useFallback, setUseFallback] = useState(false);
-  const [playing, setPlaying] = useState(true);
-  const [muted, setMuted] = useState(true);
+  const [useFallback, setUseFallback] = useState(!LIFESTYLE_VIDEO);
+  const [playing, setPlaying] = useState(Boolean(LIFESTYLE_VIDEO));
 
   useEffect(() => {
-    fetch(ASSETS.lifestyleVideo, { method: "HEAD" })
-      .then((res) => {
-        if (!res.ok) setUseFallback(true);
-      })
-      .catch(() => setUseFallback(true));
+    if (!LIFESTYLE_VIDEO) return;
+    const video = videoRef.current;
+    if (!video) return;
+    const onError = () => setUseFallback(true);
+    video.addEventListener("error", onError);
+    return () => video.removeEventListener("error", onError);
   }, []);
 
   useEffect(() => {
@@ -48,17 +53,31 @@ export function VideoExperience() {
   useEffect(() => {
     const section = sectionRef.current;
     const text = textRef.current;
-    if (!section || !text) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const media = mediaWrapRef.current;
+    if (!section || !text || !media) return;
+    if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
         text,
-        { y: 80 },
+        { y: 48 },
         {
-          y: -40,
+          y: -24,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        },
+      );
+
+      gsap.fromTo(
+        media,
+        { y: 24 },
+        {
+          y: -36,
           ease: "none",
           scrollTrigger: {
             trigger: section,
@@ -85,22 +104,15 @@ export function VideoExperience() {
     }
   };
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-  };
-
   return (
     <section
+      id="experience"
       ref={sectionRef}
       className="relative overflow-hidden bg-green py-24 sm:py-32"
       aria-labelledby="experience-heading"
     >
       <div className="section-pad mx-auto grid max-w-[1400px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div ref={textRef} className="relative z-10 max-w-xl">
-          <p className="eyebrow mb-5">The experience</p>
           <h2 id="experience-heading" className="heading-lg mb-6 text-ivory">
             More than a stay. A feeling.
           </h2>
@@ -110,9 +122,9 @@ export function VideoExperience() {
           </p>
         </div>
 
-        <div className="relative mx-[-1.25rem] sm:mx-0">
+        <div ref={mediaWrapRef} className="relative mx-[-1.25rem] sm:mx-0">
           <div className="relative aspect-[9/14] w-full overflow-hidden border-y border-gold/30 sm:border lg:max-h-[78vh]">
-            {!useFallback ? (
+            {!useFallback && LIFESTYLE_VIDEO ? (
               <video
                 ref={videoRef}
                 className="h-full w-full object-cover"
@@ -120,10 +132,10 @@ export function VideoExperience() {
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="none"
                 poster={ASSETS.bedroom}
               >
-                <source src={ASSETS.lifestyleVideo} type="video/mp4" />
+                <source src={LIFESTYLE_VIDEO} type="video/mp4" />
               </video>
             ) : (
               <Image
@@ -131,12 +143,17 @@ export function VideoExperience() {
                 alt="Lifestyle interior view of L’étoile de Rêve"
                 fill
                 sizes="(max-width: 768px) 100vw, 45vw"
+                loading="lazy"
                 className="object-cover"
               />
             )}
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-transparent to-forest/20"
+              aria-hidden="true"
+            />
 
-            {!useFallback && (
-              <div className="absolute bottom-4 right-4 flex gap-2">
+            {!useFallback && LIFESTYLE_VIDEO ? (
+              <div className="absolute bottom-4 right-4">
                 <button
                   type="button"
                   onClick={togglePlay}
@@ -145,16 +162,8 @@ export function VideoExperience() {
                 >
                   {playing ? <Pause size={16} /> : <Play size={16} />}
                 </button>
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  className="inline-flex h-11 w-11 items-center justify-center border border-gold/40 bg-forest/55 text-ivory backdrop-blur-sm transition hover:border-gold"
-                  aria-label={muted ? "Unmute video" : "Mute video"}
-                >
-                  {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

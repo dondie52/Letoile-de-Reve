@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "build:pages": "GITHUB_PAGES=true next build",
+    "start": "npx --yes serve@14 out -l tcp://0.0.0.0:3000",
+    "serve:static": "npx --yes serve@14 out -l tcp://0.0.0.0:3000",
     "lint": "eslint"
   },
   "dependencies": {

@@ -5,47 +5,59 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gold/20 bg-green">
+    <footer className="border-t border-gold/20 bg-green pb-[env(safe-area-inset-bottom)]">
       <div className="section-pad mx-auto flex max-w-[1400px] flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Image
-            src={ASSETS.logoWide}
-            alt={BRAND.name}
-            width={180}
-            height={44}
-            className="mb-5 h-9 w-auto object-contain"
+            src={ASSETS.logoNav}
+            alt="L’étoile de Rêve Luxury Apartment"
+            width={200}
+            height={52}
+            className="mb-5 h-10 w-auto max-w-none object-contain"
           />
-          <p className="mb-4 max-w-sm font-display text-lg text-ivory/90">
-            {BRAND.name} — Luxury Apartment, Phakalane
+          <p className="title-sm mb-4 text-ivory/90">
+            Luxury apartment in Phakalane
           </p>
-          <div className="flex flex-col gap-2 text-sm text-stone">
-            <a href={`mailto:${BRAND.email}`} className="hover:text-gold">
+          <div className="contact-line flex flex-col gap-1">
+            <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
               {BRAND.email}
             </a>
-            <a href={`tel:${BRAND.phoneTel}`} className="hover:text-gold">
+            <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-gold">
               {BRAND.phoneDisplay}
             </a>
             <a
               href={`https://${BRAND.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gold"
+              className="transition hover:text-gold"
             >
               {BRAND.website}
             </a>
           </div>
         </div>
 
-        <div className="flex flex-col items-start gap-4 sm:items-end">
-          <a
-            href="https://www.facebook.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs uppercase tracking-[0.2em] text-stone transition hover:text-gold"
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          <nav
+            aria-label="Footer"
+            className="nav-label flex flex-wrap gap-x-2 gap-y-1 text-stone sm:justify-end"
           >
-            Facebook
-          </a>
-          <p className="text-xs tracking-wide text-stone/80">
+            <a href="#story" className="tap-link transition hover:text-gold">
+              Story
+            </a>
+            <a href="#apartment" className="tap-link transition hover:text-gold">
+              Apartment
+            </a>
+            <a href="#amenities" className="tap-link transition hover:text-gold">
+              Amenities
+            </a>
+            <a href="#location" className="tap-link transition hover:text-gold">
+              Location
+            </a>
+            <a href="#book" className="tap-link transition hover:text-gold">
+              Book
+            </a>
+          </nav>
+          <p className="caption">
             © {year} {BRAND.name}. All rights reserved.
           </p>
         </div>

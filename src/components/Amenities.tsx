@@ -4,17 +4,18 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AMENITIES } from "@/lib/constants";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function AmenityIcon({ index }: { index: number }) {
   const common = {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     viewBox: "0 0 36 36",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.2,
+    strokeWidth: 1.15,
     "aria-hidden": true as const,
   };
 
@@ -63,21 +64,19 @@ export function Amenities() {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    if (prefersReducedMotion()) return;
 
     const items = section.querySelectorAll<HTMLElement>("[data-amenity]");
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
         items,
-        { opacity: 0, y: 28 },
+        { opacity: 0, y: 24 },
         {
           opacity: 1,
           y: 0,
           stagger: 0.1,
-          duration: 0.8,
+          duration: 0.85,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
@@ -100,26 +99,25 @@ export function Amenities() {
     >
       <div className="section-pad mx-auto max-w-[1400px]">
         <div className="mb-16 max-w-2xl">
-          <p className="eyebrow mb-5">Amenities</p>
           <h2 id="amenities-heading" className="heading-lg text-ivory">
             Everything considered.
           </h2>
         </div>
 
-        <ul className="grid gap-0 border-t border-gold/25 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="amenities-grid border-t border-gold/25">
           {AMENITIES.map((item, i) => (
             <li
               key={item.title}
               data-amenity
-              className="group border-b border-gold/25 px-0 py-8 sm:px-6 sm:py-10 lg:[&:nth-child(3n)]:border-r-0 sm:border-r"
+              className="group border-b border-gold/25 px-0 py-9 sm:px-6 lg:border-r lg:[&:nth-child(3)]:border-r-0 lg:[&:nth-child(5)]:border-r-0 sm:[&:nth-child(even)]:border-r-0 sm:border-r"
             >
-              <div className="mb-6 text-gold transition-transform duration-500 group-hover:-translate-y-1">
+              <div className="mb-5 text-gold transition-transform duration-500 group-hover:-translate-y-0.5">
                 <AmenityIcon index={i} />
               </div>
-              <h3 className="mb-3 font-display text-2xl text-ivory">
+              <h3 className="title-sm mb-3 text-ivory">
                 {item.title}
               </h3>
-              <p className="body-lg max-w-sm">{item.description}</p>
+              <p className="body-lg">{item.description}</p>
             </li>
           ))}
         </ul>

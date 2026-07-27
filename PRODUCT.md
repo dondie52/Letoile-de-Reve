@@ -45,6 +45,7 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 - Room photography: living room, bedroom, kitchen, bathroom, entrance
 - Brand flyer reference: `public/assets/images/brand-flyer.webp`
 - Optional videos: `public/assets/videos/hero-tour.mp4`, `lifestyle-tour.mp4` (fallback to photos when missing)
+- Facebook Reels (outbound tour links): apartment tour `https://www.facebook.com/reel/1490590898839114/`, lifestyle tour `https://www.facebook.com/reel/24987327710964150/`
 
 ## Product Principles
 

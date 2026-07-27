@@ -17,6 +17,17 @@ export const BRAND = {
     ),
 } as const;
 
+export const FACEBOOK_REELS = [
+  {
+    label: "Apartment tour",
+    href: "https://www.facebook.com/reel/1490590898839114/",
+  },
+  {
+    label: "Lifestyle tour",
+    href: "https://www.facebook.com/reel/24987327710964150/",
+  },
+] as const;
+
 export const NAV_LINKS = [
   { href: "#story", label: "Story", id: "story" },
   { href: "#apartment", label: "Apartment", id: "apartment" },

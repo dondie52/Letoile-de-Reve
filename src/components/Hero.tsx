@@ -10,6 +10,7 @@ import { TOUR_VIDEO } from "@/lib/media";
 import {
   ARRIVE_EASE,
   heroIntroDelay,
+  kenBurns,
   prefersReducedMotion,
 } from "@/lib/motion";
 
@@ -21,6 +22,7 @@ const HERO_VIDEO = TOUR_VIDEO.hero;
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
   const veilRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -185,6 +187,24 @@ export function Hero() {
     return () => ctx.revert();
   }, []);
 
+  /* Still-photo motion when no tour video — slow cinematic Ken Burns */
+  useEffect(() => {
+    if (!useFallback) return;
+    const photo = photoRef.current;
+    if (!photo) return;
+    const tl = kenBurns(photo, {
+      scaleFrom: 1.06,
+      scaleTo: 1.14,
+      xPercent: -2.2,
+      yPercent: 1.8,
+      duration: 22,
+      delay: heroIntroDelay() + 0.4,
+    });
+    return () => {
+      tl?.kill();
+    };
+  }, [useFallback]);
+
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video || useFallback) return;
@@ -223,14 +243,16 @@ export function Hero() {
             <source src={HERO_VIDEO} type="video/mp4" />
           </video>
         ) : (
-          <Image
-            src={ASSETS.livingRoom}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+          <div ref={photoRef} className="absolute inset-[-6%] will-change-transform">
+            <Image
+              src={ASSETS.livingRoom}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
         )}
         <div
           className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,21,14,0.55)_0%,rgba(6,21,14,0.32)_38%,rgba(6,21,14,0.78)_72%,rgba(6,21,14,0.95)_100%)]"

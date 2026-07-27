@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, FACEBOOK_REELS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
-import { prefersReducedMotion } from "@/lib/motion";
+import { kenBurns, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +16,7 @@ const LIFESTYLE_VIDEO = TOUR_VIDEO.lifestyle;
 export function VideoExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaWrapRef = useRef<HTMLDivElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [useFallback, setUseFallback] = useState(!LIFESTYLE_VIDEO);
@@ -92,6 +93,22 @@ export function VideoExperience() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    if (!useFallback) return;
+    const photo = photoRef.current;
+    if (!photo) return;
+    const tl = kenBurns(photo, {
+      scaleFrom: 1.05,
+      scaleTo: 1.13,
+      xPercent: 2,
+      yPercent: -1.5,
+      duration: 20,
+    });
+    return () => {
+      tl?.kill();
+    };
+  }, [useFallback]);
+
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -120,8 +137,7 @@ export function VideoExperience() {
             Arrive, settle in and enjoy a home where style, convenience and
             privacy come naturally.
           </p>
-          <p className="meta mt-8 text-stone">Watch on Facebook</p>
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             {FACEBOOK_REELS.map((reel) => (
               <a
                 key={reel.href}
@@ -152,14 +168,19 @@ export function VideoExperience() {
                 <source src={LIFESTYLE_VIDEO} type="video/mp4" />
               </video>
             ) : (
-              <Image
-                src={ASSETS.bedroom}
-                alt="Lifestyle interior view of L’étoile de Rêve"
-                fill
-                sizes="(max-width: 768px) 100vw, 45vw"
-                loading="lazy"
-                className="object-cover"
-              />
+              <div
+                ref={photoRef}
+                className="absolute inset-[-8%] will-change-transform"
+              >
+                <Image
+                  src={ASSETS.bedroom}
+                  alt="Lifestyle interior view of L’étoile de Rêve"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 45vw"
+                  loading="lazy"
+                  className="object-cover"
+                />
+              </div>
             )}
             <div
               className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-transparent to-forest/20"

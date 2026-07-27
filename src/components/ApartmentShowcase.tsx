@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { gsap } from "gsap";
@@ -15,7 +15,63 @@ export function ApartmentShowcase() {
   const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
+  const imagesRef = useRef<HTMLElement[]>([]);
+  const copiesRef = useRef<HTMLElement[]>([]);
   const [active, setActive] = useState(0);
+
+  const paintRoom = useCallback((index: number, instant = false) => {
+    const images = imagesRef.current;
+    const copies = copiesRef.current;
+    const progress = progressRef.current;
+    if (!images.length || !copies.length) return;
+
+    images.forEach((img, i) => {
+      const on = i === index;
+      if (instant) {
+        gsap.set(img, {
+          opacity: on ? 1 : 0,
+          scale: 1,
+          xPercent: 0,
+          clipPath: "inset(0% 0% 0% 0%)",
+          zIndex: on ? 2 : 1,
+        });
+      } else {
+        gsap.to(img, {
+          opacity: on ? 1 : 0,
+          scale: on ? 1 : 1.04,
+          xPercent: on ? 0 : i < index ? -4 : 4,
+          duration: 0.55,
+          ease: "power2.inOut",
+          zIndex: on ? 2 : 1,
+        });
+      }
+    });
+
+    copies.forEach((copy, i) => {
+      const on = i === index;
+      if (instant) {
+        gsap.set(copy, { opacity: on ? 1 : 0, y: 0 });
+      } else {
+        gsap.to(copy, {
+          opacity: on ? 1 : 0,
+          y: on ? 0 : i < index ? -14 : 14,
+          duration: 0.4,
+          ease: "power2.out",
+        });
+      }
+    });
+
+    if (progress) {
+      gsap.to(progress, {
+        scaleY: (index + 1) / ROOMS.length,
+        duration: instant ? 0 : 0.45,
+        ease: "power2.out",
+        transformOrigin: "top center",
+      });
+    }
+
+    setActive(index);
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -23,20 +79,82 @@ export function ApartmentShowcase() {
     const progress = progressRef.current;
     if (!section || !pin || !progress) return;
 
+    const images = gsap.utils.toArray<HTMLElement>("[data-room-image]");
+    const copies = gsap.utils.toArray<HTMLElement>("[data-room-copy]");
+    imagesRef.current = images;
+    copiesRef.current = copies;
+
     const reduced = prefersReducedMotion();
     const mobile = isMobileViewport();
 
-    if (reduced || mobile) {
-      gsap.set(progress, { scaleY: 1 });
+    /* Mobile: snap carousel — activate the centered room */
+    if (mobile) {
+      const scroller = section.querySelector<HTMLElement>("[data-room-scroller]");
+      const articles = section.querySelectorAll<HTMLElement>("[data-room-card]");
+      if (!scroller) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          const idx = Number(
+            (visible.target as HTMLElement).dataset.roomIndex ?? "0",
+          );
+          setActive(idx);
+          if (!prefersReducedMotion()) {
+            const media = visible.target.querySelector<HTMLElement>(
+              "[data-room-card-media]",
+            );
+            if (media) {
+              gsap.fromTo(
+                media,
+                { scale: 1.04 },
+                { scale: 1, duration: 0.85, ease: "power2.out", overwrite: true },
+              );
+            }
+          }
+        },
+        {
+          root: scroller,
+          threshold: [0.55, 0.75],
+          rootMargin: "0px -12% 0px -12%",
+        },
+      );
+      articles.forEach((el) => observer.observe(el));
+      return () => observer.disconnect();
+    }
+
+    /* Desktop + reduced motion: clickable rooms, no pin scrub */
+    if (reduced) {
+      gsap.set(images, { opacity: 0, scale: 1, xPercent: 0 });
+      gsap.set(images[0], { opacity: 1, zIndex: 2 });
+      gsap.set(copies, { opacity: 0, y: 0 });
+      gsap.set(copies[0], { opacity: 1 });
+      gsap.set(progress, {
+        scaleY: 1 / ROOMS.length,
+        transformOrigin: "top center",
+      });
       return;
     }
 
-    const images = gsap.utils.toArray<HTMLElement>("[data-room-image]");
-    const copies = gsap.utils.toArray<HTMLElement>("[data-room-copy]");
-
-    gsap.set(images, { opacity: 0, scale: 1.04 });
-    gsap.set(images[0], { opacity: 1, scale: 1 });
-    gsap.set(copies, { opacity: 0, y: 22 });
+    /* Desktop tour — walk through the residence */
+    gsap.set(images, {
+      opacity: 0,
+      scale: 1.06,
+      xPercent: 6,
+      clipPath: "inset(0% 0% 0% 100%)",
+      zIndex: 1,
+    });
+    gsap.set(images[0], {
+      opacity: 1,
+      scale: 1,
+      xPercent: 0,
+      clipPath: "inset(0% 0% 0% 0%)",
+      zIndex: 2,
+    });
+    gsap.set(copies, { opacity: 0, y: 28 });
     gsap.set(copies[0], { opacity: 1, y: 0 });
     gsap.set(progress, { scaleY: 0, transformOrigin: "top center" });
 
@@ -45,8 +163,8 @@ export function ApartmentShowcase() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${ROOMS.length * 90}%`,
-          scrub: true,
+          end: () => `+=${ROOMS.length * 105}%`,
+          scrub: 0.65,
           pin: pin,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -64,22 +182,66 @@ export function ApartmentShowcase() {
 
       tl.to(progress, { scaleY: 1, ease: "none", duration: 1 }, 0);
 
+      /* Gentle living ken-burns on the first room while held */
+      tl.fromTo(
+        images[0],
+        { scale: 1 },
+        { scale: 1.05, ease: "none", duration: 0.22 },
+        0,
+      );
+
       ROOMS.forEach((_, i) => {
         if (i === 0) return;
-        const start = (i - 0.28) / ROOMS.length;
+        const start = (i - 0.22) / ROOMS.length;
+        const hold = 0.18;
+
         tl.to(
           images[i - 1],
-          { opacity: 0, scale: 1.08, duration: 0.22, ease: "none" },
+          {
+            opacity: 0,
+            scale: 1.08,
+            xPercent: -5,
+            clipPath: "inset(0% 18% 0% 0%)",
+            duration: hold,
+            ease: "none",
+          },
           start,
         )
           .fromTo(
             images[i],
-            { opacity: 0, scale: 1.04 },
-            { opacity: 1, scale: 1, duration: 0.22, ease: "none" },
+            {
+              opacity: 0.35,
+              scale: 1.06,
+              xPercent: 7,
+              clipPath: "inset(0% 0% 0% 72%)",
+              zIndex: 3,
+            },
+            {
+              opacity: 1,
+              scale: 1,
+              xPercent: 0,
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: hold,
+              ease: "none",
+            },
             start,
           )
-          .to(copies[i - 1], { opacity: 0, y: -16, duration: 0.14 }, start)
-          .to(copies[i], { opacity: 1, y: 0, duration: 0.14 }, start + 0.04);
+          .to(
+            images[i],
+            { scale: 1.05, ease: "none", duration: 0.2 },
+            start + hold,
+          )
+          .to(
+            copies[i - 1],
+            { opacity: 0, y: -18, duration: 0.1, ease: "none" },
+            start,
+          )
+          .fromTo(
+            copies[i],
+            { opacity: 0, y: 22 },
+            { opacity: 1, y: 0, duration: 0.12, ease: "none" },
+            start + 0.04,
+          );
       });
     }, section);
 
@@ -93,16 +255,24 @@ export function ApartmentShowcase() {
     const section = sectionRef.current;
     if (!section) return;
 
-    if (isMobileViewport() || prefersReducedMotion()) {
+    if (isMobileViewport()) {
       const el = document.getElementById(`room-${ROOMS[index].id}`);
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       setActive(index);
       return;
     }
 
+    if (prefersReducedMotion()) {
+      paintRoom(index, false);
+      return;
+    }
+
     const st = stRef.current;
-    if (!st) return;
-    const progress = (index + 0.5) / ROOMS.length;
+    if (!st) {
+      paintRoom(index, true);
+      return;
+    }
+    const progress = (index + 0.45) / ROOMS.length;
     const y = st.start + (st.end - st.start) * progress;
     window.scrollTo({ top: y, behavior: "smooth" });
   };
@@ -116,12 +286,12 @@ export function ApartmentShowcase() {
     >
       <div ref={pinRef} className="relative hidden min-h-[100dvh] md:block">
         <div className="section-pad mx-auto grid h-[100dvh] max-w-[1400px] grid-cols-[1.15fr_0.85fr] items-center gap-10 py-24">
-          <div className="relative aspect-[4/5] max-h-[78vh] w-full overflow-hidden border border-gold/25">
+          <div className="apartment-frame relative aspect-[4/5] max-h-[78vh] w-full overflow-hidden border border-gold/25">
             {ROOMS.map((room, i) => (
               <div
                 key={room.id}
                 data-room-image
-                className="absolute inset-0"
+                className="absolute inset-0 will-change-transform"
                 style={{ opacity: i === 0 ? 1 : 0 }}
               >
                 <Image
@@ -135,7 +305,7 @@ export function ApartmentShowcase() {
               </div>
             ))}
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/45 via-transparent to-transparent"
+              className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-forest/45 via-transparent to-transparent"
               aria-hidden="true"
             />
           </div>
@@ -192,7 +362,7 @@ export function ApartmentShowcase() {
                         aria-selected={i === active}
                         aria-label={`View ${room.label}`}
                         onClick={() => goToRoom(i)}
-                        className={`nav-label group relative py-1 text-left transition-colors ${
+                        className={`nav-label group relative py-1 text-left transition-colors duration-300 ${
                           i === active
                             ? "text-gold"
                             : "text-stone/70 hover:text-ivory"
@@ -242,23 +412,35 @@ export function ApartmentShowcase() {
         <h2 className="heading-md mb-12 text-ivory">
           Spaces designed for quiet luxury.
         </h2>
-        <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {ROOMS.map((room) => (
+        <div
+          data-room-scroller
+          className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {ROOMS.map((room, i) => (
             <article
               key={room.id}
               id={`room-${room.id}`}
-              className="w-[85%] shrink-0 snap-center"
+              data-room-card
+              data-room-index={i}
+              className={`w-[85%] shrink-0 snap-center transition-opacity duration-500 ${
+                active === i ? "opacity-100" : "opacity-70"
+              }`}
               style={{ scrollMarginTop: "5.5rem" }}
             >
               <div className="relative mb-5 aspect-[4/5] overflow-hidden border border-gold/20">
-                <Image
-                  src={room.src}
-                  alt={room.alt}
-                  fill
-                  sizes="85vw"
-                  loading="lazy"
-                  className="object-cover"
-                />
+                <div
+                  data-room-card-media
+                  className="absolute inset-0 origin-center"
+                >
+                  <Image
+                    src={room.src}
+                    alt={room.alt}
+                    fill
+                    sizes="85vw"
+                    loading="lazy"
+                    className="object-cover"
+                  />
+                </div>
               </div>
               <p className="meta mb-2 text-gold">
                 {room.index} / 04

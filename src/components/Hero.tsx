@@ -6,7 +6,11 @@ import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS } from "@/lib/constants";
-import { prefersReducedMotion } from "@/lib/motion";
+import {
+  ARRIVE_EASE,
+  heroIntroDelay,
+  prefersReducedMotion,
+} from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +19,7 @@ const EYEBROW = "LUXURY APARTMENT · PHAKALANE";
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [useFallback, setUseFallback] = useState(false);
@@ -35,42 +40,127 @@ export function Hero() {
     return () => video.removeEventListener("error", onError);
   }, []);
 
+  /* Pause looping video when the hero leaves the viewport */
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video || useFallback) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (playing) void video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.15 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [playing, useFallback]);
+
   useEffect(() => {
     const section = sectionRef.current;
     const media = mediaRef.current;
+    const veil = veilRef.current;
     const content = contentRef.current;
-    if (!section || !media || !content) return;
+    if (!section || !media || !veil || !content) return;
 
     const reduced = prefersReducedMotion();
-    const lines = content.querySelectorAll("[data-hero-line]");
-    const scrollHint = content.querySelector("[data-hero-scroll]");
+    const lines = content.querySelectorAll<HTMLElement>("[data-hero-line]");
+    const scrollHint = content.querySelector<HTMLElement>("[data-hero-scroll]");
+    const scrollStem = scrollHint?.querySelector<HTMLElement>("[data-scroll-stem]");
 
     const ctx = gsap.context(() => {
       if (reduced) {
-        gsap.set([lines, scrollHint], { opacity: 1, y: 0 });
-        gsap.set(media, { scale: 1 });
+        gsap.set([lines, scrollHint, media, veil], {
+          clearProps: "all",
+        });
+        gsap.set(lines, { opacity: 1, y: 0, clipPath: "none", filter: "none" });
+        gsap.set(scrollHint, { opacity: 1, y: 0 });
+        gsap.set(media, { scale: 1, filter: "none" });
+        gsap.set(veil, { opacity: 0 });
         return;
       }
 
-      gsap.set(lines, { opacity: 0, y: 28 });
-      gsap.set(scrollHint, { opacity: 0, y: 16 });
-      gsap.set(media, { scale: 1.06 });
+      /* Dawn under the stars — veil clears, type unveils, cue breathes */
+      gsap.set(media, { scale: 1.1, filter: "blur(10px)" });
+      gsap.set(veil, { opacity: 1 });
+      gsap.set(lines, {
+        opacity: 0,
+        y: 36,
+        clipPath: "inset(110% 0 0 0)",
+        filter: "blur(6px)",
+      });
+      gsap.set(scrollHint, { opacity: 0, y: 12 });
+      if (scrollStem) gsap.set(scrollStem, { scaleY: 0, transformOrigin: "top center" });
 
-      const intro = gsap.timeline({ delay: 0.3 });
+      const intro = gsap.timeline({
+        delay: heroIntroDelay(),
+        defaults: { ease: ARRIVE_EASE },
+        onComplete: () => {
+          gsap.set(media, { clearProps: "filter" });
+          gsap.set(lines, { clearProps: "clipPath,filter" });
+          media.classList.remove("is-animating");
+        },
+      });
+
+      media.classList.add("is-animating");
+
       intro
-        .to(lines, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.14,
-          ease: "power2.out",
-        })
+        .to(
+          media,
+          {
+            scale: 1.04,
+            filter: "blur(0px)",
+            duration: 1.35,
+            onComplete: () => media.classList.remove("is-animating"),
+          },
+          0,
+        )
+        .to(
+          veil,
+          {
+            opacity: 0,
+            duration: 1.2,
+            ease: "power2.inOut",
+          },
+          0.1,
+        )
+        .to(
+          lines,
+          {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0% 0 0 0)",
+            filter: "blur(0px)",
+            duration: 0.95,
+            stagger: 0.11,
+          },
+          0.35,
+        )
         .to(
           scrollHint,
-          { opacity: 1, y: 0, duration: 0.85, ease: "power2.out" },
-          "-=0.4",
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            onComplete: () => scrollHint?.classList.add("is-ready"),
+          },
+          "-=0.25",
         );
 
+      if (scrollStem) {
+        intro.to(
+          scrollStem,
+          { scaleY: 1, duration: 0.75, ease: "power2.out" },
+          "-=0.45",
+        );
+      }
+
+      /* Scroll continuity — settle into the residence */
       gsap.to(media, {
         scale: 1,
         ease: "none",
@@ -83,8 +173,8 @@ export function Hero() {
       });
 
       gsap.to(content, {
-        opacity: 0.4,
-        y: -28,
+        opacity: 0.35,
+        y: -36,
         ease: "none",
         scrollTrigger: {
           trigger: section,
@@ -119,7 +209,7 @@ export function Hero() {
     >
       <div
         ref={mediaRef}
-        className="absolute inset-0 origin-center will-change-transform"
+        className="hero-media absolute inset-0 origin-center"
       >
         {!useFallback ? (
           <video
@@ -147,6 +237,11 @@ export function Hero() {
         )}
         <div
           className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,21,14,0.55)_0%,rgba(6,21,14,0.32)_38%,rgba(6,21,14,0.78)_72%,rgba(6,21,14,0.95)_100%)]"
+          aria-hidden="true"
+        />
+        <div
+          ref={veilRef}
+          className="hero-veil pointer-events-none absolute inset-0 bg-forest/70"
           aria-hidden="true"
         />
       </div>
@@ -177,10 +272,7 @@ export function Hero() {
           Your dream stay, written in the stars.
         </h1>
 
-        <p
-          data-hero-line
-          className="body-lg mb-8 text-pretty sm:mb-10"
-        >
+        <p data-hero-line className="body-lg mb-8 text-pretty sm:mb-10">
           A refined fully furnished retreat in the heart of Phakalane, created
           for comfort, privacy and effortless living.
         </p>
@@ -205,7 +297,8 @@ export function Hero() {
         >
           Scroll to discover
           <span
-            className="block h-10 w-px origin-top bg-gradient-to-b from-gold to-transparent"
+            data-scroll-stem
+            className="scroll-stem block h-10 w-px origin-top bg-gradient-to-b from-gold to-transparent"
             aria-hidden="true"
           />
         </a>

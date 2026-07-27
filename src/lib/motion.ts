@@ -1,5 +1,9 @@
 import { gsap } from "gsap";
 
+/** Confident arrival — luxury hospitality (expo deceleration). */
+export const ARRIVE_EASE = "expo.out";
+/** Scroll / scrub continuity — linear relationship to scroll. */
+export const SCRUB_EASE = "none";
 export const LUXURY_EASE = "power2.out";
 export const LUXURY_DURATION = 1;
 
@@ -13,6 +17,14 @@ export function isMobileViewport(): boolean {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
+/** Delay hero intro until the preloader has cleared on first visit. */
+export function heroIntroDelay(): number {
+  if (typeof window === "undefined") return 0.2;
+  if (prefersReducedMotion()) return 0;
+  const seen = sessionStorage.getItem("letoile-preloader") === "1";
+  return seen ? 0.18 : 1.45;
+}
+
 /** Standard fade-up reveal for elements entering the viewport. */
 export function revealLines(
   elements: gsap.TweenTarget,
@@ -23,7 +35,7 @@ export function revealLines(
   const stagger = options?.stagger ?? 0.12;
 
   if (prefersReducedMotion()) {
-    gsap.set(elements, { opacity: 1, y: 0, clearProps: "filter" });
+    gsap.set(elements, { opacity: 1, y: 0, clearProps: "filter,clipPath" });
     return null;
   }
 

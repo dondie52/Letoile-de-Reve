@@ -55,10 +55,12 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 
 ## Motion
 
-- Hero: media scale `1.06 → 1`, staggered content reveal, header transparent → forest glass
-- Story: editorial fade-up; star mark subtle glow (no black logo slab)
-- Apartment: desktop pinned crossfade gallery; mobile stacked panels (no 400vh pin)
-- Prefer `transform` / `opacity`; honor `prefers-reduced-motion`
+- **Thesis:** Hero = dawn under the stars; Apartment = walk through the residence
+- Hero: veiled media clears (blur + forest veil), type unveils via clip-path, scroll stem breathes; scroll settles scale and dims copy; video pauses offscreen
+- Apartment desktop: pinned scrub tour with directional clip/crossfade + ken-burns hold; gold progress is the path; tabs/arrows scrub to room
+- Apartment mobile: horizontal snap with centered-room settle (scale)
+- Reduced motion: no pin/scrub; instant or short crossfades; hero content visible without choreography
+- Prefer `transform` / `opacity` / bounded `filter` / `clip-path`; honor `prefers-reduced-motion`
 
 ## Components
 

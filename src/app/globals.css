@@ -171,9 +171,42 @@ section[id],
   padding-inline: clamp(1.25rem, 4vw, 4.5rem);
 }
 
-.hero-content {
-  padding-top: calc(var(--nav-h) + 1.75rem);
-  padding-bottom: calc(2.75rem + var(--mobile-cta-h));
+.hero-media.is-animating {
+  will-change: transform, filter;
+}
+
+.hero-veil {
+  opacity: 0;
+}
+
+.scroll-stem {
+  transform-origin: top center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-scroll].is-ready .scroll-stem {
+    animation: scroll-stem-breathe 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes scroll-stem-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scaleY(0.72);
+  }
+}
+
+.apartment-frame {
+  isolation: isolate;
+}
+
+.apartment-frame [data-room-image] {
+  backface-visibility: hidden;
 }
 
 @media (min-width: 768px) {

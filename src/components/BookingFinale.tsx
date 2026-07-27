@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { todayISO } from "@/lib/motion";
@@ -34,16 +34,15 @@ function validate(values: FormState): FormErrors {
   ) {
     errors.contact = "Enter a valid email or phone number.";
   }
-  if (!values.checkIn) errors.checkIn = "Select a check-in date.";
-  if (!values.checkOut) errors.checkOut = "Select a check-out date.";
+  if (!values.checkIn) errors.checkIn = "Select an arrival date.";
+  if (!values.checkOut) errors.checkOut = "Select a departure date.";
   if (
     values.checkIn &&
     values.checkOut &&
     values.checkOut <= values.checkIn
   ) {
-    errors.checkOut = "Check-out must be after check-in.";
+    errors.checkOut = "Departure must be after arrival.";
   }
-  if (!values.message.trim()) errors.message = "Please add a short message.";
   return errors;
 }
 
@@ -55,16 +54,54 @@ function nextDayISO(iso: string): string {
   return `${d.getFullYear()}-${m}-${day}`;
 }
 
+function readPrefill(): Partial<FormState> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = sessionStorage.getItem("letoile-enquiry");
+    if (!raw) return {};
+    const data = JSON.parse(raw) as {
+      arrival?: string;
+      departure?: string;
+      message?: string;
+    };
+    return {
+      checkIn: data.arrival || "",
+      checkOut: data.departure || "",
+      message: data.message || "",
+    };
+  } catch {
+    return {};
+  }
+}
+
 export function BookingFinale() {
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
   const [sentVia, setSentVia] = useState<"email" | "whatsapp" | null>(null);
   const minDate = useMemo(() => todayISO(), []);
   const checkOutMin = values.checkIn ? nextDayISO(values.checkIn) : minDate;
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const apply = () => {
+      const fromPrefill = readPrefill();
+      if (!fromPrefill.checkIn && !fromPrefill.checkOut) return;
+      setValues((v) => ({
+        ...v,
+        checkIn: fromPrefill.checkIn || v.checkIn,
+        checkOut: fromPrefill.checkOut || v.checkOut,
+        message: fromPrefill.message || v.message,
+      }));
+    };
+    const timer = window.setTimeout(apply, 0);
+    const onPrefill = () => apply();
+    window.addEventListener("letoile:enquiry-prefill", onPrefill);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("letoile:enquiry-prefill", onPrefill);
+    };
+  }, []);
+
+  const submit = (method: "email" | "whatsapp") => {
     const nextErrors = validate(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
@@ -76,10 +113,10 @@ export function BookingFinale() {
     const body = [
       `Name: ${values.name}`,
       `Contact: ${values.contact}`,
-      `Check-in: ${values.checkIn}`,
-      `Check-out: ${values.checkOut}`,
+      `Arrival: ${values.checkIn}`,
+      `Departure: ${values.checkOut}`,
       "",
-      values.message,
+      values.message.trim() || "(No additional note)",
     ].join("\n");
 
     if (method === "whatsapp") {
@@ -98,72 +135,43 @@ export function BookingFinale() {
     setSentVia("email");
   };
 
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    submit("whatsapp");
+  };
+
   return (
     <section
       id="book"
-      className="relative overflow-hidden bg-forest py-24 sm:py-32"
+      className="relative overflow-hidden bg-pine-950 py-24 sm:py-32"
       aria-labelledby="book-heading"
     >
-      <div
-        className="pointer-events-none absolute inset-0 star-field opacity-70"
-        aria-hidden="true"
-      />
+      <div className="section-pad relative z-10 mx-auto max-w-[920px]">
+        <div className="mb-10 max-w-xl text-ivory sm:mb-12">
+          <h2 id="book-heading" className="heading-lg mb-4">
+            Plan your stay.
+          </h2>
+          <p className="body-lg">
+            Tell us when you would like to arrive. We will confirm availability
+            personally.
+          </p>
+        </div>
 
-      <div className="section-pad relative z-10 mx-auto max-w-[1100px]">
-        <div className="booking-panel relative px-6 py-12 sm:px-12 sm:py-16">
-          <div
-            className="pointer-events-none absolute inset-2 border border-gold/15"
-            aria-hidden="true"
-          />
-
-          <div className="mb-12 text-center">
-            <h2
-              id="book-heading"
-              className="heading-lg mx-auto max-w-[16ch] text-ivory"
-            >
-              Make {BRAND.name} your next stay.
-            </h2>
-            <p className="body-lg mx-auto mt-5 max-w-xl text-pretty">
-              Share your dates and we will respond with availability for your
-              dream stay.
-            </p>
-          </div>
-
-          <div className="contact-line mb-10 flex flex-wrap justify-center gap-x-6 gap-y-1 text-center">
-            <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold">
-              {BRAND.email}
-            </a>
-            <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-gold">
-              {BRAND.phoneDisplay}
-            </a>
-            <a
-              href={`https://${BRAND.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-gold"
-            >
-              {BRAND.website}
-            </a>
-          </div>
-
+        <div className="booking-panel relative px-6 py-10 sm:px-10 sm:py-12">
           {sentVia ? (
-            <div
-              className="mx-auto max-w-lg text-center"
-              role="status"
-              aria-live="polite"
-            >
-              <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center border border-gold/40 text-gold">
-                <Check size={22} aria-hidden="true" />
+            <div role="status" aria-live="polite">
+              <div className="mb-5 flex h-11 w-11 items-center justify-center border border-pine-800/30 text-pine-800">
+                <Check size={20} strokeWidth={1.5} aria-hidden="true" />
               </div>
-              <p className="title-sm mb-3 text-ivory">Enquiry opened</p>
-              <p className="body-lg mx-auto text-pretty">
+              <p className="title-sm mb-3 text-ink">Enquiry opened</p>
+              <p className="body-ink text-pretty">
                 {sentVia === "whatsapp"
                   ? "Your WhatsApp message is ready to send. We look forward to welcoming you."
                   : "Your email draft should be open. If nothing appeared, write to us at stay@letoiledereve.com."}
               </p>
               <button
                 type="button"
-                className="btn btn-secondary mt-8"
+                className="btn btn-on-light mt-8"
                 onClick={() => {
                   setSentVia(null);
                   setErrors({});
@@ -173,33 +181,61 @@ export function BookingFinale() {
               </button>
             </div>
           ) : (
-            <form
-              onSubmit={onSubmit}
-              className="mx-auto grid max-w-2xl gap-6"
-              noValidate
-            >
-              <div
-                className="grid grid-cols-2 gap-2 sm:mx-auto sm:inline-grid sm:w-auto"
-                role="group"
-                aria-label="Send via"
-              >
-                <button
-                  type="button"
-                  className={`btn w-full ${method === "whatsapp" ? "btn-primary" : "btn-secondary"}`}
-                  onClick={() => setMethod("whatsapp")}
-                  aria-pressed={method === "whatsapp"}
-                >
-                  <MessageCircle size={16} aria-hidden="true" />
-                  WhatsApp
-                </button>
-                <button
-                  type="button"
-                  className={`btn w-full ${method === "email" ? "btn-primary" : "btn-secondary"}`}
-                  onClick={() => setMethod("email")}
-                  aria-pressed={method === "email"}
-                >
-                  Email
-                </button>
+            <form onSubmit={onSubmit} className="grid gap-5" noValidate>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="checkIn" className="field-label">
+                    Arrival
+                  </label>
+                  <input
+                    id="checkIn"
+                    name="checkIn"
+                    type="date"
+                    min={minDate}
+                    className="input-field input-date"
+                    value={values.checkIn}
+                    aria-invalid={!!errors.checkIn}
+                    aria-describedby={errors.checkIn ? "checkin-error" : undefined}
+                    onChange={(e) => {
+                      const checkIn = e.target.value;
+                      setValues((v) => {
+                        const checkOut =
+                          v.checkOut && checkIn && v.checkOut <= checkIn
+                            ? ""
+                            : v.checkOut;
+                        return { ...v, checkIn, checkOut };
+                      });
+                    }}
+                  />
+                  {errors.checkIn && (
+                    <p id="checkin-error" className="field-error" role="alert">
+                      {errors.checkIn}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="checkOut" className="field-label">
+                    Departure
+                  </label>
+                  <input
+                    id="checkOut"
+                    name="checkOut"
+                    type="date"
+                    min={checkOutMin}
+                    className="input-field input-date"
+                    value={values.checkOut}
+                    aria-invalid={!!errors.checkOut}
+                    aria-describedby={errors.checkOut ? "checkout-error" : undefined}
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, checkOut: e.target.value }))
+                    }
+                  />
+                  {errors.checkOut && (
+                    <p id="checkout-error" className="field-error" role="alert">
+                      {errors.checkOut}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -228,7 +264,7 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="contact" className="field-label">
-                  Email or phone
+                  Preferred contact
                 </label>
                 <input
                   id="contact"
@@ -250,106 +286,49 @@ export function BookingFinale() {
                 )}
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="checkIn" className="field-label">
-                    Check-in
-                  </label>
-                  <p id="checkin-hint" className="field-hint">
-                    Select check-in date
-                  </p>
-                  <input
-                    id="checkIn"
-                    name="checkIn"
-                    type="date"
-                    min={minDate}
-                    className="input-field input-date"
-                    value={values.checkIn}
-                    aria-invalid={!!errors.checkIn}
-                    aria-describedby={
-                      errors.checkIn
-                        ? "checkin-hint checkin-error"
-                        : "checkin-hint"
-                    }
-                    onChange={(e) => {
-                      const checkIn = e.target.value;
-                      setValues((v) => {
-                        const checkOut =
-                          v.checkOut && checkIn && v.checkOut <= checkIn
-                            ? ""
-                            : v.checkOut;
-                        return { ...v, checkIn, checkOut };
-                      });
-                    }}
-                  />
-                  {errors.checkIn && (
-                    <p id="checkin-error" className="field-error" role="alert">
-                      {errors.checkIn}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="checkOut" className="field-label">
-                    Check-out
-                  </label>
-                  <p id="checkout-hint" className="field-hint">
-                    Select check-out date
-                  </p>
-                  <input
-                    id="checkOut"
-                    name="checkOut"
-                    type="date"
-                    min={checkOutMin}
-                    className="input-field input-date"
-                    value={values.checkOut}
-                    aria-invalid={!!errors.checkOut}
-                    aria-describedby={
-                      errors.checkOut
-                        ? "checkout-hint checkout-error"
-                        : "checkout-hint"
-                    }
-                    onChange={(e) =>
-                      setValues((v) => ({ ...v, checkOut: e.target.value }))
-                    }
-                  />
-                  {errors.checkOut && (
-                    <p id="checkout-error" className="field-error" role="alert">
-                      {errors.checkOut}
-                    </p>
-                  )}
-                </div>
-              </div>
-
               <div>
                 <label htmlFor="message" className="field-label">
-                  Message
+                  A note about your stay
+                  <span className="ml-1 font-normal text-muted">(optional)</span>
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="input-field resize-y"
-                  placeholder="Tell us about your stay"
+                  placeholder="Guests, occasion, or anything we should know"
                   value={values.message}
-                  aria-invalid={!!errors.message}
-                  aria-describedby={errors.message ? "message-error" : undefined}
                   onChange={(e) =>
                     setValues((v) => ({ ...v, message: e.target.value }))
                   }
                 />
-                {errors.message && (
-                  <p id="message-error" className="field-error" role="alert">
-                    {errors.message}
-                  </p>
-                )}
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary mt-2 w-full justify-self-center sm:w-auto"
-              >
-                {method === "email" ? "Send via email" : "Send via WhatsApp"}
-              </button>
+              <div className="mt-3 flex flex-col items-start gap-4">
+                <button type="submit" className="btn btn-on-light">
+                  <MessageCircle size={16} strokeWidth={1.5} aria-hidden="true" />
+                  Continue on WhatsApp
+                </button>
+                <button
+                  type="button"
+                  className="link-underline text-[0.9375rem] text-muted transition hover:text-ink"
+                  onClick={() => submit("email")}
+                >
+                  Or send by email
+                </button>
+              </div>
+
+              <p className="contact-line mt-8 border-t border-stone-200 pt-6 text-muted">
+                <a href={`mailto:${BRAND.email}`} className="transition hover:text-ink">
+                  {BRAND.email}
+                </a>
+                <span className="mx-3 text-stone-200" aria-hidden="true">
+                  ·
+                </span>
+                <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-ink">
+                  {BRAND.phoneDisplay}
+                </a>
+              </p>
             </form>
           )}
         </div>

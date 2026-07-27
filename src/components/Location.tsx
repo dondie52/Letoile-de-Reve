@@ -12,47 +12,48 @@ export function Location() {
   return (
     <section
       id="location"
-      className="relative bg-green"
+      className="surface-ivory relative"
       aria-labelledby="location-heading"
     >
-      <div className="grid lg:grid-cols-2">
-        <div className="location-media relative">
-          <Image
-            src={ASSETS.entranceMat}
-            alt="Entrance at L’étoile de Rêve featuring branded welcome mat"
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            loading="lazy"
-            className="object-cover object-[50%_40%]"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent to-green/40 max-lg:bg-gradient-to-t max-lg:from-green/55 max-lg:via-transparent max-lg:to-transparent"
-            aria-hidden="true"
-          />
-        </div>
-
-        <div className="section-pad flex flex-col justify-center py-[clamp(2.5rem,8vw,5rem)] lg:py-28">
+      <div className="section-pad mx-auto grid max-w-[1100px] gap-12 py-24 lg:grid-cols-[1fr_220px] lg:items-end lg:gap-16 lg:py-32">
+        <div>
+          <p className="meta mb-5 text-muted">Phakalane · Gaborone · Botswana</p>
           <h2
             id="location-heading"
-            className="heading-lg mb-6 max-w-[12ch] text-ivory"
+            className="heading-editorial mb-6 max-w-[14ch]"
           >
-            Perfectly placed in Phakalane.
+            Quietly placed in Phakalane.
           </h2>
-          <p className="body-lg mb-8 text-pretty">
-            A peaceful address in Gaborone with convenient access to everyday
-            essentials, dining and key destinations.
+          <p className="body-ink mb-8 max-w-[48ch] text-pretty">
+            A peaceful residential address with convenient access to everyday
+            essentials, dining and key destinations across Gaborone.
           </p>
-          <p className="lede mb-10">{BRAND.location}</p>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-secondary w-fit"
+            className="btn btn-on-light w-fit"
           >
             Get directions
-            <ArrowUpRight size={16} aria-hidden="true" />
+            <ArrowUpRight size={16} strokeWidth={1.5} aria-hidden="true" />
           </a>
         </div>
+
+        <figure className="max-w-[220px]">
+          <div className="relative aspect-[4/5] w-full overflow-hidden">
+            <Image
+              src={ASSETS.entranceMat}
+              alt="Branded welcome mat at the entrance of L’étoile de Rêve"
+              fill
+              sizes="220px"
+              loading="lazy"
+              className="object-cover object-[50%_40%]"
+            />
+          </div>
+          <figcaption className="caption caption-muted mt-3">
+            Arrival detail
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

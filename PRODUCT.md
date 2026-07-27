@@ -35,8 +35,9 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 
 - Name: L’étoile de Rêve (“The Star of Dreams”)
 - Pronunciation: [leh·twah·duh·rev]
-- Palette: deep forest green, near-black tinted green, champagne gold, warm ivory
-- Typography: editorial serif display + clean supporting sans
+- Palette: deep pine green for cinematic moments, warm ivory editorial surfaces, champagne gold accents (never gold body text)
+- Typography: editorial serif for emotional headlines only; modern sans for UI, captions, amenities and forms
+- Visual world: “The Private Residence” — architecture-magazine editorial, not a dark-green template canvas
 - Contact: stay@letoiledereve.com · 71 813 137 · WhatsApp +267 71 813 137
 
 ## Evidence on Hand

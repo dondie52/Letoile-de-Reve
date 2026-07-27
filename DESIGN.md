@@ -1,80 +1,118 @@
 # Design System — L’étoile de Rêve
 
-<!-- Generated with UI UX Pro Max (Luxury Premium / Hospitality) + Taste Skill + Impeccable -->
+<!-- impeccable:design-schema 1 -->
+<!-- Generated for “The Private Residence” redesign -->
 
 ## Design read
 
-Redesign of an existing luxury hospitality marketing site for boutique-apartment guests, with a quiet-luxury editorial language: deep forest green, champagne gold, Cormorant Garamond + Manrope, preserving property photography.
+Editorial luxury residence marketing site for boutique-apartment guests. Visual world: a private architecture magazine — warm ivory editorial plates alternating with deep-green cinematic moments and full-bleed photography. Not a dark-green branded canvas.
 
-**Dials:** `DESIGN_VARIANCE: 6` · `MOTION_INTENSITY: 5` · `VISUAL_DENSITY: 3`
+**Dials:** `DESIGN_VARIANCE: 7` · `MOTION_INTENSITY: 4` · `VISUAL_DENSITY: 3`
+
+**Mode:** Persuade
 
 ## Palette
 
+Colour distribution ≈ 35% warm ivory · 30% photography · 25% deep green · 10% champagne gold / neutrals.
+
 | Token | Value | Role |
 | --- | --- | --- |
-| `--forest` | `#06150e` | Page ground |
-| `--green` | `#0b2117` | Section surface |
-| `--gold` | `#c79a49` | Accent, rules, CTAs |
-| `--champagne` | `#d4b56a` | Soft highlight |
-| `--ivory` | `#f4efe5` | Primary text |
-| `--stone` | `#b9b1a4` | Secondary text |
+| `--pine-950` | `#071d15` | Deepest green (hero ground, booking finale) |
+| `--pine-900` | `#0b281d` | Nav / scrolled header / dark sections |
+| `--pine-800` | `#11372a` | Elevated dark surface |
+| `--ivory-50` | `#f7f3e9` | Primary light editorial surface |
+| `--ivory-100` | `#efe8d9` | Soft stone panel / form panel |
+| `--stone-200` | `#d8cfbf` | Hairlines, rules on light |
+| `--gold-500` | `#c89b45` | Accent, borders, primary CTA fill |
+| `--gold-400` | `#d7b66c` | Soft highlight |
+| `--ink` | `#172019` | Body text on ivory |
+| `--muted` | `#6e746d` | Secondary text on ivory |
+| `--danger` | `#c45c4e` | Form errors |
 
-Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logos.
+Legacy aliases: `--forest` → `--pine-950`, `--green` → `--pine-900`, `--gold` → `--gold-500`, `--ivory` → light text on dark (`#f7f3e9`), `--stone` → muted on dark.
+
+Never use gold for paragraph text. Maintain accessible contrast on both surfaces.
+
+## Surfaces
+
+- **Dark cinematic:** hero, navigation (scrolled), emotional media, booking finale background, footer
+- **Warm editorial:** introduction, stay details, parts of location
+- **Photography:** cinematic gallery, emotional full-bleed, location arrival detail
 
 ## Typography
 
-- **Display:** Cormorant Garamond 400 / 500 (editorial serif)
-- **Body / UI:** Manrope 400 / 500 / 600
-- **Roles**
-  - `.eyebrow` — 0.6875rem, uppercase, `0.28em` tracking, gold (hero only)
-  - `.heading-xl` — hero display: `clamp(2.55rem, 6.8vw, 5.5rem)`, lh `0.98`, tracking `-0.025em`
-  - `.heading-lg` — section titles: `clamp(2.05rem, 4.2vw, 3.55rem)`, lh `1.08`
-  - `.heading-md` — gallery / mid sections: `clamp(1.85rem, 3.2vw, 2.85rem)`
-  - `.title-sm` — room & amenity titles: `clamp(1.45rem, 2.1vw, 1.85rem)`, weight 500
-  - `.lede` — gold display subhead (tagline, location line)
-  - `.body-lg` — primary reading: ≥1.0625rem, lh `1.8`, tracking `0.014em`, measure `65ch`
-  - `.meta` / `.nav-label` — uppercase metadata and navigation
-  - `.contact-line` / `.caption` / `.field-label` / `.field-error` — UI chrome
-- Light-on-dark body uses slightly open tracking and leading; display stays optically tight
-- Body measure ~65ch; avoid arbitrary one-off `text-*` sizes for product roles
+- **Display serif:** Cormorant Garamond 400 / 500 — emotional headlines only (hero, intro statement, emotional moment, booking title)
+- **UI / body sans:** Manrope 400 / 500 / 600 — navigation, paragraphs, room captions, amenities, form labels, buttons, metadata
+
+### Roles
+
+- `.heading-xl` — hero display (serif)
+- `.heading-lg` — emotional section titles (serif)
+- `.heading-editorial` — large ivory-surface statement (serif)
+- `.title-sm` — **sans**, room & amenity names (not serif)
+- `.body-lg` / `.body-ink` — reading text, measure ~48–62ch
+- `.caption` / `.room-caption` — editorial image captions (sans)
+- `.meta` — sparse metadata; prefer sentence case over uppercase tracking
+- `.field-label` — visible form labels (sans, not heavy uppercase)
+
+Reduce uppercase letter-spaced eyebrows. Hero may keep one quiet location line.
 
 ## Layout
 
 - Max content width `1400px`
-- Header height `76–92px` (`--nav-h`)
-- Section padding `py-24` to `py-36`
-- Fine 1px gold rules; sharp corners (no heavy radius system)
-- Asymmetric editorial splits where useful; no card-in-card grids
+- Header height `76–84px` (`--nav-h`)
+- Section padding generous on ivory; tighter on compact footer
+- Sharp corners (`2–4px` max on floating CTA / inputs)
+- No amenity cards; use rules and lists
+- No bordered logo shrine in story
 
-## Header lockup
+## Header
 
-- Asset: `logo-nav.webp` / `logo-nav.png` (official star + wordmark, no eyebrow)
-- Max height ~48–54px · width auto · `object-fit: contain`
-- No duplicate typed brand name beside the logo
-- Eyebrow `LUXURY APARTMENT · PHAKALANE` lives only in the hero
+- Asset: `logo-nav.webp` (official lockup)
+- Desktop: Story · Residence · Details · Location · Book + one restrained booking button
+- Mobile: logo + menu; no permanent full-width gold bar
+
+## Mobile booking action
+
+Compact floating button: `Book your stay →`
+
+- 16–20px from viewport edges (+ safe-area)
+- Dark green + fine gold border; gold fill on hover/active
+- Hide when booking section or footer is visible
+- Never cover essential content
+
+## Section architecture
+
+1. **Hero** — full-bleed living-room media; brand + short headline; desktop availability panel lower-right; one mobile CTA
+2. **Introduction** — ivory; editorial statement; star mark; pronunciation; concise story
+3. **Residence gallery** — full-width editorial sequence; captions; natural scroll (no tall pin wrappers on mobile)
+4. **Stay details** — ivory two-column editorial list
+5. **Emotional moment** — full-bleed bedroom media; three short lines
+6. **Location** — typographic + small arrival detail; map/directions; doormat not dominant
+7. **Booking** — pine background; ivory concierge form panel
+8. **Footer** — compact; one logo; contacts; nav; copyright; Facebook when URL known
 
 ## Motion
 
-- **Thesis:** Hero = dawn under the stars; Apartment = walk through the residence
-- Hero: veiled media clears (blur + forest veil), type unveils via clip-path, scroll stem breathes; scroll settles scale and dims copy; video pauses offscreen
-- Apartment desktop: pinned scrub tour with directional clip/crossfade + ken-burns hold; gold progress is the path; tabs/arrows scrub to room
-- Apartment mobile: horizontal snap with centered-room settle (scale)
-- Reduced motion: no pin/scrub; instant or short crossfades; hero content visible without choreography
-- Prefer `transform` / `opacity` / bounded `filter` / `clip-path`; honor `prefers-reduced-motion`
-- Optional tour videos via `TOUR_VIDEO` in `src/lib/media.ts` (null = photo only, no 404 probes)
-- Gallery `will-change` only while the pin scrub is active (`.is-compositing`)
-- Below-fold sections use `content-visibility: auto`; mid/lower sections are dynamically imported
-- Optional tour videos via `TOUR_VIDEO` in `src/lib/media.ts` (null = photo only, no 404 probes)
-- Gallery `will-change` only while the pin scrub is active (`.is-compositing`)
+- Slow hero media settle (scale 1.02 → 1)
+- Masked headline reveals
+- Gentle gallery image scale
+- Fine line reveals
+- Honor `prefers-reduced-motion`
+- No bouncing, particles, heavy pin scrub, or ghost image layers
 
 ## Components
 
-- Primary CTA: gold fill / forest text
-- Secondary CTA: gold hairline / ivory text
-- Inputs: bordered fields with visible focus (not low-contrast underline-only)
-- Amenities: five-item composition with gold separators
-- Scrolled header / mobile book bar: solid `--green` (no content bleed)
-- Desktop nav from `lg` (1024px); hamburger below that
-- Interactive hit areas ≥44×44 (`tap-link`, room tabs, contact lines) while type roles stay quiet
-- Booking form: WhatsApp/Email method toggle, validation alerts, post-submit acknowledgement
-- `viewport-fit: cover` for notched devices
+- Primary CTA (on dark): gold fill / pine text
+- Primary CTA (on ivory): pine fill / ivory text
+- Secondary: hairline gold / contextual text
+- Floating book: pine + gold border → gold on hover
+- Inputs on ivory panel: light fields, dark text, 16px min, visible labels
+- Gallery controls: buttons (not tabs) when changing room state
+
+## Accessibility
+
+- Native lists and landmarks; no fake tablists without panels
+- Touch targets ≥44×44
+- Visible focus rings on both surfaces
+- Reduced-motion paths for GSAP

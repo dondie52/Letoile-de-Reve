@@ -37,7 +37,7 @@ export function Preloader() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-pine-950"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-forest"
       role="status"
       aria-live="polite"
       aria-label="Loading L’étoile de Rêve"

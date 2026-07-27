@@ -39,6 +39,7 @@ export function Navigation() {
     return () => observer.disconnect();
   }, []);
 
+  /* Sticky Book CTA: show after hero, hide over booking section or footer — no layout shift */
   useEffect(() => {
     const hero = document.getElementById("top");
     const book = document.getElementById("book");
@@ -84,7 +85,6 @@ export function Navigation() {
   }, []);
 
   const showMobileBook = pastHero && !coverZoneVisible;
-
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -103,10 +103,10 @@ export function Navigation() {
 
   const mobileLinks = [
     ...NAV_LINKS,
-    { href: "#book", label: "Book", id: "book" },
+    { href: "#book", label: "Book Now", id: "book" },
   ] as const;
 
-  const headerH = scrolled ? 76 : 84;
+  const headerH = scrolled ? 76 : 88;
 
   return (
     <>
@@ -133,18 +133,24 @@ export function Navigation() {
               width={205}
               height={52}
               priority
-              className="h-9 w-auto max-w-none object-contain object-left sm:h-[48px]"
+              className="h-10 w-auto max-w-none object-contain object-left sm:h-[52px]"
             />
           </a>
 
           <ul className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.map((link, i) => (
               <li key={link.id} className="flex items-center">
+                {i > 0 ? (
+                  <span
+                    className="mx-3 h-3 w-px bg-gold/25 lg:mx-4"
+                    aria-hidden="true"
+                  />
+                ) : null}
                 <a
                   href={link.href}
-                  className={`nav-label link-underline inline-flex min-h-11 items-center px-3 py-2 transition-colors ${
+                  className={`nav-label link-underline inline-flex min-h-11 items-center py-2 transition-colors ${
                     active === link.id
-                      ? "text-gold-400"
+                      ? "text-gold"
                       : "text-ivory/80 hover:text-ivory"
                   }`}
                 >
@@ -156,26 +162,26 @@ export function Navigation() {
 
           <div className="relative z-10 flex items-center justify-self-end">
             <div className="max-lg:hidden">
-              <a href="#book" className="btn btn-secondary">
-                Book
+              <a href="#book" className="btn btn-primary">
+                Book Now
               </a>
             </div>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center text-ivory transition hover:text-gold-400 lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center text-ivory transition hover:text-gold lg:hidden"
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((v) => !v)}
             >
-              {open ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
+              {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </nav>
 
         <div
           id="mobile-menu"
-          className={`fixed inset-0 z-0 bg-pine-950/98 transition-all duration-500 lg:hidden ${
+          className={`fixed inset-0 z-0 bg-forest/98 transition-all duration-500 lg:hidden ${
             open
               ? "pointer-events-auto opacity-100"
               : "pointer-events-none opacity-0"
@@ -183,35 +189,39 @@ export function Navigation() {
           aria-hidden={!open}
           {...(!open ? ({ inert: true } as React.HTMLAttributes<HTMLDivElement>) : {})}
         >
-          <ul className="flex h-full flex-col justify-center gap-2 px-8 pt-20">
+          <div className="flex h-full flex-col justify-center gap-7 px-8 pt-20">
             {mobileLinks.map((link, i) => (
-              <li key={link.id}>
-                <a
-                  href={link.href}
-                  tabIndex={open ? 0 : -1}
-                  onClick={() => setOpen(false)}
-                  className={`nav-drawer-link inline-flex min-h-11 items-center transition-all duration-500 ${
-                    open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-                  }`}
-                  style={{ transitionDelay: open ? `${100 + i * 55}ms` : "0ms" }}
-                >
-                  {link.label}
-                </a>
-              </li>
+              <a
+                key={link.id}
+                href={link.href}
+                tabIndex={open ? 0 : -1}
+                onClick={() => setOpen(false)}
+                className={`nav-drawer-link transition-all duration-500 ${
+                  open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                }`}
+                style={{ transitionDelay: open ? `${100 + i * 55}ms` : "0ms" }}
+              >
+                {link.label}
+              </a>
             ))}
-          </ul>
+          </div>
         </div>
       </header>
 
-      <a
-        href="#book"
-        className={`mobile-book-float lg:hidden ${showMobileBook && !open ? "is-visible" : ""}`}
-        tabIndex={showMobileBook && !open ? 0 : -1}
+      <div
+        className={`mobile-book-bar lg:hidden ${showMobileBook && !open ? "is-visible" : ""}`}
         aria-hidden={!showMobileBook || open}
       >
-        Book your stay
-        <span aria-hidden="true">→</span>
-      </a>
+        <div className="mobile-book-bar-inner">
+          <a
+            href="#book"
+            className="btn btn-primary mobile-book-bar-btn w-full"
+            tabIndex={showMobileBook && !open ? 0 : -1}
+          >
+            Book your stay
+          </a>
+        </div>
+      </div>
     </>
   );
 }

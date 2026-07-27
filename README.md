@@ -42,8 +42,8 @@ Place property media in:
 - `public/assets/videos/hero-tour.mp4` — hero background reel
 - `public/assets/videos/lifestyle-tour.mp4` — experience section reel
 
-Header and footer use `logo-nav.webp` (official star + wordmark).
-The introduction uses only `logo-mark.webp` as a small decorative star.
+Header uses `logo-nav.webp` (official star + wordmark, no eyebrow).
+Story uses `logo-mark.webp` with a soft glow.
 
 If videos are missing, the site falls back to apartment photography automatically.
 

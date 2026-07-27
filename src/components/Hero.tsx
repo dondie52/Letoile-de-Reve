@@ -190,7 +190,12 @@ export function Hero() {
     try {
       sessionStorage.setItem(
         "letoile-enquiry",
-        JSON.stringify({ arrival, departure, guests }),
+        JSON.stringify({
+          arrival,
+          departure,
+          guests,
+          message: guests ? `Guests: ${guests}` : "",
+        }),
       );
     } catch {
       /* ignore quota / private mode */
@@ -258,7 +263,11 @@ export function Hero() {
         className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:gap-10"
       >
         <div className="max-w-xl">
-          <p data-hero-line className="mb-3 font-display text-[clamp(1.65rem,3.5vw,2.35rem)] leading-none tracking-[-0.02em] text-ivory">
+          <p data-hero-line className="mb-4 text-[0.8125rem] font-medium tracking-[0.06em] text-gold-400/90">
+            Phakalane, Gaborone
+          </p>
+
+          <p data-hero-line className="mb-3 font-display text-[clamp(1.55rem,3.2vw,2.15rem)] leading-none tracking-[-0.02em] text-ivory">
             L’étoile de Rêve
           </p>
 
@@ -271,7 +280,7 @@ export function Hero() {
             beautifully considered.
           </h1>
 
-          <p data-hero-line className="body-lg mb-8 max-w-[36ch] text-pretty sm:mb-10">
+          <p data-hero-line className="body-lg mb-8 max-w-[34ch] text-pretty sm:mb-10">
             Fully furnished luxury living in Phakalane.
           </p>
 

@@ -13,7 +13,7 @@
   --gold-400: #d7b66c;
 
   --ink: #172019;
-  --muted: #6e746d;
+  --muted: #555c54;
   --danger: #c45c4e;
 
   /* Legacy aliases used across components */
@@ -258,19 +258,19 @@ section[id],
 
 .gallery-frame--landscape {
   aspect-ratio: 16 / 10;
-  max-height: min(72svh, 820px);
+  max-height: min(78svh, 900px);
 }
 
 .gallery-frame--portrait {
   aspect-ratio: 4 / 5;
   max-height: min(65svh, 720px);
-  max-width: min(100%, 560px);
+  max-width: min(100%, 520px);
 }
 
 .gallery-frame--detail {
-  aspect-ratio: 1 / 1;
-  max-height: min(52svh, 480px);
-  max-width: min(100%, 420px);
+  aspect-ratio: 5 / 6;
+  max-height: min(52svh, 460px);
+  max-width: min(100%, 380px);
 }
 
 @media (max-width: 767px) {
@@ -279,6 +279,10 @@ section[id],
   .gallery-frame--detail {
     max-height: 65svh;
     max-width: 100%;
+  }
+
+  .gallery-caption {
+    padding-inline: 0;
   }
 }
 
@@ -313,19 +317,12 @@ section[id],
   max-width: 40ch;
 }
 
-.surface-dark .gallery-caption-index,
-.surface-pine .gallery-caption-index {
-  color: color-mix(in srgb, var(--ivory) 55%, transparent);
+.gallery-caption.is-on-dark .gallery-caption-index {
+  color: color-mix(in srgb, var(--ivory) 68%, transparent);
 }
 
-.surface-dark .gallery-caption-title,
-.surface-pine .gallery-caption-title {
-  color: var(--ivory);
-}
-
-.surface-dark .gallery-caption-body,
-.surface-pine .gallery-caption-body {
-  color: color-mix(in srgb, var(--ivory) 72%, var(--stone));
+.gallery-caption.is-on-dark .gallery-caption-body {
+  color: color-mix(in srgb, var(--ivory) 82%, transparent);
 }
 
 /* Below-fold sections */
@@ -416,9 +413,9 @@ section[id],
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: clamp(1rem, 1.05vw, 1.125rem);
   font-weight: 400;
-  line-height: 1.75;
-  letter-spacing: 0.01em;
-  max-width: 58ch;
+  line-height: 1.7;
+  letter-spacing: 0.008em;
+  max-width: 54ch;
   color: color-mix(in srgb, var(--ivory) 84%, var(--stone));
 }
 
@@ -426,9 +423,9 @@ section[id],
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: clamp(1rem, 1.05vw, 1.125rem);
   font-weight: 400;
-  line-height: 1.75;
-  letter-spacing: 0.01em;
-  max-width: 58ch;
+  line-height: 1.7;
+  letter-spacing: 0.008em;
+  max-width: 54ch;
   color: color-mix(in srgb, var(--ink) 88%, var(--muted));
 }
 
@@ -461,6 +458,9 @@ section[id],
   font-weight: 400;
   letter-spacing: 0.03em;
   line-height: 1.5;
+}
+
+.caption-muted {
   color: var(--muted);
 }
 
@@ -594,6 +594,11 @@ section[id],
   .btn-on-light:hover {
     background: var(--pine-800);
     transform: translateY(-1px);
+  }
+
+  /* On pine buttons, keep label light — never gold-on-green for primary fill */
+  .btn-on-light {
+    letter-spacing: 0.03em;
   }
 
   .btn-secondary {
@@ -799,8 +804,8 @@ input[type="date"].input-field {
   transition: background-color 0.3s ease;
 }
 
-.amenities-editorial > li:hover {
-  background: color-mix(in srgb, var(--ivory-100) 65%, transparent);
+.amenities-editorial > li:hover .title-sm {
+  color: var(--pine-800);
 }
 
 .amenity-icon {

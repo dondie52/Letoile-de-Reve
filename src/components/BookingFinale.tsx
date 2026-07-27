@@ -62,10 +62,12 @@ function readPrefill(): Partial<FormState> {
     const data = JSON.parse(raw) as {
       arrival?: string;
       departure?: string;
+      message?: string;
     };
     return {
       checkIn: data.arrival || "",
       checkOut: data.departure || "",
+      message: data.message || "",
     };
   } catch {
     return {};
@@ -87,6 +89,7 @@ export function BookingFinale() {
         ...v,
         checkIn: fromPrefill.checkIn || v.checkIn,
         checkOut: fromPrefill.checkOut || v.checkOut,
+        message: fromPrefill.message || v.message,
       }));
     };
     const timer = window.setTimeout(apply, 0);
@@ -149,18 +152,9 @@ export function BookingFinale() {
             Plan your stay.
           </h2>
           <p className="body-lg">
-            A private enquiry for availability — we respond personally via
-            WhatsApp or email.
+            Tell us when you would like to arrive. We will confirm availability
+            personally.
           </p>
-        </div>
-
-        <div className="contact-line mb-8 flex flex-wrap gap-x-6 gap-y-1 text-stone">
-          <a href={`mailto:${BRAND.email}`} className="transition hover:text-gold-400">
-            {BRAND.email}
-          </a>
-          <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-gold-400">
-            {BRAND.phoneDisplay}
-          </a>
         </div>
 
         <div className="booking-panel relative px-6 py-10 sm:px-10 sm:py-12">
@@ -188,7 +182,7 @@ export function BookingFinale() {
             </div>
           ) : (
             <form onSubmit={onSubmit} className="grid gap-5" noValidate>
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="checkIn" className="field-label">
                     Arrival
@@ -310,19 +304,31 @@ export function BookingFinale() {
                 />
               </div>
 
-              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="mt-3 flex flex-col items-start gap-4">
                 <button type="submit" className="btn btn-on-light">
                   <MessageCircle size={16} strokeWidth={1.5} aria-hidden="true" />
                   Continue on WhatsApp
                 </button>
                 <button
                   type="button"
-                  className="btn btn-secondary-ink"
+                  className="link-underline text-[0.9375rem] text-muted transition hover:text-ink"
                   onClick={() => submit("email")}
                 >
-                  Send by email
+                  Or send by email
                 </button>
               </div>
+
+              <p className="contact-line mt-8 border-t border-stone-200 pt-6 text-muted">
+                <a href={`mailto:${BRAND.email}`} className="transition hover:text-ink">
+                  {BRAND.email}
+                </a>
+                <span className="mx-3 text-stone-200" aria-hidden="true">
+                  ·
+                </span>
+                <a href={`tel:${BRAND.phoneTel}`} className="transition hover:text-ink">
+                  {BRAND.phoneDisplay}
+                </a>
+              </p>
             </form>
           )}
         </div>

@@ -26,7 +26,7 @@ Colour distribution ≈ 35% warm ivory · 30% photography · 25% deep green · 1
 | `--gold-500` | `#c89b45` | Accent, borders, primary CTA fill |
 | `--gold-400` | `#d7b66c` | Soft highlight |
 | `--ink` | `#172019` | Body text on ivory |
-| `--muted` | `#6e746d` | Secondary text on ivory |
+| `--muted` | `#555c54` | Secondary text on ivory (WCAG AA vs ivory-50) |
 | `--danger` | `#c45c4e` | Form errors |
 
 Legacy aliases: `--forest` → `--pine-950`, `--green` → `--pine-900`, `--gold` → `--gold-500`, `--ivory` → light text on dark (`#f7f3e9`), `--stone` → muted on dark.

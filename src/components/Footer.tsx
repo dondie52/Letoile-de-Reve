@@ -64,7 +64,7 @@ export function Footer() {
               Book
             </a>
           </nav>
-          <p className="caption text-stone/80">
+          <p className="caption text-ivory/70">
             © {year} {BRAND.name}. All rights reserved.
           </p>
         </div>

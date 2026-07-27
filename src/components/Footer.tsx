@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { ASSETS, BRAND } from "@/lib/constants";
+import { BrandLogo } from "@/components/BrandLogo";
+import { BRAND } from "@/lib/constants";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -8,13 +8,9 @@ export function Footer() {
     <footer className="border-t border-gold/20 bg-green">
       <div className="section-pad mx-auto flex max-w-[1400px] flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Image
-            src={ASSETS.logoWide}
-            alt={BRAND.name}
-            width={180}
-            height={44}
-            className="mb-5 h-9 w-auto object-contain"
-          />
+          <a href="#top" className="mb-6 inline-block" aria-label={BRAND.name}>
+            <BrandLogo variant="nav" />
+          </a>
           <p className="mb-4 max-w-sm font-display text-lg text-ivory/90">
             {BRAND.name} — Luxury Apartment, Phakalane
           </p>

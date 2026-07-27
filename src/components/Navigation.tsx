@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { ASSETS, BRAND, NAV_LINKS } from "@/lib/constants";
+import { BrandLogo } from "@/components/BrandLogo";
+import { BRAND, NAV_LINKS } from "@/lib/constants";
 
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -50,18 +50,15 @@ export function Navigation() {
       }`}
     >
       <nav
-        className="section-pad mx-auto flex h-[4.5rem] max-w-[1400px] items-center justify-between"
+        className="section-pad mx-auto flex h-[4.75rem] max-w-[1400px] items-center justify-between"
         aria-label="Primary"
       >
-        <a href="#top" className="relative z-10 flex items-center gap-3">
-          <Image
-            src={ASSETS.logoWide}
-            alt={BRAND.name}
-            width={160}
-            height={40}
-            priority
-            className="h-8 w-auto object-contain sm:h-9"
-          />
+        <a
+          href="#top"
+          className="relative z-10"
+          aria-label={`${BRAND.name} home`}
+        >
+          <BrandLogo variant="nav" priority />
         </a>
 
         <ul className="hidden items-center gap-8 md:flex">

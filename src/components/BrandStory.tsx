@@ -112,16 +112,18 @@ export function BrandStory() {
           </p>
         </div>
 
-        <div data-story-line className="relative mx-auto w-full max-w-sm lg:mx-0 lg:justify-self-end">
+        <div data-story-line className="relative mx-auto w-full max-w-[280px] lg:mx-0 lg:max-w-xs lg:justify-self-end">
           <div className="absolute -inset-4 border border-gold/25" aria-hidden="true" />
-          <Image
-            src={ASSETS.logoPortrait}
-            alt={`${BRAND.name} logo mark`}
-            width={480}
-            height={620}
-            sizes="(max-width: 768px) 80vw, 320px"
-            className="relative mx-auto h-auto w-[70%] object-contain lg:w-full"
-          />
+          <div className="relative bg-forest/40 px-8 py-10">
+            <Image
+              src={ASSETS.logoFull}
+              alt={`${BRAND.name} logo mark`}
+              width={365}
+              height={424}
+              sizes="(max-width: 768px) 60vw, 280px"
+              className="relative mx-auto h-auto w-full object-contain"
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -86,6 +86,8 @@ export const AMENITIES = [
 export const ASSETS = {
   logoWide: withBase("/assets/images/logo-wide.webp"),
   logoPortrait: withBase("/assets/images/logo-portrait.webp"),
+  logoFull: withBase("/assets/images/logo-full.webp"),
+  logoMark: withBase("/assets/images/logo-mark.webp"),
   livingRoom: withBase("/assets/images/living-room.webp"),
   bedroom: withBase("/assets/images/bedroom.webp"),
   kitchen: withBase("/assets/images/kitchen.webp"),

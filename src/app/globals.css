@@ -223,10 +223,24 @@ section[id],
 
 .apartment-frame {
   isolation: isolate;
+  contain: paint;
 }
 
 .apartment-frame [data-room-image] {
   backface-visibility: hidden;
+}
+
+.apartment-frame [data-room-image].is-compositing {
+  will-change: transform, opacity, clip-path;
+}
+
+/* Below-fold sections — defer layout/paint work until near viewport */
+#experience,
+#amenities,
+#location,
+#book {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
 
 /* Type roles — size + weight + tracking carry hierarchy together */

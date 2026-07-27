@@ -157,6 +157,7 @@ export function ApartmentShowcase() {
     gsap.set(copies, { opacity: 0, y: 28 });
     gsap.set(copies[0], { opacity: 1, y: 0 });
     gsap.set(progress, { scaleY: 0, transformOrigin: "top center" });
+    images.forEach((img) => img.classList.add("is-compositing"));
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -247,6 +248,7 @@ export function ApartmentShowcase() {
 
     return () => {
       stRef.current = null;
+      images.forEach((img) => img.classList.remove("is-compositing"));
       ctx.revert();
     };
   }, []);
@@ -291,7 +293,7 @@ export function ApartmentShowcase() {
               <div
                 key={room.id}
                 data-room-image
-                className="absolute inset-0 will-change-transform"
+                className="absolute inset-0"
                 style={{ opacity: i === 0 ? 1 : 0 }}
               >
                 <Image
@@ -300,7 +302,7 @@ export function ApartmentShowcase() {
                   fill
                   sizes="(max-width: 1200px) 55vw, 700px"
                   className="object-cover"
-                  priority={i === 0}
+                  loading="lazy"
                 />
               </div>
             ))}

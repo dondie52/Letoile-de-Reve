@@ -61,6 +61,11 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 - Apartment mobile: horizontal snap with centered-room settle (scale)
 - Reduced motion: no pin/scrub; instant or short crossfades; hero content visible without choreography
 - Prefer `transform` / `opacity` / bounded `filter` / `clip-path`; honor `prefers-reduced-motion`
+- Optional tour videos via `TOUR_VIDEO` in `src/lib/media.ts` (null = photo only, no 404 probes)
+- Gallery `will-change` only while the pin scrub is active (`.is-compositing`)
+- Below-fold sections use `content-visibility: auto`; mid/lower sections are dynamically imported
+- Optional tour videos via `TOUR_VIDEO` in `src/lib/media.ts` (null = photo only, no 404 probes)
+- Gallery `will-change` only while the pin scrub is active (`.is-compositing`)
 
 ## Components
 

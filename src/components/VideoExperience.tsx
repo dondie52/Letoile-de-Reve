@@ -6,24 +6,28 @@ import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS } from "@/lib/constants";
+import { TOUR_VIDEO } from "@/lib/media";
 import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const LIFESTYLE_VIDEO = TOUR_VIDEO.lifestyle;
 
 export function VideoExperience() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaWrapRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useFallback, setUseFallback] = useState(false);
-  const [playing, setPlaying] = useState(true);
+  const [useFallback, setUseFallback] = useState(!LIFESTYLE_VIDEO);
+  const [playing, setPlaying] = useState(Boolean(LIFESTYLE_VIDEO));
 
   useEffect(() => {
-    fetch(ASSETS.lifestyleVideo, { method: "HEAD" })
-      .then((res) => {
-        if (!res.ok) setUseFallback(true);
-      })
-      .catch(() => setUseFallback(true));
+    if (!LIFESTYLE_VIDEO) return;
+    const video = videoRef.current;
+    if (!video) return;
+    const onError = () => setUseFallback(true);
+    video.addEventListener("error", onError);
+    return () => video.removeEventListener("error", onError);
   }, []);
 
   useEffect(() => {
@@ -102,6 +106,7 @@ export function VideoExperience() {
 
   return (
     <section
+      id="experience"
       ref={sectionRef}
       className="relative overflow-hidden bg-green py-24 sm:py-32"
       aria-labelledby="experience-heading"
@@ -119,7 +124,7 @@ export function VideoExperience() {
 
         <div ref={mediaWrapRef} className="relative mx-[-1.25rem] sm:mx-0">
           <div className="relative aspect-[9/14] w-full overflow-hidden border-y border-gold/30 sm:border lg:max-h-[78vh]">
-            {!useFallback ? (
+            {!useFallback && LIFESTYLE_VIDEO ? (
               <video
                 ref={videoRef}
                 className="h-full w-full object-cover"
@@ -130,7 +135,7 @@ export function VideoExperience() {
                 preload="none"
                 poster={ASSETS.bedroom}
               >
-                <source src={ASSETS.lifestyleVideo} type="video/mp4" />
+                <source src={LIFESTYLE_VIDEO} type="video/mp4" />
               </video>
             ) : (
               <Image
@@ -147,7 +152,7 @@ export function VideoExperience() {
               aria-hidden="true"
             />
 
-            {!useFallback && (
+            {!useFallback && LIFESTYLE_VIDEO ? (
               <div className="absolute bottom-4 right-4">
                 <button
                   type="button"
@@ -158,7 +163,7 @@ export function VideoExperience() {
                   {playing ? <Pause size={16} /> : <Play size={16} />}
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

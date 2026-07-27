@@ -94,6 +94,4 @@ export const ASSETS = {
   kitchen: withBase("/assets/images/kitchen.webp"),
   bathroom: withBase("/assets/images/bathroom.webp"),
   entranceMat: withBase("/assets/images/entrance-mat.webp"),
-  heroVideo: withBase("/assets/videos/hero-tour.mp4"),
-  lifestyleVideo: withBase("/assets/videos/lifestyle-tour.mp4"),
 } as const;

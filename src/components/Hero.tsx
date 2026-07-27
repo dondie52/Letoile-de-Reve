@@ -6,6 +6,7 @@ import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS } from "@/lib/constants";
+import { TOUR_VIDEO } from "@/lib/media";
 import {
   ARRIVE_EASE,
   heroIntroDelay,
@@ -15,6 +16,7 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const EYEBROW = "LUXURY APARTMENT · PHAKALANE";
+const HERO_VIDEO = TOUR_VIDEO.hero;
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -22,18 +24,13 @@ export function Hero() {
   const veilRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useFallback, setUseFallback] = useState(false);
-  const [playing, setPlaying] = useState(true);
+  /* No video path → photo only (avoids HEAD/GET 404s) */
+  const [useFallback, setUseFallback] = useState(!HERO_VIDEO);
+  const [playing, setPlaying] = useState(Boolean(HERO_VIDEO));
 
   useEffect(() => {
+    if (!HERO_VIDEO) return;
     const video = videoRef.current;
-
-    fetch(ASSETS.heroVideo, { method: "HEAD" })
-      .then((res) => {
-        if (!res.ok) setUseFallback(true);
-      })
-      .catch(() => setUseFallback(true));
-
     if (!video) return;
     const onError = () => setUseFallback(true);
     video.addEventListener("error", onError);
@@ -211,7 +208,7 @@ export function Hero() {
         ref={mediaRef}
         className="hero-media absolute inset-0 origin-center"
       >
-        {!useFallback ? (
+        {!useFallback && HERO_VIDEO ? (
           <video
             ref={videoRef}
             className="h-full w-full object-cover"
@@ -223,7 +220,7 @@ export function Hero() {
             poster={ASSETS.livingRoom}
             aria-hidden="true"
           >
-            <source src={ASSETS.heroVideo} type="video/mp4" />
+            <source src={HERO_VIDEO} type="video/mp4" />
           </video>
         ) : (
           <Image

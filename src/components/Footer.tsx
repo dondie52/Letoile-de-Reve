@@ -76,7 +76,14 @@ export function Footer() {
           </p>
           <p className="caption sm:text-right">
             Designed by{" "}
-            <span className="text-stone transition hover:text-gold">Tech Lab</span>
+            <a
+              href="https://techlabbw.co.bw/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone transition hover:text-gold"
+            >
+              Tech Lab Botswana
+            </a>
           </p>
         </div>
       </div>

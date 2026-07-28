@@ -504,7 +504,13 @@ export function ApartmentShowcase() {
               </h2>
             </div>
 
-            <div className="relative min-h-[10rem]" aria-live="polite">
+            <div
+              id="apartment-room-panel"
+              role="tabpanel"
+              aria-labelledby={`room-tab-${room.id}`}
+              className="relative min-h-[10rem]"
+              aria-live="polite"
+            >
               <p className="meta mb-3 text-gold">{room.index} / 04</p>
               <p className="title-sm mb-3 text-ivory">{room.label}</p>
               <p className="body-lg">{room.description}</p>
@@ -522,39 +528,42 @@ export function ApartmentShowcase() {
               </div>
 
               <div className="flex flex-1 flex-col gap-4">
-                <ul
+                <div
                   className="flex flex-col gap-0.5"
                   role="tablist"
                   aria-label="Apartment rooms"
+                  aria-orientation="vertical"
                 >
                   {ROOMS.map((r, i) => {
                     const isActive = i === active;
                     return (
-                      <li key={r.id}>
-                        <button
-                          type="button"
-                          role="tab"
-                          aria-selected={isActive}
-                          aria-label={`View ${r.label}`}
-                          onClick={() => goToRoom(i)}
-                          className={`room-tab nav-label group relative flex min-h-11 w-full items-center py-3 text-left transition-colors duration-300 ${
-                            isActive
-                              ? "is-active text-gold"
-                              : "text-stone/70 hover:text-ivory"
+                      <button
+                        key={r.id}
+                        type="button"
+                        role="tab"
+                        id={`room-tab-${r.id}`}
+                        aria-selected={isActive}
+                        aria-controls="apartment-room-panel"
+                        tabIndex={isActive ? 0 : -1}
+                        aria-label={`View ${r.label}`}
+                        onClick={() => goToRoom(i)}
+                        className={`room-tab nav-label group relative flex min-h-11 w-full items-center py-3 text-left transition-colors duration-300 ${
+                          isActive
+                            ? "is-active text-gold"
+                            : "text-stone/70 hover:text-ivory"
+                        }`}
+                      >
+                        <span
+                          className={`absolute -left-4 top-1/2 h-px -translate-y-1/2 bg-gold transition-all duration-500 ${
+                            isActive ? "w-2.5 opacity-100" : "w-0 opacity-0"
                           }`}
-                        >
-                          <span
-                            className={`absolute -left-4 top-1/2 h-px -translate-y-1/2 bg-gold transition-all duration-500 ${
-                              isActive ? "w-2.5 opacity-100" : "w-0 opacity-0"
-                            }`}
-                            aria-hidden="true"
-                          />
-                          {r.label}
-                        </button>
-                      </li>
+                          aria-hidden="true"
+                        />
+                        {r.label}
+                      </button>
                     );
                   })}
-                </ul>
+                </div>
 
                 <div className="flex gap-2 pt-2">
                   <button
@@ -633,11 +642,11 @@ export function ApartmentShowcase() {
                       }`}
                     >
                       <Image
-                        src={r.src}
+                        src={r.srcSm}
                         alt={r.alt}
                         fill
-                        sizes="(max-width: 768px) 88vw, 600px"
-                        loading="lazy"
+                        sizes="88vw"
+                        loading={Math.abs(i - active) <= 1 ? "eager" : "lazy"}
                         className="object-cover"
                         style={{ objectPosition: r.objectPosition }}
                       />
@@ -672,7 +681,7 @@ export function ApartmentShowcase() {
           </div>
 
           <div
-            className="flex items-center gap-2 pr-1"
+            className="flex items-center gap-1 pr-1"
             role="tablist"
             aria-label="Room navigation"
           >
@@ -684,10 +693,15 @@ export function ApartmentShowcase() {
                 aria-selected={i === active}
                 aria-label={`View ${r.label}`}
                 onClick={() => goToRoom(i)}
-                className={`h-2.5 w-2.5 transition-colors duration-300 ${
-                  i === active ? "bg-gold" : "bg-ivory/35"
-                }`}
-              />
+                className="inline-flex h-11 w-11 items-center justify-center"
+              >
+                <span
+                  className={`block h-2.5 w-2.5 transition-colors duration-300 ${
+                    i === active ? "bg-gold" : "bg-ivory/35"
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
             ))}
           </div>
         </div>

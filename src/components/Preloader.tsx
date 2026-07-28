@@ -51,14 +51,19 @@ export function Preloader() {
         }`}
       >
         <Image
-          src={ASSETS.logoMark}
-          alt=""
-          width={120}
-          height={98}
+          src={ASSETS.logoFull}
+          alt="L’étoile de Rêve"
+          width={220}
+          height={256}
           priority
-          className="h-auto w-[min(28vw,5.5rem)] object-contain sm:w-24"
+          className="h-auto w-[min(42vw,11.5rem)] object-contain sm:w-[13rem]"
         />
-        <span className="sr-only">L’étoile de Rêve</span>
+        <span
+          className={`mt-8 h-px w-12 origin-center bg-gold/70 transition-transform duration-700 delay-200 ${
+            animate ? "scale-x-100" : "scale-x-0"
+          }`}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );

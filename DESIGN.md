@@ -56,7 +56,7 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 - Subtitle: `LUXURY APARTMENT | PHAKALANE` in soft ivory sans
 - Scales up on desktop (`lg+`); compact variant when scrolled / menu open
 - No horizontal `logo-nav` lockup in the header (footer may still use it)
-- Hero eyebrow `LUXURY APARTMENT · PHAKALANE` remains in the hero content
+- Location subtitle lives in the header lockup only (not duplicated in the hero)
 
 ## Motion
 

@@ -4,20 +4,28 @@ import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { ASSETS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
-import {
-  ARRIVE_EASE,
-  heroIntroDelay,
-  prefersReducedMotion,
-} from "@/lib/motion-utils";
+import { prefersReducedMotion } from "@/lib/motion-utils";
 
 const EYEBROW = "LUXURY APARTMENT · PHAKALANE";
 const HERO_VIDEO = TOUR_VIDEO.hero;
+
+function whenIdle(cb: () => void, timeout = 2500) {
+  const w = window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    cancelIdleCallback?: (id: number) => void;
+  };
+  if (typeof w.requestIdleCallback === "function") {
+    const id = w.requestIdleCallback(cb, { timeout });
+    return () => w.cancelIdleCallback?.(id);
+  }
+  const t = window.setTimeout(cb, Math.min(timeout, 1200));
+  return () => window.clearTimeout(t);
+}
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const photoRef = useRef<HTMLDivElement>(null);
-  const veilRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   /* No video path → photo only (avoids HEAD/GET 404s) */
@@ -54,168 +62,94 @@ export function Hero() {
     return () => observer.disconnect();
   }, [playing, useFallback]);
 
+  /* Scroll polish only — intro is CSS so LCP/SI/TBT stay clean on both viewports */
   useEffect(() => {
     const section = sectionRef.current;
     const media = mediaRef.current;
-    const veil = veilRef.current;
     const content = contentRef.current;
-    if (!section || !media || !veil || !content) return;
+    if (!section || !media || !content) return;
+    if (prefersReducedMotion()) {
+      content.querySelector<HTMLElement>("[data-hero-scroll]")?.classList.add("is-ready");
+      return;
+    }
 
     let cancelled = false;
     let revert: (() => void) | undefined;
+    const cancelIdle = whenIdle(() => {
+      void (async () => {
+        const { gsap } = await import("gsap");
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        if (cancelled) return;
+        gsap.registerPlugin(ScrollTrigger);
 
-    void (async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      if (cancelled) return;
-      gsap.registerPlugin(ScrollTrigger);
+        content
+          .querySelector<HTMLElement>("[data-hero-scroll]")
+          ?.classList.add("is-ready");
 
-      const reduced = prefersReducedMotion();
-      const lines = content.querySelectorAll<HTMLElement>("[data-hero-line]");
-      const scrollHint = content.querySelector<HTMLElement>("[data-hero-scroll]");
-      const scrollStem = scrollHint?.querySelector<HTMLElement>("[data-scroll-stem]");
-
-      const ctx = gsap.context(() => {
-        if (reduced) {
-          gsap.set([lines, scrollHint, media, veil], {
-            clearProps: "all",
+        const ctx = gsap.context(() => {
+          gsap.to(media, {
+            scale: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
           });
-          gsap.set(lines, { opacity: 1, y: 0, clipPath: "none", filter: "none" });
-          gsap.set(scrollHint, { opacity: 1, y: 0 });
-          gsap.set(media, { scale: 1, filter: "none" });
-          gsap.set(veil, { opacity: 0 });
-          return;
-        }
 
-        /* Light veil only — heavy cover delayed Speed Index / LCP visual progress.
-           Avoid filter:blur on the media layer — it delays LCP paint. */
-        gsap.set(media, { scale: 1.06 });
-        gsap.set(veil, { opacity: 0.35 });
-        gsap.set(lines, {
-          opacity: 0,
-          y: 28,
-          clipPath: "inset(110% 0 0 0)",
-        });
-        gsap.set(scrollHint, { opacity: 0, y: 12 });
-        if (scrollStem) gsap.set(scrollStem, { scaleY: 0, transformOrigin: "top center" });
-
-        const intro = gsap.timeline({
-          delay: heroIntroDelay(),
-          defaults: { ease: ARRIVE_EASE },
-          onComplete: () => {
-            gsap.set(lines, { clearProps: "clipPath" });
-            media.classList.remove("is-animating");
-          },
-        });
-
-        media.classList.add("is-animating");
-
-        intro
-          .to(
-            media,
-            {
-              scale: 1.03,
-              duration: 1.1,
-              onComplete: () => media.classList.remove("is-animating"),
+          gsap.to(content, {
+            opacity: 0.35,
+            y: -36,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "center top",
+              end: "bottom top",
+              scrub: true,
             },
-            0,
-          )
-          .to(
-            veil,
-            {
-              opacity: 0,
-              duration: 0.7,
-              ease: "power2.out",
-            },
-            0,
-          )
-          .to(
-            lines,
-            {
-              opacity: 1,
-              y: 0,
-              clipPath: "inset(0% 0 0 0)",
-              duration: 0.85,
-              stagger: 0.09,
-            },
-            0.12,
-          )
-          .to(
-            scrollHint,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.55,
-              onComplete: () => scrollHint?.classList.add("is-ready"),
-            },
-            "-=0.2",
-          );
+          });
+        }, section);
 
-        if (scrollStem) {
-          intro.to(
-            scrollStem,
-            { scaleY: 1, duration: 0.6, ease: "power2.out" },
-            "-=0.35",
-          );
-        }
-
-        gsap.to(media, {
-          scale: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-
-        gsap.to(content, {
-          opacity: 0.35,
-          y: -36,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "center top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }, section);
-
-      revert = () => ctx.revert();
-    })();
+        revert = () => ctx.revert();
+      })();
+    }, 2800);
 
     return () => {
       cancelled = true;
+      cancelIdle();
       revert?.();
     };
   }, []);
 
-  /* Still-photo motion when no tour video — slow cinematic Ken Burns */
+  /* Still-photo motion when no tour video — after idle to protect TBT */
   useEffect(() => {
     if (!useFallback) return;
     const photo = photoRef.current;
     if (!photo) return;
+    if (prefersReducedMotion()) return;
+
     let cancelled = false;
     let kill: (() => void) | undefined;
-
-    void (async () => {
-      const { kenBurns } = await import("@/lib/motion");
-      if (cancelled) return;
-      const tl = kenBurns(photo, {
-        scaleFrom: 1.06,
-        scaleTo: 1.14,
-        xPercent: -2.2,
-        yPercent: 1.8,
-        duration: 22,
-        delay: heroIntroDelay() + 0.4,
-      });
-      kill = () => tl?.kill();
-    })();
+    const cancelIdle = whenIdle(() => {
+      void (async () => {
+        const { kenBurns } = await import("@/lib/motion");
+        if (cancelled) return;
+        const tl = kenBurns(photo, {
+          scaleFrom: 1.04,
+          scaleTo: 1.12,
+          xPercent: -2.2,
+          yPercent: 1.8,
+          duration: 22,
+          delay: 0.2,
+        });
+        kill = () => tl?.kill();
+      })();
+    }, 3200);
 
     return () => {
       cancelled = true;
+      cancelIdle();
       kill?.();
     };
   }, [useFallback]);
@@ -268,6 +202,8 @@ export function Hero() {
               <img
                 src={ASSETS.livingRoom}
                 alt=""
+                width={810}
+                height={1080}
                 fetchPriority="high"
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
@@ -281,11 +217,6 @@ export function Hero() {
         />
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[68%] bg-[linear-gradient(180deg,transparent_0%,rgba(6,21,14,0.55)_45%,rgba(6,21,14,0.88)_100%)] md:h-[58%]"
-          aria-hidden="true"
-        />
-        <div
-          ref={veilRef}
-          className="hero-veil pointer-events-none absolute inset-0 bg-forest/40"
           aria-hidden="true"
         />
       </div>

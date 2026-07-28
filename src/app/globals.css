@@ -285,22 +285,64 @@ section[id],
   }
 }
 
-.hero-media.is-animating {
-  will-change: transform, filter;
+.hero-media {
+  transform: scale(1.03);
 }
 
-.hero-veil {
-  opacity: 0;
+@media (prefers-reduced-motion: no-preference) {
+  .hero-media {
+    animation: hero-media-settle 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  [data-hero-line] {
+    animation: hero-line-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  [data-hero-line]:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  [data-hero-line]:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+  [data-hero-line]:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  [data-hero-line]:nth-child(4) {
+    animation-delay: 0.28s;
+  }
+
+  [data-hero-scroll] {
+    animation: hero-line-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+  }
+
+  [data-hero-scroll] .scroll-stem,
+  [data-hero-scroll].is-ready .scroll-stem {
+    animation: scroll-stem-breathe 2.4s ease-in-out 1s infinite;
+  }
+}
+
+@keyframes hero-media-settle {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hero-line-in {
+  from {
+    opacity: 0.72;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .scroll-stem {
   transform-origin: top center;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  [data-hero-scroll].is-ready .scroll-stem {
-    animation: scroll-stem-breathe 2.4s ease-in-out infinite;
-  }
 }
 
 @keyframes scroll-stem-breathe {

@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
 import { AMENITIES } from "@/lib/constants";
-import { isMobileViewport, prefersReducedMotion } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-
-gsap.registerPlugin(ScrollTrigger);
 
 function AmenityIcon({ index }: { index: number }) {
   const common = {
@@ -64,40 +59,6 @@ export function Amenities() {
 
   useScrollReveal(sectionRef);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    if (prefersReducedMotion()) return;
-
-    const items = section.querySelectorAll<HTMLElement>("[data-amenity]");
-    const mobile = isMobileViewport();
-
-    const ctx = gsap.context(() => {
-      items.forEach((item, i) => {
-        gsap.fromTo(
-          item,
-          { opacity: 0, y: mobile ? 18 : 28, filter: "blur(4px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: mobile ? 0.7 : 0.9,
-            delay: mobile ? 0 : (i % 3) * 0.06,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: item,
-              start: mobile ? "top 90%" : "top 85%",
-              once: true,
-            },
-            onComplete: () => gsap.set(item, { clearProps: "filter" }),
-          },
-        );
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <section
       id="amenities"
@@ -129,7 +90,8 @@ export function Amenities() {
           {AMENITIES.map((item, i) => (
             <li
               key={item.title}
-              data-amenity
+              data-reveal
+              data-reveal-group="amenities-list"
               className="group border-b border-gold/25 px-0 py-9 sm:px-6 lg:border-r lg:[&:nth-child(3)]:border-r-0 lg:[&:nth-child(5)]:border-r-0 sm:[&:nth-child(even)]:border-r-0 sm:border-r"
             >
               <div className="mb-5 text-gold transition-transform duration-500 group-hover:-translate-y-0.5">

@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { STAY_MOMENTS } from "@/lib/constants";
-import { prefersReducedMotion } from "@/lib/motion";
+import { prefersReducedMotion } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function StayMoments() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,25 +17,42 @@ export function StayMoments() {
     const rail = railRef.current;
     if (!section || !rail || prefersReducedMotion()) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        rail,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: "none",
-          transformOrigin: "top center",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 70%",
-            end: "bottom 75%",
-            scrub: 0.5,
-          },
-        },
-      );
-    }, section);
-
-    return () => ctx.revert();
+    let cancelled = false;
+    let revert: (() => void) | undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      void (async () => {
+        const { gsap } = await import("gsap");
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        if (cancelled) return;
+        gsap.registerPlugin(ScrollTrigger);
+        const ctx = gsap.context(() => {
+          gsap.fromTo(
+            rail,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              transformOrigin: "top center",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 70%",
+                end: "bottom 75%",
+                scrub: 0.5,
+              },
+            },
+          );
+        }, section);
+        revert = () => ctx.revert();
+      })();
+    }, { rootMargin: "20% 0px", threshold: 0.01 });
+    observer.observe(section);
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      revert?.();
+    };
   }, []);
 
   return (

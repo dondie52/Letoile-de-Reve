@@ -2,12 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, BRAND } from "@/lib/constants";
 import { isMobileViewport, prefersReducedMotion } from "@/lib/motion-utils";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function BrandStory() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -16,84 +12,108 @@ export function BrandStory() {
     const section = sectionRef.current;
     if (!section) return;
 
-    const reduced = prefersReducedMotion();
-    const lines = section.querySelectorAll<HTMLElement>("[data-story-line]");
-    const logoWrap = section.querySelector<HTMLElement>("[data-story-logo]");
-    const star = section.querySelector<HTMLElement>("[data-story-star]");
-    const floatStars = section.querySelectorAll<HTMLElement>("[data-parallax-star]");
+    let cancelled = false;
+    let revert: (() => void) | undefined;
 
-    const ctx = gsap.context(() => {
-      if (reduced) {
-        gsap.set([lines, logoWrap], { opacity: 1, y: 0, scale: 1 });
-        return;
-      }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        void (async () => {
+          const { gsap } = await import("gsap");
+          const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+          if (cancelled) return;
+          gsap.registerPlugin(ScrollTrigger);
 
-      const mobile = isMobileViewport();
+          const reduced = prefersReducedMotion();
+          const lines = section.querySelectorAll<HTMLElement>("[data-story-line]");
+          const logoWrap = section.querySelector<HTMLElement>("[data-story-logo]");
+          const star = section.querySelector<HTMLElement>("[data-story-star]");
+          const floatStars = section.querySelectorAll<HTMLElement>("[data-parallax-star]");
 
-      gsap.set(lines, { opacity: 0, y: mobile ? 20 : 32 });
-      gsap.set(logoWrap, { opacity: 0, scale: 0.96 });
+          const ctx = gsap.context(() => {
+            if (reduced) {
+              gsap.set([lines, logoWrap], { opacity: 1, y: 0, scale: 1 });
+              return;
+            }
 
-      /* Phones get a settled reveal; scrubbing type reads as lag on touch */
-      gsap.to(lines, {
-        opacity: 1,
-        y: 0,
-        stagger: mobile ? 0.08 : 0.12,
-        duration: mobile ? 0.75 : 1,
-        ease: mobile ? "expo.out" : "power2.out",
-        scrollTrigger: mobile
-          ? { trigger: section, start: "top 85%", once: true }
-          : {
-              trigger: section,
-              start: "top 70%",
-              end: "top 30%",
-              scrub: true,
-            },
-      });
+            const mobile = isMobileViewport();
 
-      gsap.to(logoWrap, {
-        opacity: 1,
-        scale: 1,
-        duration: 1.15,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 65%",
-          toggleActions: "play none none reverse",
-        },
-      });
+            gsap.set(lines, { opacity: 0, y: mobile ? 20 : 32 });
+            gsap.set(logoWrap, { opacity: 0, scale: 0.96 });
 
-      if (star) {
-        gsap.fromTo(
-          star,
-          { rotate: -3 },
-          {
-            rotate: 2,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
-            },
-          },
-        );
-      }
+            gsap.to(lines, {
+              opacity: 1,
+              y: 0,
+              stagger: mobile ? 0.08 : 0.12,
+              duration: mobile ? 0.75 : 1,
+              ease: mobile ? "expo.out" : "power2.out",
+              scrollTrigger: mobile
+                ? { trigger: section, start: "top 85%", once: true }
+                : {
+                    trigger: section,
+                    start: "top 70%",
+                    end: "top 30%",
+                    scrub: true,
+                  },
+            });
 
-      floatStars.forEach((el, i) => {
-        gsap.to(el, {
-          y: i % 2 === 0 ? -50 : -28,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      });
-    }, section);
+            gsap.to(logoWrap, {
+              opacity: 1,
+              scale: 1,
+              duration: 1.15,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 65%",
+                toggleActions: "play none none reverse",
+              },
+            });
 
-    return () => ctx.revert();
+            if (star) {
+              gsap.fromTo(
+                star,
+                { rotate: -3 },
+                {
+                  rotate: 2,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                  },
+                },
+              );
+            }
+
+            floatStars.forEach((el, i) => {
+              gsap.to(el, {
+                y: i % 2 === 0 ? -50 : -28,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                },
+              });
+            });
+          }, section);
+
+          revert = () => ctx.revert();
+        })();
+      },
+      { rootMargin: "30% 0px", threshold: 0.01 },
+    );
+
+    observer.observe(section);
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      revert?.();
+    };
   }, []);
 
   return (

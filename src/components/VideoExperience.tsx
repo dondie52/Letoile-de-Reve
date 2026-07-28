@@ -3,14 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Pause, Play } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
-import { kenBurns, prefersReducedMotion } from "@/lib/motion";
+import { prefersReducedMotion } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const LIFESTYLE_VIDEO = TOUR_VIDEO.lifestyle;
 
@@ -61,54 +57,93 @@ export function VideoExperience() {
     if (!section || !text || !media) return;
     if (prefersReducedMotion()) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        text,
-        { y: 48 },
-        {
-          y: -24,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        },
-      );
+    let cancelled = false;
+    let revert: (() => void) | undefined;
 
-      gsap.fromTo(
-        media,
-        { y: 24 },
-        {
-          y: -36,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        },
-      );
-    }, section);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        void (async () => {
+          const { gsap } = await import("gsap");
+          const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+          if (cancelled) return;
+          gsap.registerPlugin(ScrollTrigger);
+          const ctx = gsap.context(() => {
+            gsap.fromTo(
+              text,
+              { y: 48 },
+              {
+                y: -24,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                },
+              },
+            );
 
-    return () => ctx.revert();
+            gsap.fromTo(
+              media,
+              { y: 24 },
+              {
+                y: -36,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                },
+              },
+            );
+          }, section);
+          revert = () => ctx.revert();
+        })();
+      },
+      { rootMargin: "25% 0px", threshold: 0.01 },
+    );
+    observer.observe(section);
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      revert?.();
+    };
   }, []);
 
   useEffect(() => {
     if (!useFallback) return;
     const photo = photoRef.current;
     if (!photo) return;
-    const tl = kenBurns(photo, {
-      scaleFrom: 1.05,
-      scaleTo: 1.13,
-      xPercent: 2,
-      yPercent: -1.5,
-      duration: 20,
-    });
+    let cancelled = false;
+    let kill: (() => void) | undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        void (async () => {
+          const { kenBurns } = await import("@/lib/motion");
+          if (cancelled) return;
+          const tl = kenBurns(photo, {
+            scaleFrom: 1.05,
+            scaleTo: 1.13,
+            xPercent: 2,
+            yPercent: -1.5,
+            duration: 20,
+          });
+          kill = () => tl?.kill();
+        })();
+      },
+      { rootMargin: "25% 0px", threshold: 0.01 },
+    );
+    observer.observe(photo);
     return () => {
-      tl?.kill();
+      cancelled = true;
+      observer.disconnect();
+      kill?.();
     };
   }, [useFallback]);
 

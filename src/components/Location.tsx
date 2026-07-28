@@ -2,13 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, BRAND } from "@/lib/constants";
-import { kenBurns, parallax } from "@/lib/motion";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function Location() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -24,25 +19,50 @@ export function Location() {
   useEffect(() => {
     const section = sectionRef.current;
     const photo = photoRef.current;
+    const ken = kenBurnsRef.current;
     if (!section || !photo) return;
-    const ctx = gsap.context(() => {
-      parallax(photo, section, 70);
-    }, section);
-    return () => ctx.revert();
-  }, []);
 
-  useEffect(() => {
-    const photo = kenBurnsRef.current;
-    if (!photo) return;
-    const tl = kenBurns(photo, {
-      scaleFrom: 1.04,
-      scaleTo: 1.12,
-      xPercent: -2,
-      yPercent: 1.6,
-      duration: 18,
-    });
+    let cancelled = false;
+    let revert: (() => void) | undefined;
+    let killKen: (() => void) | undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        void (async () => {
+          const [{ gsap }, { ScrollTrigger }, motion] = await Promise.all([
+            import("gsap"),
+            import("gsap/ScrollTrigger"),
+            import("@/lib/motion"),
+          ]);
+          if (cancelled) return;
+          gsap.registerPlugin(ScrollTrigger);
+          const ctx = gsap.context(() => {
+            motion.parallax(photo, section, 70);
+          }, section);
+          revert = () => ctx.revert();
+          if (ken) {
+            const tl = motion.kenBurns(ken, {
+              scaleFrom: 1.04,
+              scaleTo: 1.12,
+              xPercent: -2,
+              yPercent: 1.6,
+              duration: 18,
+            });
+            killKen = () => tl?.kill();
+          }
+        })();
+      },
+      { rootMargin: "25% 0px", threshold: 0.01 },
+    );
+    observer.observe(section);
+
     return () => {
-      tl?.kill();
+      cancelled = true;
+      observer.disconnect();
+      revert?.();
+      killKen?.();
     };
   }, []);
 

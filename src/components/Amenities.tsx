@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AMENITIES } from "@/lib/constants";
-import { isMobileViewport, prefersReducedMotion } from "@/lib/motion";
+import { isMobileViewport, prefersReducedMotion } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 gsap.registerPlugin(ScrollTrigger);

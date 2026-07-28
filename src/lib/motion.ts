@@ -1,30 +1,23 @@
 import { gsap } from "gsap";
+import {
+  ARRIVE_EASE,
+  LUXURY_DURATION,
+  LUXURY_EASE,
+  SCRUB_EASE,
+  isMobileViewport,
+  prefersReducedMotion,
+} from "@/lib/motion-utils";
 
-/** Confident arrival — luxury hospitality (expo deceleration). */
-export const ARRIVE_EASE = "expo.out";
-/** Scroll / scrub continuity — linear relationship to scroll. */
-export const SCRUB_EASE = "none";
-export const LUXURY_EASE = "power2.out";
-export const LUXURY_DURATION = 1;
-
-export function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-export function isMobileViewport(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(max-width: 767px)").matches;
-}
-
-/** Delay hero intro until the preloader has cleared on first visit. */
-export function heroIntroDelay(): number {
-  if (typeof window === "undefined") return 0.15;
-  if (prefersReducedMotion()) return 0;
-  const seen = sessionStorage.getItem("letoile-preloader") === "1";
-  /* Keep in sync with Preloader PRELOADER_MS (720) + fade. */
-  return seen ? 0.12 : 0.78;
-}
+export {
+  ARRIVE_EASE,
+  SCRUB_EASE,
+  LUXURY_EASE,
+  LUXURY_DURATION,
+  prefersReducedMotion,
+  isMobileViewport,
+  heroIntroDelay,
+  todayISO,
+} from "@/lib/motion-utils";
 
 /** Standard fade-up reveal for elements entering the viewport. */
 export function revealLines(
@@ -61,13 +54,6 @@ export function revealLines(
           toggleActions: "play none none reverse",
         },
   });
-}
-
-export function todayISO(): string {
-  const d = new Date();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
 }
 
 /**

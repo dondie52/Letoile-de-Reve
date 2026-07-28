@@ -5,7 +5,7 @@ export const BRAND = {
   tagline: "The Star of Dreams",
   pronunciation: "[leh·twah·duh·rev]",
   email: "stay@letoiledereve.com",
-  phoneDisplay: "71 070 488",
+  phoneDisplay: "+267 71 070 488",
   phoneTel: "+26771070488",
   website: "letoiledereve.com",
   location: "Phakalane, Gaborone, Botswana",

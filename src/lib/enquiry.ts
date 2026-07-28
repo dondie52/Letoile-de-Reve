@@ -1,3 +1,5 @@
+import { BRAND } from "@/lib/constants";
+
 type EnquiryValues = {
   name: string;
   contact: string;
@@ -5,8 +7,6 @@ type EnquiryValues = {
   checkOut: string;
   message: string;
 };
-
-const PROPERTY_NAME = "L'étoile de Rêve";
 
 function formatStayDate(iso: string): string {
   const date = new Date(`${iso}T12:00:00`);
@@ -34,7 +34,7 @@ export function buildEnquiryBody(values: EnquiryValues): string {
   const nights = stayNights(values.checkIn, values.checkOut);
 
   const lines = [
-    `Dear ${PROPERTY_NAME} team,`,
+    `Dear ${BRAND.name} team,`,
     "",
     "I would like to enquire about availability for a stay at your luxury apartment in Phakalane.",
     "",
@@ -46,19 +46,15 @@ export function buildEnquiryBody(values: EnquiryValues): string {
     `Check-in: ${formatStayDate(values.checkIn)}`,
     `Check-out: ${formatStayDate(values.checkOut)}`,
     `Duration: ${nightLabel(nights)}`,
-  ];
-
-  if (message) {
-    lines.push("", "Special requests", message);
-  }
-
-  lines.push(
+    "",
+    "Special requests",
+    message || "No special requests",
     "",
     "I look forward to hearing from you.",
     "",
     "Kind regards,",
     name,
-  );
+  ];
 
   return lines.join("\n");
 }

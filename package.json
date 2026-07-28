@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:pages": "next build",
+    "build": "next build && cp serve.json out/serve.json",
+    "build:pages": "next build && cp serve.json out/serve.json",
     "start": "npx --yes serve@14 out -l tcp://0.0.0.0:3000",
     "serve:static": "npx --yes serve@14 out -l tcp://0.0.0.0:3000",
     "lint": "eslint"

@@ -325,18 +325,17 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Message
+                  Special requests
                 </label>
                 <p id="message-hint" className="field-hint">
-                  Optional — share any special requests or details about your
-                  stay
+                  Optional
                 </p>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="input-field input-textarea resize-y"
-                  placeholder="Tell us about your stay"
+                  placeholder="Any special requests?"
                   value={values.message}
                   aria-required={false}
                   aria-describedby="message-hint"

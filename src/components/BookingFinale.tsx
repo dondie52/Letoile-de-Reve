@@ -44,7 +44,6 @@ function validate(values: FormState): FormErrors {
   ) {
     errors.checkOut = "Check-out must be after check-in.";
   }
-  if (!values.message.trim()) errors.message = "Please add a short message.";
   return errors;
 }
 
@@ -83,7 +82,7 @@ export function BookingFinale() {
       `Check-in: ${values.checkIn}`,
       `Check-out: ${values.checkOut}`,
       "",
-      values.message,
+      values.message.trim(),
     ].join("\n");
 
     if (method === "whatsapp") {
@@ -333,14 +332,14 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Message
+                  Any Special requests?
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="input-field resize-y"
-                  placeholder="Tell us about your stay"
+                  placeholder="Any Special requests?"
                   value={values.message}
                   aria-invalid={!!errors.message}
                   aria-describedby={errors.message ? "message-error" : undefined}

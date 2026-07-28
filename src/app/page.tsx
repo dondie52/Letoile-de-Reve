@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { Preloader } from "@/components/Preloader";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
@@ -67,6 +68,7 @@ export default function Home() {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
+      <Preloader />
       <Navigation />
       <main id="main-content">
         <Hero />

@@ -62,7 +62,11 @@ export const metadata: Metadata = {
     images: [ogImage],
   },
   icons: {
-    icon: [{ url: withBase("/icon-32.png"), sizes: "32x32", type: "image/png" }],
+    icon: [
+      { url: withBase("/icon-32.png"), sizes: "32x32", type: "image/png" },
+      { url: withBase("/icon-48.png"), sizes: "48x48", type: "image/png" },
+      { url: withBase("/icon-192.png"), sizes: "192x192", type: "image/png" },
+    ],
     apple: [{ url: withBase("/apple-touch-icon.png"), sizes: "180x180" }],
     shortcut: withBase("/favicon.ico"),
   },
@@ -113,9 +117,15 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href={withBase("/assets/images/logo-nav.webp")}
+          href={withBase("/assets/images/logo-full.webp")}
           type="image/webp"
           fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href={withBase("/assets/images/logo-nav.webp")}
+          type="image/webp"
         />
         <link
           rel="preload"

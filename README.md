@@ -49,5 +49,5 @@ If videos are missing, the site falls back to apartment photography automaticall
 ## Contact
 
 - Email: stay@letoiledereve.com
-- Phone: 71 813 137
-- WhatsApp: +267 71 813 137
+- Phone: 71 070 488
+- WhatsApp: +267 71 070 488

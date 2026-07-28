@@ -91,7 +91,7 @@ const jsonLd = {
     "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
   url: siteUrl,
   email: "stay@letoiledereve.com",
-  telephone: "+26771813137",
+  telephone: "+26771070488",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Phakalane",

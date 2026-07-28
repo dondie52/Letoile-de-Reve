@@ -87,7 +87,7 @@ export function BookingFinale() {
     ].join("\n");
 
     if (method === "whatsapp") {
-      const url = `https://wa.me/26771813137?text=${encodeURIComponent(
+      const url = `https://wa.me/26771070488?text=${encodeURIComponent(
         `Hello, I would like to enquire about staying at L’étoile de Rêve.\n\n${body}`,
       )}`;
       window.open(url, "_blank", "noopener,noreferrer");

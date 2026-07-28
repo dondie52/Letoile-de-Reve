@@ -37,7 +37,7 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 - Pronunciation: [leh·twah·duh·rev]
 - Palette: deep forest green, near-black tinted green, champagne gold, warm ivory
 - Typography: editorial serif display + clean supporting sans
-- Contact: stay@letoiledereve.com · 71 813 137 · WhatsApp +267 71 813 137
+- Contact: stay@letoiledereve.com · 71 070 488 · WhatsApp +267 71 070 488
 
 ## Evidence on Hand
 

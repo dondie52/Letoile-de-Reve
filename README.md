@@ -31,8 +31,7 @@ npm start
 npm run build:pages
 ```
 
-This builds with `basePath` `/Letoile-de-Reve` for
-`https://dondie52.github.io/Letoile-de-Reve/`.
+This builds for the custom domain `https://letoiledereve.com/`.
 
 ## Assets
 

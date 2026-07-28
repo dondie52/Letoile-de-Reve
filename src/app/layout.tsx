@@ -117,7 +117,7 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href={withBase("/assets/images/logo-mark.webp")}
+          href={withBase("/assets/images/logo-full.webp")}
           type="image/webp"
           fetchPriority="high"
         />

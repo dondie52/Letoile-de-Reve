@@ -35,7 +35,7 @@ export function Location() {
     <section
       id="location"
       ref={sectionRef}
-      className="relative bg-green"
+      className="relative surface-canopy"
       aria-labelledby="location-heading"
     >
       <div className="grid lg:grid-cols-2">

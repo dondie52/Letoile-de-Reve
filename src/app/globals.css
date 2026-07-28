@@ -2,11 +2,16 @@
 
 :root {
   --forest: #06150e;
-  --green: #0b2117;
+  --green: #143024;
+  --canopy: #1a3829;
   --gold: #c79a49;
   --champagne: #d4b56a;
   --gold-soft: rgba(199, 154, 73, 0.35);
   --ivory: #f4efe5;
+  --dawn: #f3eee4;
+  --dawn-deep: #e8e0d2;
+  --ink: #0c1c14;
+  --ink-soft: #3a4a40;
   --stone: #b9b1a4;
   --danger: #d4786a;
   --forest-soft: rgba(6, 21, 14, 0.72);
@@ -28,9 +33,12 @@
 @theme inline {
   --color-forest: var(--forest);
   --color-green: var(--green);
+  --color-canopy: var(--canopy);
   --color-gold: var(--gold);
   --color-champagne: var(--champagne);
   --color-ivory: var(--ivory);
+  --color-dawn: var(--dawn);
+  --color-ink: var(--ink);
   --color-stone: var(--stone);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -185,6 +193,73 @@ section[id],
     radial-gradient(1px 1px at 55% 45%, rgba(244, 239, 229, 0.25), transparent),
     radial-gradient(1px 1px at 33% 12%, rgba(199, 154, 73, 0.3), transparent),
     radial-gradient(1px 1px at 90% 88%, rgba(244, 239, 229, 0.25), transparent);
+}
+
+/* Page rhythm — deep forest / lifted canopy / warm dawn ivory */
+.surface-deep {
+  background-color: var(--forest);
+  background-image: radial-gradient(
+    ellipse 90% 55% at 80% -10%,
+    color-mix(in srgb, var(--gold) 7%, transparent),
+    transparent 58%
+  );
+}
+
+.surface-canopy {
+  background-color: var(--green);
+  background-image:
+    radial-gradient(
+      ellipse 70% 50% at 0% 0%,
+      color-mix(in srgb, var(--champagne) 8%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--canopy) 70%, var(--green)) 0%,
+      var(--green) 48%,
+      color-mix(in srgb, var(--forest) 35%, var(--green)) 100%
+    );
+}
+
+.surface-dawn {
+  background-color: var(--dawn);
+  background-image:
+    radial-gradient(
+      ellipse 65% 45% at 100% 0%,
+      color-mix(in srgb, var(--gold) 14%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--dawn) 0%, var(--dawn-deep) 100%);
+  color: var(--ink);
+}
+
+.surface-dawn .heading-xl,
+.surface-dawn .heading-lg,
+.surface-dawn .heading-md,
+.surface-dawn .title-sm {
+  color: var(--ink);
+}
+
+.surface-dawn .body-lg {
+  color: color-mix(in srgb, var(--ink) 78%, var(--ink-soft));
+}
+
+.surface-dawn .lede {
+  color: color-mix(in srgb, var(--gold) 72%, #6b4e16);
+}
+
+.surface-dawn .meta {
+  color: color-mix(in srgb, var(--ink-soft) 70%, var(--gold));
+}
+
+.surface-dawn .btn-secondary {
+  border-color: color-mix(in srgb, var(--gold) 55%, var(--ink));
+  color: var(--ink);
+}
+
+.surface-dawn .btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--ink);
 }
 
 .section-pad {
@@ -765,6 +840,13 @@ input[type="date"].input-field {
 
 .booking-panel {
   border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      color-mix(in srgb, var(--gold) 10%, transparent),
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--canopy) 55%, var(--forest));
   box-shadow:
     inset 0 0 60px color-mix(in srgb, var(--gold) 6%, transparent),
     0 0 80px color-mix(in srgb, var(--gold) 5%, transparent);

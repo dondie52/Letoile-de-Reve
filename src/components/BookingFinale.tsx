@@ -106,7 +106,7 @@ export function BookingFinale() {
     <section
       id="book"
       ref={sectionRef}
-      className="relative overflow-hidden bg-forest py-24 sm:py-32"
+      className="relative overflow-hidden surface-deep py-24 sm:py-32"
       aria-labelledby="book-heading"
     >
       <div

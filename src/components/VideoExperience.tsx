@@ -128,7 +128,7 @@ export function VideoExperience() {
     <section
       id="experience"
       ref={sectionRef}
-      className="relative overflow-hidden bg-green py-24 sm:py-32"
+      className="relative overflow-hidden surface-canopy py-24 sm:py-32"
       aria-labelledby="experience-heading"
     >
       <div className="section-pad mx-auto grid max-w-[1400px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">

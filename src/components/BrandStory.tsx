@@ -100,7 +100,7 @@ export function BrandStory() {
     <section
       id="story"
       ref={sectionRef}
-      className="relative overflow-hidden bg-green py-28 sm:py-36"
+      className="relative overflow-hidden surface-canopy py-28 sm:py-36"
       aria-labelledby="story-heading"
     >
       <div

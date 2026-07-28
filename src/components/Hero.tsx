@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -84,8 +83,9 @@ export function Hero() {
         return;
       }
 
-      /* Dawn under the stars — veil clears, type unveils, cue breathes */
-      gsap.set(media, { scale: 1.1, filter: "blur(10px)" });
+      /* Dawn under the stars — veil clears, type unveils, cue breathes.
+         Avoid filter:blur on the media layer — it delays LCP paint. */
+      gsap.set(media, { scale: 1.08 });
       gsap.set(veil, { opacity: 1 });
       gsap.set(lines, {
         opacity: 0,
@@ -100,7 +100,6 @@ export function Hero() {
         delay: heroIntroDelay(),
         defaults: { ease: ARRIVE_EASE },
         onComplete: () => {
-          gsap.set(media, { clearProps: "filter" });
           gsap.set(lines, { clearProps: "clipPath,filter" });
           media.classList.remove("is-animating");
         },
@@ -113,7 +112,6 @@ export function Hero() {
           media,
           {
             scale: 1.04,
-            filter: "blur(0px)",
             duration: 1.35,
             onComplete: () => media.classList.remove("is-animating"),
           },
@@ -244,14 +242,20 @@ export function Hero() {
           </video>
         ) : (
           <div ref={photoRef} className="absolute inset-[-6%] will-change-transform">
-            <Image
-              src={ASSETS.livingRoom}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
+            <picture>
+              <source
+                media="(max-width: 767px)"
+                srcSet={ASSETS.livingRoomSm}
+                type="image/webp"
+              />
+              <img
+                src={ASSETS.livingRoom}
+                alt=""
+                fetchPriority="high"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </picture>
           </div>
         )}
         <div

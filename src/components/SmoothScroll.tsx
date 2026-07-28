@@ -1,11 +1,6 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import Lenis from "lenis";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -22,29 +17,49 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       return;
     }
 
-    const lenis = new Lenis({
-      duration: 1.15,
-      smoothWheel: true,
-      touchMultiplier: 1.1,
-      allowNestedScroll: true,
-    });
+    let destroyed = false;
+    let cleanup: (() => void) | undefined;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    void (async () => {
+      const [{ default: Lenis }, { gsap }, { ScrollTrigger }] = await Promise.all([
+        import("lenis"),
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
 
-    const ticker = (time: number) => {
-      lenis.raf(time * 1000);
-    };
+      if (destroyed) return;
 
-    gsap.ticker.add(ticker);
-    gsap.ticker.lagSmoothing(0);
+      gsap.registerPlugin(ScrollTrigger);
 
-    const onResize = () => ScrollTrigger.refresh();
-    window.addEventListener("resize", onResize);
+      const lenis = new Lenis({
+        duration: 1.15,
+        smoothWheel: true,
+        touchMultiplier: 1.1,
+        allowNestedScroll: true,
+      });
+
+      lenis.on("scroll", ScrollTrigger.update);
+
+      const ticker = (time: number) => {
+        lenis.raf(time * 1000);
+      };
+
+      gsap.ticker.add(ticker);
+      gsap.ticker.lagSmoothing(0);
+
+      const onResize = () => ScrollTrigger.refresh();
+      window.addEventListener("resize", onResize);
+
+      cleanup = () => {
+        window.removeEventListener("resize", onResize);
+        gsap.ticker.remove(ticker);
+        lenis.destroy();
+      };
+    })();
 
     return () => {
-      window.removeEventListener("resize", onResize);
-      gsap.ticker.remove(ticker);
-      lenis.destroy();
+      destroyed = true;
+      cleanup?.();
     };
   }, []);
 

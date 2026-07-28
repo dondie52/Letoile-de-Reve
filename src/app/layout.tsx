@@ -9,6 +9,7 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+  preload: true,
 });
 
 const manrope = Manrope({
@@ -16,6 +17,7 @@ const manrope = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
+  preload: true,
 });
 
 const siteUrl = "https://letoiledereve.com";
@@ -107,6 +109,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href={withBase("/assets/images/logo-nav.webp")}
+          type="image/webp"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href={withBase("/assets/images/living-room-sm.webp")}
+          type="image/webp"
+          media="(max-width: 767px)"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href={withBase("/assets/images/living-room.webp")}
+          type="image/webp"
+          media="(min-width: 768px)"
+        />
+      </head>
       <body className="font-body antialiased">
         <script
           type="application/ld+json"

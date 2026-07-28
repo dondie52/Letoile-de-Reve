@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -61,14 +60,20 @@ export function Location() {
               ref={kenBurnsRef}
               className="absolute inset-[-5%] will-change-transform"
             >
-              <Image
-                src={ASSETS.entranceMat}
-                alt="Entrance at L’étoile de Rêve featuring branded welcome mat"
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                loading="lazy"
-                className="object-cover object-[50%_40%]"
-              />
+              <picture>
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={ASSETS.entranceMatSm}
+                  type="image/webp"
+                />
+                <img
+                  src={ASSETS.entranceMat}
+                  alt="Entrance at L’étoile de Rêve featuring branded welcome mat"
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover object-[50%_40%]"
+                />
+              </picture>
             </div>
           </div>
           <div

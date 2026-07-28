@@ -19,10 +19,11 @@ export function isMobileViewport(): boolean {
 
 /** Delay hero intro until the preloader has cleared on first visit. */
 export function heroIntroDelay(): number {
-  if (typeof window === "undefined") return 0.2;
+  if (typeof window === "undefined") return 0.15;
   if (prefersReducedMotion()) return 0;
   const seen = sessionStorage.getItem("letoile-preloader") === "1";
-  return seen ? 0.18 : 1.45;
+  /* Keep in sync with Preloader PRELOADER_MS (720) + fade. */
+  return seen ? 0.12 : 0.78;
 }
 
 /** Standard fade-up reveal for elements entering the viewport. */

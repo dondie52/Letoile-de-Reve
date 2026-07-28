@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ASSETS } from "@/lib/constants";
 
+/** First-visit brand beat — keep short so Speed Index / LCP stay healthy. */
+const PRELOADER_MS = 720;
+
 export function Preloader() {
   const [visible, setVisible] = useState(true);
   const [animate, setAnimate] = useState(false);
@@ -24,7 +27,7 @@ export function Preloader() {
       hideTimer = window.setTimeout(() => {
         setVisible(false);
         sessionStorage.setItem("letoile-preloader", "1");
-      }, 1400);
+      }, PRELOADER_MS);
     });
 
     return () => {
@@ -43,17 +46,17 @@ export function Preloader() {
       aria-label="Loading L’étoile de Rêve"
     >
       <div
-        className={`transition-all duration-700 ${
+        className={`transition-all duration-500 ${
           animate ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >
+        {/* Same asset as nav LCP — no extra priority fetch */}
         <Image
           src={ASSETS.logoNav}
           alt=""
-          width={240}
-          height={62}
-          priority
-          className="h-auto w-[200px] object-contain sm:w-[240px]"
+          width={205}
+          height={52}
+          className="h-auto w-[180px] object-contain sm:w-[205px]"
         />
       </div>
     </div>

@@ -130,8 +130,8 @@ export function Navigation() {
             <Image
               src={ASSETS.logoNav}
               alt="L’étoile de Rêve Luxury Apartment"
-              width={180}
-              height={46}
+              width={205}
+              height={52}
               priority
               fetchPriority="high"
               className="h-10 w-auto max-w-none object-contain object-left sm:h-[52px]"

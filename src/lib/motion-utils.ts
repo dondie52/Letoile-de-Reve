@@ -15,11 +15,13 @@ export function isMobileViewport(): boolean {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-/** Short beat before hero intro — no blocking preloader. */
+/** Delay hero intro until the preloader has cleared on first visit. */
 export function heroIntroDelay(): number {
-  if (typeof window === "undefined") return 0.08;
+  if (typeof window === "undefined") return 0.15;
   if (prefersReducedMotion()) return 0;
-  return 0.08;
+  const seen = sessionStorage.getItem("letoile-preloader") === "1";
+  /* Keep in sync with Preloader PRELOADER_MS (900) + fade. */
+  return seen ? 0.1 : 0.95;
 }
 
 export function todayISO(): string {

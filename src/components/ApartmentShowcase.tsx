@@ -234,6 +234,44 @@ export function ApartmentShowcase() {
     };
   }, [startKenBurns]);
 
+  /* Mobile: Ken Burns on the active room photo */
+  useEffect(() => {
+    if (!isMobileViewport() || prefersReducedMotion()) return;
+    const track = mobileTrackRef.current;
+    if (!track) return;
+
+    kenBurnsRef.current?.kill();
+    kenBurnsRef.current = null;
+
+    const photo = track.querySelector<HTMLElement>(
+      `[data-room-slide][data-index="${active}"] [data-ken-burns-mobile]`,
+    );
+    if (!photo) return;
+
+    const directions = [
+      { xPercent: -2.2, yPercent: 1.4 },
+      { xPercent: 2, yPercent: -1.2 },
+      { xPercent: -1.5, yPercent: -1.8 },
+      { xPercent: 1.6, yPercent: 2 },
+    ] as const;
+    const dir = directions[active % directions.length];
+
+    const frame = requestAnimationFrame(() => {
+      kenBurnsRef.current = kenBurns(photo, {
+        scaleFrom: 1.02,
+        scaleTo: 1.1,
+        ...dir,
+        duration: 14,
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      kenBurnsRef.current?.kill();
+      kenBurnsRef.current = null;
+    };
+  }, [active]);
+
   const syncMobileTrack = useCallback((index: number, instant = false) => {
     const track = mobileTrackRef.current;
     if (!track) return;
@@ -589,8 +627,9 @@ export function ApartmentShowcase() {
 
                   <div className="apartment-mobile-media relative w-full overflow-hidden border border-gold/20">
                     <div
-                      className={`absolute inset-[-5%] transition-transform duration-[1.2s] ease-out ${
-                        isActive ? "scale-100" : "scale-[1.06]"
+                      data-ken-burns-mobile
+                      className={`absolute inset-[-6%] will-change-transform transition-opacity duration-500 ease-out ${
+                        isActive ? "opacity-100" : "opacity-90"
                       }`}
                     >
                       <Image

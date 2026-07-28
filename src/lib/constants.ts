@@ -31,6 +31,7 @@ export const FACEBOOK_REELS = [
 export const NAV_LINKS = [
   { href: "#story", label: "Story", id: "story" },
   { href: "#apartment", label: "Apartment", id: "apartment" },
+  { href: "#stay", label: "The Stay", id: "stay" },
   { href: "#amenities", label: "Amenities", id: "amenities" },
   { href: "#location", label: "Location", id: "location" },
 ] as const;
@@ -94,6 +95,34 @@ export const AMENITIES = [
   {
     title: "Comfort, style and privacy",
     description: "Thoughtful interiors designed for a quiet, elevated stay.",
+  },
+] as const;
+
+/** Sensory moments of a stay — narrative, not a feature list. */
+export const STAY_MOMENTS = [
+  {
+    time: "Arrival",
+    title: "The door opens on a home, not a room.",
+    description:
+      "Warm light, made beds and space to put everything down. Nothing to set up, nothing to ask for.",
+  },
+  {
+    time: "Daytime",
+    title: "Work, cook, or do very little.",
+    description:
+      "Fast Wi-Fi and a full kitchen when the day needs structure. Quiet rooms when it does not.",
+  },
+  {
+    time: "Evening",
+    title: "The city goes quiet from here.",
+    description:
+      "Secure grounds, soft lamplight and a living room made for slow evenings and long conversations.",
+  },
+  {
+    time: "Morning",
+    title: "Wake to Phakalane light.",
+    description:
+      "Coffee in your own kitchen, then a calm start with everything you need already close by.",
   },
 ] as const;
 

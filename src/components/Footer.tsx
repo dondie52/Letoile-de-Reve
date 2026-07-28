@@ -55,6 +55,9 @@ export function Footer() {
             <a href="#story" className="tap-link transition hover:text-gold">
               Story
             </a>
+            <a href="#stay" className="tap-link transition hover:text-gold">
+              The Stay
+            </a>
             <a href="#apartment" className="tap-link transition hover:text-gold">
               Apartment
             </a>

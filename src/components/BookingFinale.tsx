@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { todayISO } from "@/lib/motion";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 type FormState = {
   name: string;
@@ -56,12 +57,15 @@ function nextDayISO(iso: string): string {
 }
 
 export function BookingFinale() {
+  const sectionRef = useRef<HTMLElement>(null);
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<FormErrors>({});
   const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
   const [sentVia, setSentVia] = useState<"email" | "whatsapp" | null>(null);
   const minDate = useMemo(() => todayISO(), []);
   const checkOutMin = values.checkIn ? nextDayISO(values.checkIn) : minDate;
+
+  useScrollReveal(sectionRef);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -101,6 +105,7 @@ export function BookingFinale() {
   return (
     <section
       id="book"
+      ref={sectionRef}
       className="relative overflow-hidden bg-forest py-24 sm:py-32"
       aria-labelledby="book-heading"
     >
@@ -119,11 +124,17 @@ export function BookingFinale() {
           <div className="mb-12 text-center">
             <h2
               id="book-heading"
+              data-reveal
+              data-reveal-group="book-intro"
               className="heading-lg mx-auto max-w-[16ch] text-ivory"
             >
               Make {BRAND.name} your next stay.
             </h2>
-            <p className="body-lg mx-auto mt-5 max-w-xl text-pretty">
+            <p
+              data-reveal
+              data-reveal-group="book-intro"
+              className="body-lg mx-auto mt-5 max-w-xl text-pretty"
+            >
               Share your dates and we will respond with availability for your
               dream stay.
             </p>

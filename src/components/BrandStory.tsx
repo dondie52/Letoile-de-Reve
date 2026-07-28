@@ -5,7 +5,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, BRAND } from "@/lib/constants";
-import { prefersReducedMotion } from "@/lib/motion";
+import { isMobileViewport, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,21 +28,26 @@ export function BrandStory() {
         return;
       }
 
-      gsap.set(lines, { opacity: 0, y: 32 });
+      const mobile = isMobileViewport();
+
+      gsap.set(lines, { opacity: 0, y: mobile ? 20 : 32 });
       gsap.set(logoWrap, { opacity: 0, scale: 0.96 });
 
+      /* Phones get a settled reveal; scrubbing type reads as lag on touch */
       gsap.to(lines, {
         opacity: 1,
         y: 0,
-        stagger: 0.12,
-        duration: 1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 70%",
-          end: "top 30%",
-          scrub: true,
-        },
+        stagger: mobile ? 0.08 : 0.12,
+        duration: mobile ? 0.75 : 1,
+        ease: mobile ? "expo.out" : "power2.out",
+        scrollTrigger: mobile
+          ? { trigger: section, start: "top 85%", once: true }
+          : {
+              trigger: section,
+              start: "top 70%",
+              end: "top 30%",
+              scrub: true,
+            },
       });
 
       gsap.to(logoWrap, {

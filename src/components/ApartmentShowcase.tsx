@@ -7,6 +7,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ROOMS } from "@/lib/constants";
 import { isMobileViewport, kenBurns, prefersReducedMotion } from "@/lib/motion";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,6 +34,8 @@ export function ApartmentShowcase() {
   const [layers, setLayers] = useState<Layer[]>([
     { index: 0, role: "current" },
   ]);
+
+  useScrollReveal(sectionRef);
 
   const setActiveSafe = useCallback((index: number) => {
     activeRef.current = index;
@@ -507,10 +510,19 @@ export function ApartmentShowcase() {
         <div className="section-pad mx-auto max-w-[1400px]">
           <h2
             id="apartment-heading-mobile"
-            className="heading-md mb-[clamp(1.5rem,5vw,2.5rem)] text-ivory"
+            data-reveal
+            data-reveal-group="apartment-intro"
+            className="heading-md mb-3 text-ivory"
           >
             Spaces designed for quiet luxury.
           </h2>
+          <p
+            data-reveal
+            data-reveal-group="apartment-intro"
+            className="meta mb-[clamp(1.25rem,4vw,2rem)] text-stone"
+          >
+            Swipe through the rooms
+          </p>
         </div>
 
         <div

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { ASSETS, BRAND, NAV_LINKS } from "@/lib/constants";
+import { BrandLockup } from "@/components/BrandLockup";
+import { BRAND, NAV_LINKS } from "@/lib/constants";
 
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -93,6 +93,12 @@ export function Navigation() {
   }, [open]);
 
   useEffect(() => {
+    const compact = scrolled || open;
+    document.documentElement.classList.toggle("nav-is-compact", compact);
+    return () => document.documentElement.classList.remove("nav-is-compact");
+  }, [scrolled, open]);
+
+  useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -106,39 +112,27 @@ export function Navigation() {
     { href: "#book", label: "Book Now", id: "book" },
   ] as const;
 
-  const headerH = scrolled ? 76 : 88;
-
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-500 ${
+        className={`fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-500 ${
           scrolled || open ? "nav-blur nav-compact" : "bg-transparent"
         }`}
-        style={{ ["--nav-h" as string]: `${headerH}px` }}
       >
         <nav
-          className="section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8"
+          className="brand-nav section-pad mx-auto grid max-w-[1400px] grid-cols-[1fr_auto] items-start gap-3 lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-8"
           aria-label="Primary"
-          style={{ height: headerH }}
         >
           <a
             href="#top"
-            className="tap-target relative z-10 -ml-1 shrink-0 justify-self-start px-1.5"
-            aria-label={`${BRAND.name} home`}
+            className="brand-lockup-link tap-target relative z-10 shrink-0 justify-self-start"
+            aria-label={`${BRAND.name} home — ${BRAND.tagline}`}
             onClick={() => setOpen(false)}
           >
-            <Image
-              src={ASSETS.logoNav}
-              alt="L’étoile de Rêve Luxury Apartment"
-              width={205}
-              height={52}
-              priority
-              fetchPriority="high"
-              className="h-10 w-auto max-w-none object-contain object-left sm:h-[52px]"
-            />
+            <BrandLockup compact={scrolled || open} priority />
           </a>
 
-          <ul className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
+          <ul className="hidden min-w-0 items-center justify-center gap-1 self-center lg:flex">
             {NAV_LINKS.map((link, i) => (
               <li key={link.id} className="flex items-center">
                 {i > 0 ? (
@@ -161,7 +155,7 @@ export function Navigation() {
             ))}
           </ul>
 
-          <div className="relative z-10 flex items-center justify-self-end">
+          <div className="relative z-10 flex items-center justify-self-end self-start pt-1 lg:self-center lg:pt-0">
             <div className="max-lg:hidden">
               <a href="#book" className="btn btn-primary">
                 Book Now

@@ -184,6 +184,7 @@ section[id],
 }
 
 .star-field {
+  overflow: hidden;
   background-image:
     radial-gradient(1px 1px at 20% 30%, rgba(244, 239, 229, 0.55), transparent),
     radial-gradient(1px 1px at 70% 20%, rgba(199, 154, 73, 0.45), transparent),
@@ -193,6 +194,152 @@ section[id],
     radial-gradient(1px 1px at 55% 45%, rgba(244, 239, 229, 0.25), transparent),
     radial-gradient(1px 1px at 33% 12%, rgba(199, 154, 73, 0.3), transparent),
     radial-gradient(1px 1px at 90% 88%, rgba(244, 239, 229, 0.25), transparent);
+}
+
+.star-field::before,
+.star-field::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+}
+
+.star-field::before {
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 22%, rgba(244, 239, 229, 0.7), transparent),
+    radial-gradient(1px 1px at 48% 16%, rgba(199, 154, 73, 0.55), transparent),
+    radial-gradient(1px 1px at 78% 38%, rgba(244, 239, 229, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 62% 72%, rgba(199, 154, 73, 0.5), transparent),
+    radial-gradient(1px 1px at 28% 64%, rgba(244, 239, 229, 0.4), transparent),
+    radial-gradient(1px 1px at 88% 14%, rgba(244, 239, 229, 0.5), transparent);
+}
+
+.star-field::after {
+  background-image:
+    radial-gradient(1px 1px at 18% 48%, rgba(199, 154, 73, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 54% 58%, rgba(244, 239, 229, 0.55), transparent),
+    radial-gradient(1px 1px at 36% 86%, rgba(199, 154, 73, 0.4), transparent),
+    radial-gradient(1px 1px at 72% 82%, rgba(244, 239, 229, 0.35), transparent),
+    radial-gradient(1px 1px at 94% 46%, rgba(199, 154, 73, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 8% 78%, rgba(244, 239, 229, 0.4), transparent);
+}
+
+.star-twinkle {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--champagne) 55%, transparent);
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .star-field {
+    animation: star-field-breathe 9s ease-in-out infinite;
+  }
+
+  .star-field::before {
+    animation:
+      star-twinkle-a 4.8s ease-in-out infinite,
+      star-drift-a 28s linear infinite;
+  }
+
+  .star-field::after {
+    animation:
+      star-twinkle-b 6.2s ease-in-out infinite,
+      star-drift-b 36s linear infinite;
+    animation-delay: -2.4s, 0s;
+  }
+
+  .star-twinkle {
+    animation: star-point-twinkle 3.6s ease-in-out infinite;
+  }
+
+  .star-twinkle:nth-child(2) {
+    animation-duration: 4.4s;
+    animation-delay: -1.1s;
+  }
+
+  .star-twinkle:nth-child(3) {
+    animation-duration: 5.1s;
+    animation-delay: -2.2s;
+  }
+
+  .star-twinkle:nth-child(4) {
+    animation-duration: 3.9s;
+    animation-delay: -0.7s;
+  }
+
+  .star-twinkle:nth-child(5) {
+    animation-duration: 4.8s;
+    animation-delay: -1.8s;
+  }
+}
+
+@keyframes star-field-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes star-twinkle-a {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  40% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes star-twinkle-b {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  35% {
+    opacity: 0.2;
+  }
+  65% {
+    opacity: 1;
+  }
+}
+
+@keyframes star-drift-a {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(1.6%, -2.2%, 0);
+  }
+}
+
+@keyframes star-drift-b {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-1.8%, 1.4%, 0);
+  }
+}
+
+@keyframes star-point-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  70% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
 }
 
 /* Page rhythm — deep forest / lifted canopy / warm dawn ivory */

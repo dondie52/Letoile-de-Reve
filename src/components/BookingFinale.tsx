@@ -113,6 +113,26 @@ export function BookingFinale() {
         className="pointer-events-none absolute inset-0 star-field opacity-70"
         aria-hidden="true"
       />
+      <span
+        className="star-twinkle pointer-events-none absolute left-[14%] top-[16%] h-1 w-1 rounded-full bg-gold/65"
+        aria-hidden="true"
+      />
+      <span
+        className="star-twinkle pointer-events-none absolute right-[22%] top-[24%] h-1.5 w-1.5 rounded-full bg-ivory/40"
+        aria-hidden="true"
+      />
+      <span
+        className="star-twinkle pointer-events-none absolute left-[38%] bottom-[18%] h-1 w-1 rounded-full bg-champagne/50"
+        aria-hidden="true"
+      />
+      <span
+        className="star-twinkle pointer-events-none absolute right-[12%] bottom-[28%] h-1 w-1 rounded-full bg-gold/45"
+        aria-hidden="true"
+      />
+      <span
+        className="star-twinkle pointer-events-none absolute left-[68%] top-[12%] h-1.5 w-1.5 rounded-full bg-ivory/35"
+        aria-hidden="true"
+      />
 
       <div className="section-pad relative z-10 mx-auto max-w-[1100px]">
         <div className="booking-panel relative px-6 py-12 sm:px-12 sm:py-16">

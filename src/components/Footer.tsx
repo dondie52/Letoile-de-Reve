@@ -71,8 +71,12 @@ export function Footer() {
               Book
             </a>
           </nav>
-          <p className="caption">
+          <p className="caption sm:text-right">
             © {year} {BRAND.name}. All rights reserved.
+          </p>
+          <p className="caption sm:text-right">
+            Designed by{" "}
+            <span className="text-stone transition hover:text-gold">Tech Lab</span>
           </p>
         </div>
       </div>

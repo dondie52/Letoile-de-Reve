@@ -6,7 +6,6 @@ import { ASSETS } from "@/lib/constants";
 import { TOUR_VIDEO } from "@/lib/media";
 import { prefersReducedMotion } from "@/lib/motion-utils";
 
-const EYEBROW = "LUXURY APARTMENT · PHAKALANE";
 const HERO_VIDEO = TOUR_VIDEO.hero;
 
 function whenIdle(cb: () => void, timeout = 2500) {
@@ -236,10 +235,6 @@ export function Hero() {
         ref={contentRef}
         className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end"
       >
-        <p data-hero-line className="eyebrow hero-eyebrow mb-4">
-          {EYEBROW}
-        </p>
-
         <h1
           data-hero-line
           className="heading-xl mb-5 max-w-[14ch] text-pretty text-ivory sm:mb-6 sm:max-w-[16ch] lg:max-w-[18ch]"

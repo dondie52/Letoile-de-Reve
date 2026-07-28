@@ -20,7 +20,6 @@ export function ApartmentShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const mobilePinRef = useRef<HTMLDivElement>(null);
   const mobileTrackRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const activeRef = useRef(0);
@@ -31,6 +30,7 @@ export function ApartmentShowcase() {
   const kenBurnsRef = useRef<gsap.core.Timeline | null>(null);
   const genRef = useRef(0);
   const syncingTrackRef = useRef(false);
+  const roomStepLockRef = useRef(false);
 
   const [active, setActive] = useState(0);
   const [layers, setLayers] = useState<Layer[]>([
@@ -258,50 +258,15 @@ export function ApartmentShowcase() {
     }, 420);
   }, []);
 
+  /* Desktop only — GSAP pin/scrub. Mobile uses native snap (no ScrollTrigger). */
   useEffect(() => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     const progress = progressRef.current;
-    const mobilePin = mobilePinRef.current;
-    if (!section) return;
+    if (!section || !pin || !progress) return;
 
     const reduced = prefersReducedMotion();
-    const mobile = isMobileViewport();
-
-    /* Mobile: pin and advance rooms on vertical scroll */
-    if (mobile) {
-      if (!mobilePin || reduced) return;
-
-      const ctx = gsap.context(() => {
-        const st = ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          end: () => `+=${ROOMS.length * 95}%`,
-          scrub: 0.55,
-          pin: mobilePin,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const idx = Math.min(
-              ROOMS.length - 1,
-              Math.floor(self.progress * ROOMS.length + 0.001),
-            );
-            if (idx !== activeRef.current) {
-              setActiveSafe(idx);
-              syncMobileTrack(idx, true);
-            }
-          },
-        });
-        stRef.current = st;
-      }, section);
-
-      return () => {
-        stRef.current = null;
-        ctx.revert();
-      };
-    }
-
-    if (!pin || !progress) return;
+    if (isMobileViewport()) return;
 
     gsap.set(progress, {
       scaleY: 1 / ROOMS.length,
@@ -344,9 +309,9 @@ export function ApartmentShowcase() {
       stRef.current = null;
       ctx.revert();
     };
-  }, [runDesktopTransition, setActiveSafe, syncMobileTrack]);
+  }, [runDesktopTransition]);
 
-  /* Mobile horizontal snap — fallback when reduced motion / no pin */
+  /* Mobile: native horizontal snap + vertical scroll/wheel steps rooms */
   useEffect(() => {
     const track = mobileTrackRef.current;
     if (!track || !isMobileViewport()) return;
@@ -372,8 +337,42 @@ export function ApartmentShowcase() {
     );
 
     slides.forEach((slide) => observer.observe(slide));
-    return () => observer.disconnect();
-  }, [setActiveSafe]);
+
+    const stepRoom = (delta: number) => {
+      if (roomStepLockRef.current || Math.abs(delta) < 8) return false;
+      const next = Math.min(
+        ROOMS.length - 1,
+        Math.max(0, activeRef.current + (delta > 0 ? 1 : -1)),
+      );
+      if (next === activeRef.current) return false;
+      roomStepLockRef.current = true;
+      setActiveSafe(next);
+      syncMobileTrack(next, prefersReducedMotion());
+      window.setTimeout(() => {
+        roomStepLockRef.current = false;
+      }, 480);
+      return true;
+    };
+
+    /* Trackpads / mouse: vertical wheel over the gallery advances rooms */
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const atStart = activeRef.current === 0 && event.deltaY < 0;
+      const atEnd =
+        activeRef.current === ROOMS.length - 1 && event.deltaY > 0;
+      if (atStart || atEnd) return;
+      if (stepRoom(event.deltaY)) {
+        event.preventDefault();
+      }
+    };
+
+    track.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      observer.disconnect();
+      track.removeEventListener("wheel", onWheel);
+    };
+  }, [setActiveSafe, syncMobileTrack]);
 
   const scrollMobileTo = useCallback(
     (index: number) => {
@@ -386,25 +385,21 @@ export function ApartmentShowcase() {
   const goToRoom = (index: number) => {
     if (index < 0 || index >= ROOMS.length) return;
 
-    const st = stRef.current;
-    const mobile = isMobileViewport();
-
-    if (mobile && (!st || prefersReducedMotion())) {
+    if (isMobileViewport()) {
       scrollMobileTo(index);
       return;
     }
 
-    if (!mobile && prefersReducedMotion()) {
+    if (prefersReducedMotion()) {
       runDesktopTransition(index, true);
       return;
     }
 
+    const st = stRef.current;
     if (!st) {
-      if (mobile) scrollMobileTo(index);
-      else runDesktopTransition(index, false);
+      runDesktopTransition(index, false);
       return;
     }
-
     const progress = (index + 0.45) / ROOMS.length;
     const y = st.start + (st.end - st.start) * progress;
     window.scrollTo({ top: y, behavior: "smooth" });
@@ -551,11 +546,8 @@ export function ApartmentShowcase() {
         </div>
       </div>
 
-      {/* Mobile scroll / snap gallery */}
-      <div
-        ref={mobilePinRef}
-        className="apartment-mobile pt-[clamp(3.5rem,10vw,5rem)] md:hidden"
-      >
+      {/* Mobile native snap gallery (no GSAP pin — touch scroll stays free) */}
+      <div className="apartment-mobile pt-[clamp(3.5rem,10vw,5rem)] md:hidden">
         <div className="section-pad mx-auto max-w-[1400px]">
           <h2
             id="apartment-heading-mobile"
@@ -570,7 +562,7 @@ export function ApartmentShowcase() {
             data-reveal-group="apartment-intro"
             className="meta mb-[clamp(1.25rem,4vw,2rem)] text-stone"
           >
-            Scroll through the rooms
+            Swipe through the rooms
           </p>
         </div>
 

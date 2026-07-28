@@ -16,10 +16,17 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       return;
     }
 
+    /* Lenis wheel smoothing is desktop-only — keep native touch scroll on phones */
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    if (mobile) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.15,
       smoothWheel: true,
       touchMultiplier: 1.1,
+      allowNestedScroll: true,
     });
 
     lenis.on("scroll", ScrollTrigger.update);

@@ -332,14 +332,14 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Special request
+                  Special requests
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="input-field resize-y"
-                  placeholder="Any Special requests?"
+                  placeholder="Any special requests?"
                   value={values.message}
                   aria-invalid={!!errors.message}
                   aria-describedby={errors.message ? "message-error" : undefined}

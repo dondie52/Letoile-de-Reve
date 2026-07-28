@@ -5,13 +5,13 @@ export const BRAND = {
   tagline: "The Star of Dreams",
   pronunciation: "[leh·twah·duh·rev]",
   email: "stay@letoiledereve.com",
-  phoneDisplay: "71 813 137",
-  phoneTel: "+26771813137",
+  phoneDisplay: "71 070 488",
+  phoneTel: "+26771070488",
   website: "letoiledereve.com",
   location: "Phakalane, Gaborone, Botswana",
   mapsQuery: "L’étoile de Rêve Phakalane Gaborone Botswana",
   whatsappUrl:
-    "https://wa.me/26771813137?text=" +
+    "https://wa.me/26771070488?text=" +
     encodeURIComponent(
       "Hello, I would like to enquire about staying at L’étoile de Rêve.",
     ),

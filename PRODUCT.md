@@ -29,7 +29,7 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 - Preserve official brand assets, contact details, dark-green + champagne-gold identity, and written content
 - Do not invent phone numbers, addresses, testimonials, or pricing
 - GitHub Pages requires `basePath` `/Letoile-de-Reve` when `GITHUB_PAGES=true`
-- Header must show one official logo lockup only; eyebrow belongs in the hero
+- Header shows the official vertical brand lockup (star above wordmark, tagline, location subtitle); hero keeps its own eyebrow
 
 ## Brand Commitments
 

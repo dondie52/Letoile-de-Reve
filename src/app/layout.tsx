@@ -125,12 +125,6 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href={withBase("/assets/images/logo-nav.webp")}
-          type="image/webp"
-        />
-        <link
-          rel="preload"
-          as="image"
           href={withBase("/assets/images/living-room-sm.webp")}
           type="image/webp"
           media="(max-width: 767px)"

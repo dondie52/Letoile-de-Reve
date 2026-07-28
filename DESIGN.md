@@ -48,10 +48,15 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 
 ## Header lockup
 
-- Asset: `logo-nav.webp` / `logo-nav.png` (official star + wordmark, no eyebrow)
-- Max height ~48–54px · width auto · `object-fit: contain`
-- No duplicate typed brand name beside the logo
-- Eyebrow `LUXURY APARTMENT · PHAKALANE` lives only in the hero
+- Vertical brand stack in the transparent header over the hero
+- Star mark: `logo-mark.webp` (transparent, ~3.5KB) centered above the wordmark
+- Wordmark: `L’ÉTOILE` / `DE RÊVE` in display serif, all caps, ivory
+- Tagline: `THE STAR OF DREAMS` in gold sans with wide tracking
+- Gold hairline + diamond rule
+- Subtitle: `LUXURY APARTMENT | PHAKALANE` in soft ivory sans
+- Scales up on desktop (`lg+`); compact variant when scrolled / menu open
+- No horizontal `logo-nav` lockup in the header (footer may still use it)
+- Hero eyebrow `LUXURY APARTMENT · PHAKALANE` remains in the hero content
 
 ## Motion
 

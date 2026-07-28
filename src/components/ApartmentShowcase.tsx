@@ -20,6 +20,7 @@ export function ApartmentShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const mobilePinRef = useRef<HTMLDivElement>(null);
   const mobileTrackRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const activeRef = useRef(0);
@@ -29,6 +30,7 @@ export function ApartmentShowcase() {
   const layersRef = useRef<Map<number, HTMLElement>>(new Map());
   const kenBurnsRef = useRef<gsap.core.Timeline | null>(null);
   const genRef = useRef(0);
+  const syncingTrackRef = useRef(false);
 
   const [active, setActive] = useState(0);
   const [layers, setLayers] = useState<Layer[]>([
@@ -232,18 +234,74 @@ export function ApartmentShowcase() {
     };
   }, [startKenBurns]);
 
+  const syncMobileTrack = useCallback((index: number, instant = false) => {
+    const track = mobileTrackRef.current;
+    if (!track) return;
+    const slide = track.querySelector<HTMLElement>(
+      `[data-room-slide][data-index="${index}"]`,
+    );
+    if (!slide) return;
+
+    const left =
+      slide.offsetLeft - (track.clientWidth - slide.clientWidth) / 2;
+    syncingTrackRef.current = true;
+    if (instant || prefersReducedMotion()) {
+      track.scrollLeft = left;
+      requestAnimationFrame(() => {
+        syncingTrackRef.current = false;
+      });
+      return;
+    }
+    track.scrollTo({ left, behavior: "smooth" });
+    window.setTimeout(() => {
+      syncingTrackRef.current = false;
+    }, 420);
+  }, []);
+
   useEffect(() => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     const progress = progressRef.current;
-    if (!section || !pin || !progress) return;
+    const mobilePin = mobilePinRef.current;
+    if (!section) return;
 
     const reduced = prefersReducedMotion();
     const mobile = isMobileViewport();
 
+    /* Mobile: pin and advance rooms on vertical scroll */
     if (mobile) {
-      return;
+      if (!mobilePin || reduced) return;
+
+      const ctx = gsap.context(() => {
+        const st = ScrollTrigger.create({
+          trigger: section,
+          start: "top top",
+          end: () => `+=${ROOMS.length * 95}%`,
+          scrub: 0.55,
+          pin: mobilePin,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const idx = Math.min(
+              ROOMS.length - 1,
+              Math.floor(self.progress * ROOMS.length + 0.001),
+            );
+            if (idx !== activeRef.current) {
+              setActiveSafe(idx);
+              syncMobileTrack(idx, true);
+            }
+          },
+        });
+        stRef.current = st;
+      }, section);
+
+      return () => {
+        stRef.current = null;
+        ctx.revert();
+      };
     }
+
+    if (!pin || !progress) return;
 
     gsap.set(progress, {
       scaleY: 1 / ROOMS.length,
@@ -286,9 +344,9 @@ export function ApartmentShowcase() {
       stRef.current = null;
       ctx.revert();
     };
-  }, [runDesktopTransition]);
+  }, [runDesktopTransition, setActiveSafe, syncMobileTrack]);
 
-  /* Mobile horizontal snap — sync active room from scroll */
+  /* Mobile horizontal snap — fallback when reduced motion / no pin */
   useEffect(() => {
     const track = mobileTrackRef.current;
     if (!track || !isMobileViewport()) return;
@@ -300,6 +358,7 @@ export function ApartmentShowcase() {
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (syncingTrackRef.current) return;
         const best = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -318,47 +377,34 @@ export function ApartmentShowcase() {
 
   const scrollMobileTo = useCallback(
     (index: number) => {
-      const track = mobileTrackRef.current;
-      if (!track) {
-        setActiveSafe(index);
-        return;
-      }
-      const slide = track.querySelector<HTMLElement>(
-        `[data-room-slide][data-index="${index}"]`,
-      );
-      if (!slide) {
-        setActiveSafe(index);
-        return;
-      }
-      const reduced = prefersReducedMotion();
-      slide.scrollIntoView({
-        behavior: reduced ? "auto" : "smooth",
-        inline: "center",
-        block: "nearest",
-      });
       setActiveSafe(index);
+      syncMobileTrack(index, prefersReducedMotion());
     },
-    [setActiveSafe],
+    [setActiveSafe, syncMobileTrack],
   );
 
   const goToRoom = (index: number) => {
     if (index < 0 || index >= ROOMS.length) return;
 
-    if (isMobileViewport()) {
+    const st = stRef.current;
+    const mobile = isMobileViewport();
+
+    if (mobile && (!st || prefersReducedMotion())) {
       scrollMobileTo(index);
       return;
     }
 
-    if (prefersReducedMotion()) {
+    if (!mobile && prefersReducedMotion()) {
       runDesktopTransition(index, true);
       return;
     }
 
-    const st = stRef.current;
     if (!st) {
-      runDesktopTransition(index, false);
+      if (mobile) scrollMobileTo(index);
+      else runDesktopTransition(index, false);
       return;
     }
+
     const progress = (index + 0.45) / ROOMS.length;
     const y = st.start + (st.end - st.start) * progress;
     window.scrollTo({ top: y, behavior: "smooth" });
@@ -505,8 +551,11 @@ export function ApartmentShowcase() {
         </div>
       </div>
 
-      {/* Mobile horizontal snap gallery */}
-      <div className="apartment-mobile pt-[clamp(3.5rem,10vw,5rem)] md:hidden">
+      {/* Mobile scroll / snap gallery */}
+      <div
+        ref={mobilePinRef}
+        className="apartment-mobile pt-[clamp(3.5rem,10vw,5rem)] md:hidden"
+      >
         <div className="section-pad mx-auto max-w-[1400px]">
           <h2
             id="apartment-heading-mobile"
@@ -521,13 +570,14 @@ export function ApartmentShowcase() {
             data-reveal-group="apartment-intro"
             className="meta mb-[clamp(1.25rem,4vw,2rem)] text-stone"
           >
-            Swipe through the rooms
+            Scroll through the rooms
           </p>
         </div>
 
         <div
           ref={mobileTrackRef}
           className="apartment-mobile-track"
+          data-lenis-prevent
           aria-label="Apartment rooms gallery"
         >
           {ROOMS.map((r, i) => {

@@ -1,41 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { ASSETS } from "@/lib/constants";
+import { useEffect } from "react";
 
 /** First-visit brand beat — keep concise so Speed Index stays healthy. */
-export const PRELOADER_MS = 900;
+export const PRELOADER_MS = 1100;
+const FADE_MS = 580;
 
+/**
+ * Dismisses the SSR boot preloader (painted in layout for instant first paint).
+ * The overlay itself lives in layout.tsx so it never waits on hydration.
+ */
 export function Preloader() {
-  const [visible, setVisible] = useState(true);
-  const [animate, setAnimate] = useState(false);
-
   useEffect(() => {
-    let hideTimer: number | undefined;
+    const el = document.getElementById("boot-preloader");
+    if (!el) return;
 
-    const frame = window.requestAnimationFrame(() => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const seen = sessionStorage.getItem("letoile-preloader") === "1";
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const seen = sessionStorage.getItem("letoile-preloader") === "1";
 
-      if (reduced || seen) {
-        setVisible(false);
-        return;
-      }
+    if (reduced || seen) {
+      el.remove();
+      document.documentElement.classList.add("preloader-done");
+      return;
+    }
 
-      setAnimate(true);
-      hideTimer = window.setTimeout(() => {
-        setVisible(false);
-        sessionStorage.setItem("letoile-preloader", "1");
-      }, PRELOADER_MS);
-    });
+    let fadeTimer: number | undefined;
+    const hideTimer = window.setTimeout(() => {
+      el.classList.add("is-done");
+      sessionStorage.setItem("letoile-preloader", "1");
+      document.documentElement.classList.add("preloader-done");
+      fadeTimer = window.setTimeout(() => {
+        el.remove();
+      }, FADE_MS);
+    }, PRELOADER_MS);
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      if (hideTimer) window.clearTimeout(hideTimer);
+      window.clearTimeout(hideTimer);
+      if (fadeTimer) window.clearTimeout(fadeTimer);
     };
   }, []);
 
+<<<<<<< HEAD
   if (!visible) return null;
 
   return (
@@ -67,4 +72,7 @@ export function Preloader() {
       </div>
     </div>
   );
+=======
+  return null;
+>>>>>>> 86d29f5 (Fix instant preloader paint and transparent star favicon)
 }

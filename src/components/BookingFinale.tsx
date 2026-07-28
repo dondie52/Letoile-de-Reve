@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
+import { buildEnquiryBody, buildEnquirySubject } from "@/lib/enquiry";
 import { todayISO } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
@@ -48,20 +49,6 @@ function validate(values: FormState): FormErrors {
   return errors;
 }
 
-function buildEnquiryBody(values: FormState): string {
-  const lines = [
-    `Name: ${values.name}`,
-    `Contact: ${values.contact}`,
-    `Check-in: ${values.checkIn}`,
-    `Check-out: ${values.checkOut}`,
-  ];
-  const message = values.message.trim();
-  if (message) {
-    lines.push("", message);
-  }
-  return lines.join("\n");
-}
-
 function nextDayISO(iso: string): string {
   const d = new Date(`${iso}T12:00:00`);
   d.setDate(d.getDate() + 1);
@@ -94,16 +81,14 @@ export function BookingFinale() {
     const body = buildEnquiryBody(values);
 
     if (method === "whatsapp") {
-      const url = `https://wa.me/26771070488?text=${encodeURIComponent(
-        `Hello, I would like to enquire about staying at L’étoile de Rêve.\n\n${body}`,
-      )}`;
+      const url = `https://wa.me/26771070488?text=${encodeURIComponent(body)}`;
       window.open(url, "_blank", "noopener,noreferrer");
       setSentVia("whatsapp");
       return;
     }
 
     const mailto = `mailto:${BRAND.email}?subject=${encodeURIComponent(
-      "Enquiry - L’étoile de Rêve",
+      buildEnquirySubject(values.name, values.checkIn, values.checkOut),
     )}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
     setSentVia("email");
@@ -340,18 +325,17 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Message
+                  Special requests
                 </label>
                 <p id="message-hint" className="field-hint">
-                  Optional — share any special requests or details about your
-                  stay
+                  Optional
                 </p>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="input-field input-textarea resize-y"
-                  placeholder="Tell us about your stay"
+                  placeholder="Any special requests?"
                   value={values.message}
                   aria-required={false}
                   aria-describedby="message-hint"

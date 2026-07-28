@@ -77,6 +77,67 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Instant first-paint preloader — lives in layout, dismissed by Preloader.tsx */
+#boot-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  background: var(--forest);
+  transition:
+    opacity 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.58s linear;
+}
+
+#boot-preloader img {
+  width: min(28vw, 5.5rem);
+  height: auto;
+  opacity: 0.88;
+  transform: scale(0.96);
+  animation: boot-star-breathe 1.55s ease-in-out infinite;
+}
+
+#boot-preloader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#boot-preloader.is-done img {
+  animation: none;
+  transform: scale(1.04);
+  opacity: 0;
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.preloader-done #boot-preloader {
+  display: none;
+}
+
+@keyframes boot-star-breathe {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #boot-preloader img {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 ::selection {
   background: color-mix(in srgb, var(--gold) 45%, transparent);
   color: var(--ivory);

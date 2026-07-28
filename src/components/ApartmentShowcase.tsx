@@ -20,7 +20,7 @@ export function ApartmentShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const mobileTrackRef = useRef<HTMLDivElement>(null);
+  const mobilePinRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const activeRef = useRef(0);
   const displayedRef = useRef(0);
@@ -29,8 +29,6 @@ export function ApartmentShowcase() {
   const layersRef = useRef<Map<number, HTMLElement>>(new Map());
   const kenBurnsRef = useRef<gsap.core.Timeline | null>(null);
   const genRef = useRef(0);
-  const syncingTrackRef = useRef(false);
-  const roomStepLockRef = useRef(false);
 
   const [active, setActive] = useState(0);
   const [layers, setLayers] = useState<Layer[]>([
@@ -234,56 +232,64 @@ export function ApartmentShowcase() {
     };
   }, [startKenBurns]);
 
-  const syncMobileTrack = useCallback((index: number, instant = false) => {
-    const track = mobileTrackRef.current;
-    if (!track) return;
-    const slide = track.querySelector<HTMLElement>(
-      `[data-room-slide][data-index="${index}"]`,
-    );
-    if (!slide) return;
-
-    const left =
-      slide.offsetLeft - (track.clientWidth - slide.clientWidth) / 2;
-    syncingTrackRef.current = true;
-    if (instant || prefersReducedMotion()) {
-      track.scrollLeft = left;
-      requestAnimationFrame(() => {
-        syncingTrackRef.current = false;
-      });
-      return;
-    }
-    track.scrollTo({ left, behavior: "smooth" });
-    window.setTimeout(() => {
-      syncingTrackRef.current = false;
-    }, 420);
-  }, []);
-
-  /* Desktop only — GSAP pin/scrub. Mobile uses native snap (no ScrollTrigger). */
+  /* Scroll-driven room tour on every viewport (Lenis is off on phones). */
   useEffect(() => {
     const section = sectionRef.current;
-    const pin = pinRef.current;
-    const progress = progressRef.current;
-    if (!section || !pin || !progress) return;
+    if (!section) return;
 
     const reduced = prefersReducedMotion();
-    if (isMobileViewport()) return;
+    const mm = gsap.matchMedia();
 
-    gsap.set(progress, {
-      scaleY: 1 / ROOMS.length,
-      transformOrigin: "top center",
+    mm.add("(max-width: 767px)", () => {
+      const pin = mobilePinRef.current;
+      if (!pin || reduced) return;
+
+      const st = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: () => `+=${ROOMS.length * 100}%`,
+        scrub: 0.45,
+        pin,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const idx = Math.min(
+            ROOMS.length - 1,
+            Math.floor(self.progress * ROOMS.length + 0.001),
+          );
+          if (idx !== activeRef.current) {
+            setActiveSafe(idx);
+          }
+        },
+      });
+      stRef.current = st;
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      return () => {
+        if (stRef.current === st) stRef.current = null;
+        st.kill();
+      };
     });
 
-    if (reduced) {
-      return;
-    }
+    mm.add("(min-width: 768px)", () => {
+      const pin = pinRef.current;
+      const progress = progressRef.current;
+      if (!pin || !progress) return;
 
-    const ctx = gsap.context(() => {
+      gsap.set(progress, {
+        scaleY: 1 / ROOMS.length,
+        transformOrigin: "top center",
+      });
+
+      if (reduced) return;
+
       const st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: () => `+=${ROOMS.length * 105}%`,
         scrub: 0.65,
-        pin: pin,
+        pin,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -303,103 +309,38 @@ export function ApartmentShowcase() {
         },
       });
       stRef.current = st;
-    }, section);
+
+      return () => {
+        if (stRef.current === st) stRef.current = null;
+        st.kill();
+      };
+    });
 
     return () => {
       stRef.current = null;
-      ctx.revert();
+      mm.revert();
     };
-  }, [runDesktopTransition]);
-
-  /* Mobile: native horizontal snap + vertical scroll/wheel steps rooms */
-  useEffect(() => {
-    const track = mobileTrackRef.current;
-    if (!track || !isMobileViewport()) return;
-
-    const slides = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-room-slide]"),
-    );
-    if (!slides.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (syncingTrackRef.current) return;
-        const best = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!best) return;
-        const idx = Number((best.target as HTMLElement).dataset.index);
-        if (Number.isFinite(idx) && idx !== activeRef.current) {
-          setActiveSafe(idx);
-        }
-      },
-      { root: track, threshold: [0.55, 0.7, 0.85] },
-    );
-
-    slides.forEach((slide) => observer.observe(slide));
-
-    const stepRoom = (delta: number) => {
-      if (roomStepLockRef.current || Math.abs(delta) < 8) return false;
-      const next = Math.min(
-        ROOMS.length - 1,
-        Math.max(0, activeRef.current + (delta > 0 ? 1 : -1)),
-      );
-      if (next === activeRef.current) return false;
-      roomStepLockRef.current = true;
-      setActiveSafe(next);
-      syncMobileTrack(next, prefersReducedMotion());
-      window.setTimeout(() => {
-        roomStepLockRef.current = false;
-      }, 480);
-      return true;
-    };
-
-    /* Trackpads / mouse: vertical wheel over the gallery advances rooms */
-    const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      const atStart = activeRef.current === 0 && event.deltaY < 0;
-      const atEnd =
-        activeRef.current === ROOMS.length - 1 && event.deltaY > 0;
-      if (atStart || atEnd) return;
-      if (stepRoom(event.deltaY)) {
-        event.preventDefault();
-      }
-    };
-
-    track.addEventListener("wheel", onWheel, { passive: false });
-
-    return () => {
-      observer.disconnect();
-      track.removeEventListener("wheel", onWheel);
-    };
-  }, [setActiveSafe, syncMobileTrack]);
-
-  const scrollMobileTo = useCallback(
-    (index: number) => {
-      setActiveSafe(index);
-      syncMobileTrack(index, prefersReducedMotion());
-    },
-    [setActiveSafe, syncMobileTrack],
-  );
+  }, [runDesktopTransition, setActiveSafe]);
 
   const goToRoom = (index: number) => {
     if (index < 0 || index >= ROOMS.length) return;
 
-    if (isMobileViewport()) {
-      scrollMobileTo(index);
-      return;
-    }
-
     if (prefersReducedMotion()) {
+      if (isMobileViewport()) {
+        setActiveSafe(index);
+        return;
+      }
       runDesktopTransition(index, true);
       return;
     }
 
     const st = stRef.current;
     if (!st) {
-      runDesktopTransition(index, false);
+      if (isMobileViewport()) setActiveSafe(index);
+      else runDesktopTransition(index, false);
       return;
     }
+
     const progress = (index + 0.45) / ROOMS.length;
     const y = st.start + (st.end - st.start) * progress;
     window.scrollTo({ top: y, behavior: "smooth" });
@@ -546,9 +487,12 @@ export function ApartmentShowcase() {
         </div>
       </div>
 
-      {/* Mobile native snap gallery (no GSAP pin — touch scroll stays free) */}
-      <div className="apartment-mobile pt-[clamp(3.5rem,10vw,5rem)] md:hidden">
-        <div className="section-pad mx-auto max-w-[1400px]">
+      {/* Mobile scroll-driven gallery — pin + scrub like desktop */}
+      <div
+        ref={mobilePinRef}
+        className="apartment-mobile md:hidden"
+      >
+        <div className="section-pad mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-center pb-[calc(var(--booking-bar-offset)+1rem)] pt-[calc(var(--nav-h)+1.25rem)]">
           <h2
             id="apartment-heading-mobile"
             data-reveal
@@ -560,34 +504,31 @@ export function ApartmentShowcase() {
           <p
             data-reveal
             data-reveal-group="apartment-intro"
-            className="meta mb-[clamp(1.25rem,4vw,2rem)] text-stone"
+            className="meta mb-6 text-stone"
           >
-            Swipe through the rooms
+            Scroll through the rooms
           </p>
-        </div>
 
-        <div
-          ref={mobileTrackRef}
-          className="apartment-mobile-track"
-          data-lenis-prevent
-          aria-label="Apartment rooms gallery"
-        >
-          {ROOMS.map((r, i) => {
-            const isActive = i === active;
-            return (
-              <article
-                key={r.id}
-                data-room-slide
-                data-index={i}
-                className={`apartment-mobile-slide ${isActive ? "is-active" : ""}`}
-                aria-current={isActive ? "true" : undefined}
-              >
-                <div className="apartment-mobile-card flex flex-col gap-4">
-                  <p className="meta text-gold">{r.index} / 04</p>
-                  <h3 className="title-sm text-ivory">{r.label}</h3>
-                  <p className="body-lg">{r.description}</p>
+          <article
+            className="apartment-mobile-card flex flex-col gap-4"
+            aria-live="polite"
+            aria-label={`${room.label}, room ${room.index} of ${ROOMS.length}`}
+          >
+            <p className="meta text-gold">{room.index} / 04</p>
+            <h3 className="title-sm text-ivory">{room.label}</h3>
+            <p className="body-lg">{room.description}</p>
 
-                  <div className="apartment-mobile-media relative w-full overflow-hidden border border-gold/20">
+            <div className="apartment-mobile-media relative w-full overflow-hidden border border-gold/20">
+              {ROOMS.map((r, i) => {
+                const isActive = i === active;
+                return (
+                  <div
+                    key={r.id}
+                    className={`absolute inset-0 transition-opacity duration-500 ease-out ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                    aria-hidden={!isActive}
+                  >
                     <div
                       className={`absolute inset-[-5%] transition-transform duration-[1.2s] ease-out ${
                         isActive ? "scale-100" : "scale-[1.06]"
@@ -597,59 +538,61 @@ export function ApartmentShowcase() {
                         src={r.src}
                         alt={r.alt}
                         fill
-                        sizes="(max-width: 768px) 88vw, 600px"
-                        loading="lazy"
+                        sizes="(max-width: 768px) 92vw, 600px"
+                        loading={i === 0 ? "eager" : "lazy"}
                         className="object-cover"
                         style={{ objectPosition: r.objectPosition }}
                       />
                     </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </article>
 
-        <div className="section-pad mx-auto mt-5 flex max-w-[1400px] items-center justify-between gap-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className="inline-flex h-12 w-12 items-center justify-center border border-gold/45 bg-forest/55 text-ivory backdrop-blur-sm transition hover:border-gold disabled:opacity-35"
-              aria-label="Previous room"
-              onClick={() => goToRoom(Math.max(0, active - 1))}
-              disabled={active === 0}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-12 w-12 items-center justify-center border border-gold/45 bg-forest/55 text-ivory backdrop-blur-sm transition hover:border-gold disabled:opacity-35"
-              aria-label="Next room"
-              onClick={() => goToRoom(Math.min(ROOMS.length - 1, active + 1))}
-              disabled={active === ROOMS.length - 1}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-
-          <div
-            className="flex items-center gap-2 pr-1"
-            role="tablist"
-            aria-label="Room navigation"
-          >
-            {ROOMS.map((r, i) => (
+          <div className="mt-5 flex items-center justify-between gap-4">
+            <div className="flex gap-2">
               <button
-                key={r.id}
                 type="button"
-                role="tab"
-                aria-selected={i === active}
-                aria-label={`View ${r.label}`}
-                onClick={() => goToRoom(i)}
-                className={`h-2.5 w-2.5 transition-colors duration-300 ${
-                  i === active ? "bg-gold" : "bg-ivory/35"
-                }`}
-              />
-            ))}
+                className="inline-flex h-12 w-12 items-center justify-center border border-gold/45 bg-forest/55 text-ivory backdrop-blur-sm transition hover:border-gold disabled:opacity-35"
+                aria-label="Previous room"
+                onClick={() => goToRoom(Math.max(0, active - 1))}
+                disabled={active === 0}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                className="inline-flex h-12 w-12 items-center justify-center border border-gold/45 bg-forest/55 text-ivory backdrop-blur-sm transition hover:border-gold disabled:opacity-35"
+                aria-label="Next room"
+                onClick={() =>
+                  goToRoom(Math.min(ROOMS.length - 1, active + 1))
+                }
+                disabled={active === ROOMS.length - 1}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+
+            <div
+              className="flex items-center gap-2 pr-1"
+              role="tablist"
+              aria-label="Room navigation"
+            >
+              {ROOMS.map((r, i) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`View ${r.label}`}
+                  onClick={() => goToRoom(i)}
+                  className={`h-2.5 w-2.5 transition-colors duration-300 ${
+                    i === active ? "bg-gold" : "bg-ivory/35"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

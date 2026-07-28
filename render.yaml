@@ -3,8 +3,6 @@ services:
     name: letoile-de-reve
     runtime: node
     plan: free
-    domains:
-      - letoiledereve.com
     buildCommand: npm install && npm run build
     startCommand: npx --yes serve@14 out -l tcp://0.0.0.0:$PORT
     healthCheckPath: /

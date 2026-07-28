@@ -411,7 +411,7 @@ export function ApartmentShowcase() {
     <section
       id="apartment"
       ref={sectionRef}
-      className="relative bg-forest"
+      className="relative surface-deep"
       aria-label="Apartment spaces"
     >
       {/* Desktop pinned gallery */}

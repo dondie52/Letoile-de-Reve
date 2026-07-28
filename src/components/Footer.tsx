@@ -5,7 +5,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer border-t border-gold/20 bg-green">
+    <footer className="site-footer border-t border-gold/20 surface-canopy">
       <div className="section-pad mx-auto flex max-w-[1400px] flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Image

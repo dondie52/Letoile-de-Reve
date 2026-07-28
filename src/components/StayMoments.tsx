@@ -46,7 +46,7 @@ export function StayMoments() {
     <section
       ref={sectionRef}
       id="stay"
-      className="relative bg-green py-24 sm:py-32"
+      className="relative surface-dawn py-24 sm:py-32"
       aria-labelledby="stay-heading"
     >
       <div className="section-pad mx-auto grid max-w-[1400px] gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
@@ -55,7 +55,7 @@ export function StayMoments() {
             id="stay-heading"
             data-reveal
             data-reveal-group="stay-intro"
-            className="heading-lg max-w-[14ch] text-ivory"
+            className="heading-lg max-w-[14ch]"
           >
             One day here explains the rest.
           </h2>
@@ -68,7 +68,7 @@ export function StayMoments() {
             how the day felt.
           </p>
 
-          <div className="mt-10 hidden border-t border-gold/25 pt-8 lg:block">
+          <div className="mt-10 hidden border-t border-gold/35 pt-8 lg:block">
             <p
               data-reveal
               data-reveal-group="stay-close"
@@ -89,7 +89,7 @@ export function StayMoments() {
 
         <div className="relative pl-8 sm:pl-14 lg:pl-16">
           <div
-            className="absolute bottom-2 left-0 top-2 w-px bg-ivory/12"
+            className="absolute bottom-2 left-0 top-2 w-px bg-ink/15"
             aria-hidden="true"
           >
             <div
@@ -106,7 +106,7 @@ export function StayMoments() {
                   aria-hidden="true"
                 />
                 <p className="meta mb-3 text-gold">{moment.time}</p>
-                <h3 className="title-sm mb-3 max-w-[26ch] text-ivory">
+                <h3 className="title-sm mb-3 max-w-[26ch]">
                   {moment.title}
                 </h3>
                 <p className="body-lg max-w-[52ch] text-pretty">
@@ -116,7 +116,7 @@ export function StayMoments() {
             ))}
           </ol>
 
-          <div className="mt-16 border-t border-gold/25 pt-10 lg:hidden">
+          <div className="mt-16 border-t border-gold/35 pt-10 lg:hidden">
             <p
               data-reveal
               data-reveal-group="stay-close-mobile"

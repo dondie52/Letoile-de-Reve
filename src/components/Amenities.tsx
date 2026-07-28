@@ -102,7 +102,7 @@ export function Amenities() {
     <section
       id="amenities"
       ref={sectionRef}
-      className="relative bg-forest py-24 sm:py-32"
+      className="relative surface-deep py-24 sm:py-32"
       aria-labelledby="amenities-heading"
     >
       <div className="section-pad mx-auto max-w-[1400px]">

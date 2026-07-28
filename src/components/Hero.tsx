@@ -255,7 +255,11 @@ export function Hero() {
           </div>
         )}
         <div
-          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,21,14,0.55)_0%,rgba(6,21,14,0.32)_38%,rgba(6,21,14,0.78)_72%,rgba(6,21,14,0.95)_100%)]"
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,21,14,0.62)_0%,rgba(6,21,14,0.48)_32%,rgba(6,21,14,0.72)_52%,rgba(6,21,14,0.9)_72%,rgba(6,21,14,0.97)_100%)]"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[68%] bg-[linear-gradient(180deg,transparent_0%,rgba(6,21,14,0.55)_45%,rgba(6,21,14,0.88)_100%)] md:h-[58%]"
           aria-hidden="true"
         />
         <div
@@ -280,7 +284,7 @@ export function Hero() {
         ref={contentRef}
         className="hero-content section-pad relative z-10 mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-end"
       >
-        <p data-hero-line className="eyebrow mb-4">
+        <p data-hero-line className="eyebrow hero-eyebrow mb-4">
           {EYEBROW}
         </p>
 

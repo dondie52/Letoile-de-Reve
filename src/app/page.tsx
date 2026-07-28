@@ -1,11 +1,20 @@
 import dynamic from "next/dynamic";
-import { Preloader } from "@/components/Preloader";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
-import { BrandStory } from "@/components/BrandStory";
-import { ApartmentShowcase } from "@/components/ApartmentShowcase";
 import { Footer } from "@/components/Footer";
 
+const BrandStory = dynamic(
+  () =>
+    import("@/components/BrandStory").then((m) => ({ default: m.BrandStory })),
+  { ssr: true },
+);
+const ApartmentShowcase = dynamic(
+  () =>
+    import("@/components/ApartmentShowcase").then((m) => ({
+      default: m.ApartmentShowcase,
+    })),
+  { ssr: true },
+);
 const VideoExperience = dynamic(
   () =>
     import("@/components/VideoExperience").then((m) => ({
@@ -44,7 +53,6 @@ export default function Home() {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <Preloader />
       <Navigation />
       <main id="main-content">
         <Hero />

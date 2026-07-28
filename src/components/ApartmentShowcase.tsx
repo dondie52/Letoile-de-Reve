@@ -6,7 +6,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ROOMS } from "@/lib/constants";
-import { isMobileViewport, kenBurns, prefersReducedMotion } from "@/lib/motion";
+import { isMobileViewport, prefersReducedMotion } from "@/lib/motion-utils";
+import { kenBurns } from "@/lib/motion";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 gsap.registerPlugin(ScrollTrigger);

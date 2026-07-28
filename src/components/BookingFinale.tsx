@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
-import { todayISO } from "@/lib/motion";
+import { todayISO } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 type FormState = {

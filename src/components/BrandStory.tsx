@@ -5,7 +5,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ASSETS, BRAND } from "@/lib/constants";
-import { isMobileViewport, prefersReducedMotion } from "@/lib/motion";
+import { isMobileViewport, prefersReducedMotion } from "@/lib/motion-utils";
 
 gsap.registerPlugin(ScrollTrigger);
 

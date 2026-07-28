@@ -332,7 +332,7 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Any Special requests?
+                  Special request
                 </label>
                 <textarea
                   id="message"

@@ -63,6 +63,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: withBase("/icon.svg"), type: "image/svg+xml" },
       { url: withBase("/icon-32.png"), sizes: "32x32", type: "image/png" },
       { url: withBase("/icon-48.png"), sizes: "48x48", type: "image/png" },
       { url: withBase("/icon-192.png"), sizes: "192x192", type: "image/png" },
@@ -117,7 +118,7 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href={withBase("/assets/images/logo-full.webp")}
+          href={withBase("/assets/images/logo-mark.webp")}
           type="image/webp"
           fetchPriority="high"
         />
@@ -143,6 +144,28 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(sessionStorage.getItem("letoile-preloader")==="1"||window.matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("preloader-done")}catch(e){}})();`,
+          }}
+        />
+        <div
+          id="boot-preloader"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading L’étoile de Rêve"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- boot paint before hydration */}
+          <img
+            src={withBase("/assets/images/logo-mark.webp")}
+            alt=""
+            width={120}
+            height={98}
+            decoding="sync"
+            fetchPriority="high"
+          />
+          <span className="sr-only">L’étoile de Rêve</span>
+        </div>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

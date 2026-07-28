@@ -1149,6 +1149,18 @@ html.nav-is-compact {
   border-color: var(--danger);
 }
 
+.input-textarea {
+  min-height: 8.5rem;
+  padding-top: 1rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 767px) {
+  .input-textarea {
+    min-height: 9rem;
+  }
+}
+
 /* Date inputs — Safari, iOS WebView, WhatsApp in-app, Chrome Android */
 .input-date,
 input[type="date"].input-field {

@@ -44,7 +44,22 @@ function validate(values: FormState): FormErrors {
   ) {
     errors.checkOut = "Check-out must be after check-in.";
   }
+  // Message is optional — guests can send an enquiry with dates only.
   return errors;
+}
+
+function buildEnquiryBody(values: FormState): string {
+  const lines = [
+    `Name: ${values.name}`,
+    `Contact: ${values.contact}`,
+    `Check-in: ${values.checkIn}`,
+    `Check-out: ${values.checkOut}`,
+  ];
+  const message = values.message.trim();
+  if (message) {
+    lines.push("", message);
+  }
+  return lines.join("\n");
 }
 
 function nextDayISO(iso: string): string {
@@ -76,14 +91,7 @@ export function BookingFinale() {
       return;
     }
 
-    const body = [
-      `Name: ${values.name}`,
-      `Contact: ${values.contact}`,
-      `Check-in: ${values.checkIn}`,
-      `Check-out: ${values.checkOut}`,
-      "",
-      values.message.trim(),
-    ].join("\n");
+    const body = buildEnquiryBody(values);
 
     if (method === "whatsapp") {
       const url = `https://wa.me/26771070488?text=${encodeURIComponent(
@@ -332,26 +340,25 @@ export function BookingFinale() {
 
               <div>
                 <label htmlFor="message" className="field-label">
-                  Special request
+                  Message
                 </label>
+                <p id="message-hint" className="field-hint">
+                  Optional — share any special requests or details about your
+                  stay
+                </p>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
-                  className="input-field resize-y"
-                  placeholder="Any Special requests?"
+                  className="input-field input-textarea resize-y"
+                  placeholder="Tell us about your stay"
                   value={values.message}
-                  aria-invalid={!!errors.message}
-                  aria-describedby={errors.message ? "message-error" : undefined}
+                  aria-required={false}
+                  aria-describedby="message-hint"
                   onChange={(e) =>
                     setValues((v) => ({ ...v, message: e.target.value }))
                   }
                 />
-                {errors.message && (
-                  <p id="message-error" className="field-error" role="alert">
-                    {errors.message}
-                  </p>
-                )}
               </div>
 
               <button

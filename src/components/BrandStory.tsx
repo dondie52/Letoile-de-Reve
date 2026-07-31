@@ -129,17 +129,27 @@ export function BrandStory() {
       />
       <span
         data-parallax-star
-        className="pointer-events-none absolute left-[12%] top-[18%] h-1 w-1 rounded-full bg-gold/70"
+        className="star-twinkle pointer-events-none absolute left-[12%] top-[18%] h-1 w-1 rounded-full bg-gold/70"
         aria-hidden="true"
       />
       <span
         data-parallax-star
-        className="pointer-events-none absolute right-[18%] top-[28%] h-1.5 w-1.5 rounded-full bg-ivory/45"
+        className="star-twinkle pointer-events-none absolute right-[18%] top-[28%] h-1.5 w-1.5 rounded-full bg-ivory/45"
         aria-hidden="true"
       />
       <span
         data-parallax-star
-        className="pointer-events-none absolute bottom-[22%] left-[28%] h-1 w-1 rounded-full bg-gold/45"
+        className="star-twinkle pointer-events-none absolute bottom-[22%] left-[28%] h-1 w-1 rounded-full bg-gold/45"
+        aria-hidden="true"
+      />
+      <span
+        data-parallax-star
+        className="star-twinkle pointer-events-none absolute right-[30%] bottom-[30%] h-1 w-1 rounded-full bg-ivory/40"
+        aria-hidden="true"
+      />
+      <span
+        data-parallax-star
+        className="star-twinkle pointer-events-none absolute left-[42%] top-[12%] h-1.5 w-1.5 rounded-full bg-gold/50"
         aria-hidden="true"
       />
 

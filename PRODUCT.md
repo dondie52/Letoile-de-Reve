@@ -28,6 +28,7 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 
 - Preserve official brand assets, contact details, dark-green + champagne-gold identity, and written content
 - Do not invent phone numbers, addresses, testimonials, or pricing
+- Official commercial terms are owner-supplied from the campaign flyers and live in `RATE` / `OFFER` in `src/lib/constants.ts`: **P950 per night**, and **book 5 nights pay for 4** with direct-booking code **`4for5`**. Change them only on the owner's instruction — never derive new rates or discounts from them
 - GitHub Pages requires `basePath` `/Letoile-de-Reve` when `GITHUB_PAGES=true`
 - Header shows the official vertical brand lockup (star above wordmark, tagline, location subtitle); hero keeps its own eyebrow
 
@@ -44,6 +45,7 @@ A private boutique residence under the stars in Phakalane: refined hospitality, 
 - Official logo artwork in `public/assets/images/` (nav lockup, full lockup, star mark)
 - Room photography: living room, bedroom, kitchen, bathroom, entrance
 - Brand flyer reference: `public/assets/images/brand-flyer.webp`
+- Campaign flyers (source of the nightly rate and the `4for5` offer, WhatsApp-shared)
 - Optional videos: `public/assets/videos/hero-tour.mp4`, `lifestyle-tour.mp4` (fallback to photos when missing)
 - Facebook Reels (outbound tour links): apartment tour `https://www.facebook.com/reel/1490590898839114/`, lifestyle tour `https://www.facebook.com/reel/24987327710964150/`
 

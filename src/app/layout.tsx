@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { OFFER, RATE } from "@/lib/constants";
 import { withBase } from "@/lib/paths";
 
 const cormorant = Cormorant_Garamond({
@@ -22,12 +23,14 @@ const manrope = Manrope({
 
 const siteUrl = "https://letoiledereve.com";
 const ogImage = withBase("/assets/images/living-room.webp");
+/* One description for meta, OG, Twitter and JSON-LD — they must not drift apart. */
+const siteDescription =
+  "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, Wi-Fi, security and parking. From P950 per night.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "L’étoile de Rêve | Luxury Apartment in Phakalane, Gaborone",
-  description:
-    "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
+  description: siteDescription,
   applicationName: "L’étoile de Rêve",
   keywords: [
     "L’étoile de Rêve",
@@ -43,8 +46,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "L’étoile de Rêve",
     title: "L’étoile de Rêve | Luxury Apartment in Phakalane, Gaborone",
-    description:
-      "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
+    description: siteDescription,
     images: [
       {
         url: ogImage,
@@ -57,8 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "L’étoile de Rêve | Luxury Apartment in Phakalane, Gaborone",
-    description:
-      "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
+    description: siteDescription,
     images: [ogImage],
   },
   icons: {
@@ -98,8 +99,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LodgingBusiness",
   name: "L’étoile de Rêve",
-  description:
-    "A refined fully furnished luxury apartment in Phakalane, Gaborone, offering comfort, privacy, high-speed Wi-Fi, security and parking.",
+  description: siteDescription,
   url: siteUrl,
   email: "stay@letoiledereve.com",
   telephone: "+26771070488",
@@ -110,6 +110,36 @@ const jsonLd = {
     addressCountry: "BW",
   },
   image: [`${siteUrl}${withBase("/assets/images/living-room.webp")}`],
+  priceRange: `${RATE.currency} ${RATE.nightly}`,
+  makesOffer: [
+    {
+      "@type": "Offer",
+      name: "Nightly stay",
+      priceCurrency: RATE.currency,
+      price: String(RATE.nightly),
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        priceCurrency: RATE.currency,
+        price: String(RATE.nightly),
+        unitCode: "DAY",
+      },
+      availability: "https://schema.org/InStock",
+      url: `${siteUrl}/#rates`,
+    },
+    {
+      "@type": "Offer",
+      name: OFFER.title,
+      description: `${OFFER.summary} ${OFFER.terms}`,
+      priceCurrency: RATE.currency,
+      price: String(RATE.nightly * (OFFER.minNights - OFFER.freeNights)),
+      eligibleQuantity: {
+        "@type": "QuantitativeValue",
+        value: OFFER.minNights,
+        unitCode: "DAY",
+      },
+      url: `${siteUrl}/#rates`,
+    },
+  ],
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Fully furnished" },
     { "@type": "LocationFeatureSpecification", name: "High-speed Wi-Fi" },

@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Check, MessageCircle } from "lucide-react";
-import { BRAND } from "@/lib/constants";
-import { buildEnquiryBody, buildEnquirySubject } from "@/lib/enquiry";
+import { BOOKING_CODE_EVENT } from "@/lib/booking-code";
+import { BRAND, OFFER } from "@/lib/constants";
+import { buildEnquiryBody, buildEnquirySubject, stayNights } from "@/lib/enquiry";
 import { todayISO } from "@/lib/motion-utils";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
@@ -12,6 +13,7 @@ type FormState = {
   contact: string;
   checkIn: string;
   checkOut: string;
+  bookingCode: string;
   message: string;
 };
 
@@ -22,6 +24,7 @@ const initial: FormState = {
   contact: "",
   checkIn: "",
   checkOut: "",
+  bookingCode: "",
   message: "",
 };
 
@@ -67,6 +70,27 @@ export function BookingFinale() {
   const checkOutMin = values.checkIn ? nextDayISO(values.checkIn) : minDate;
 
   useScrollReveal(sectionRef);
+
+  /* The offer CTA in the rates section pre-fills the code as it scrolls here. */
+  useEffect(() => {
+    const onCode = (e: Event) => {
+      const code = (e as CustomEvent<string>).detail;
+      if (typeof code !== "string" || !code) return;
+      setValues((v) => ({ ...v, bookingCode: code }));
+      setSentVia(null);
+    };
+    window.addEventListener(BOOKING_CODE_EVENT, onCode);
+    return () => window.removeEventListener(BOOKING_CODE_EVENT, onCode);
+  }, []);
+
+  const nights =
+    values.checkIn && values.checkOut && values.checkOut > values.checkIn
+      ? stayNights(values.checkIn, values.checkOut)
+      : 0;
+  /* Remind long stays about the offer — unless they already carry the code. */
+  const showOfferHint =
+    nights >= OFFER.minNights &&
+    values.bookingCode.trim().toUpperCase() !== OFFER.code;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -318,6 +342,38 @@ export function BookingFinale() {
                   {errors.checkOut && (
                     <p id="checkout-error" className="field-error" role="alert">
                       {errors.checkOut}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="bookingCode" className="field-label">
+                  Booking code
+                </label>
+                <p id="code-hint" className="field-hint">
+                  Optional — leave blank if you do not have one
+                </p>
+                <input
+                  id="bookingCode"
+                  name="bookingCode"
+                  className="input-field"
+                  placeholder={OFFER.codeDisplay}
+                  autoComplete="off"
+                  spellCheck={false}
+                  value={values.bookingCode}
+                  aria-describedby={
+                    showOfferHint ? "code-hint code-offer" : "code-hint"
+                  }
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, bookingCode: e.target.value }))
+                  }
+                />
+                <div aria-live="polite">
+                  {showOfferHint && (
+                    <p id="code-offer" className="field-hint mt-3 text-gold">
+                      {nights} nights — add code {OFFER.codeDisplay} and pay for{" "}
+                      {OFFER.minNights - OFFER.freeNights}.
                     </p>
                   )}
                 </div>

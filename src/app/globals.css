@@ -515,6 +515,7 @@ section[id],
 /* Below-fold sections — defer layout/paint work until near viewport */
 #experience,
 #amenities,
+#rates,
 #location,
 #book {
   content-visibility: auto;
@@ -793,6 +794,20 @@ a.btn-primary {
 
 .btn-ghost:hover {
   border-color: var(--ivory);
+}
+
+/* Booking code badge — reads as a token to copy, not a button to press */
+.code-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--champagne);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
 }
 }
 

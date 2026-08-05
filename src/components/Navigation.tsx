@@ -135,9 +135,10 @@ export function Navigation() {
           <ul className="hidden min-w-0 items-center justify-center gap-1 self-center lg:flex">
             {NAV_LINKS.map((link, i) => (
               <li key={link.id} className="flex items-center">
+                {/* Tighter until xl — six links now sit beside the lockup and CTA */}
                 {i > 0 ? (
                   <span
-                    className="mx-3 h-3 w-px bg-gold/25 lg:mx-4"
+                    className="mx-3 h-3 w-px bg-gold/25 xl:mx-4"
                     aria-hidden="true"
                   />
                 ) : null}

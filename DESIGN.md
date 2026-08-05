@@ -82,4 +82,6 @@ Avoid purple/blue gradients, cheap metallics, and pure `#000` panels behind logo
 - Desktop nav from `lg` (1024px); hamburger below that
 - Interactive hit areas ≥44×44 (`tap-link`, room tabs, contact lines) while type roles stay quiet
 - Booking form: WhatsApp/Email method toggle, validation alerts, post-submit acknowledgement
+- Rates section (`#rates`): nightly rate on the left, offer in a `.booking-panel` on the right, code shown in a `.code-chip`; its CTA pre-fills the form via the `letoile:booking-code` event
+- Booking code field: always optional — never validated, never blocks submission, and omitted from the enquiry message when blank
 - `viewport-fit: cover` for notched devices

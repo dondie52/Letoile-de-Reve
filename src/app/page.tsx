@@ -45,6 +45,13 @@ const Amenities = dynamic(
     })),
   { ssr: true },
 );
+const RatesOffer = dynamic(
+  () =>
+    import(/* webpackPrefetch: false */ "@/components/RatesOffer").then((m) => ({
+      default: m.RatesOffer,
+    })),
+  { ssr: true },
+);
 const Location = dynamic(
   () =>
     import(/* webpackPrefetch: false */ "@/components/Location").then((m) => ({
@@ -77,6 +84,7 @@ export default function Home() {
         <VideoExperience />
         <StayMoments />
         <Amenities />
+        <RatesOffer />
         <Location />
         <BookingFinale />
       </main>

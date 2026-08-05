@@ -17,6 +17,28 @@ export const BRAND = {
     ),
 } as const;
 
+/** Official nightly rate — owner-supplied, published on the campaign flyers. */
+export const RATE = {
+  currency: "BWP",
+  nightly: 950,
+  nightlyDisplay: "P950",
+  unit: "per night",
+} as const;
+
+/** Direct-booking promotion — owner-supplied, published on the campaign flyers. */
+export const OFFER = {
+  /** Stored uppercase; the flyer sets it as "4for5". Matched case-insensitively. */
+  code: "4FOR5",
+  codeDisplay: "4for5",
+  title: "Book 5 nights, pay for 4",
+  minNights: 5,
+  freeNights: 1,
+  summary:
+    "Stay five nights and the fifth is on us — when you book direct with us.",
+  terms:
+    "Applies to direct enquiries through letoiledereve.com. Subject to availability.",
+} as const;
+
 export const FACEBOOK_REELS = [
   {
     label: "Apartment tour",
@@ -33,6 +55,7 @@ export const NAV_LINKS = [
   { href: "#apartment", label: "Apartment", id: "apartment" },
   { href: "#stay", label: "The Stay", id: "stay" },
   { href: "#amenities", label: "Amenities", id: "amenities" },
+  { href: "#rates", label: "Rates", id: "rates" },
   { href: "#location", label: "Location", id: "location" },
 ] as const;
 

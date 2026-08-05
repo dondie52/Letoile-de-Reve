@@ -5,6 +5,7 @@ type EnquiryValues = {
   contact: string;
   checkIn: string;
   checkOut: string;
+  bookingCode: string;
   message: string;
 };
 
@@ -17,7 +18,7 @@ function formatStayDate(iso: string): string {
   }).format(date);
 }
 
-function stayNights(checkIn: string, checkOut: string): number {
+export function stayNights(checkIn: string, checkOut: string): number {
   const start = new Date(`${checkIn}T12:00:00`);
   const end = new Date(`${checkOut}T12:00:00`);
   return Math.round((end.getTime() - start.getTime()) / 86_400_000);
@@ -31,6 +32,7 @@ export function buildEnquiryBody(values: EnquiryValues): string {
   const name = values.name.trim();
   const contact = values.contact.trim();
   const message = values.message.trim();
+  const bookingCode = values.bookingCode.trim().toUpperCase();
   const nights = stayNights(values.checkIn, values.checkOut);
 
   const lines = [
@@ -46,6 +48,8 @@ export function buildEnquiryBody(values: EnquiryValues): string {
     `Check-in: ${formatStayDate(values.checkIn)}`,
     `Check-out: ${formatStayDate(values.checkOut)}`,
     `Duration: ${nightLabel(nights)}`,
+    /* Omitted entirely when the guest has no code — the enquiry reads as before. */
+    ...(bookingCode ? [`Booking code: ${bookingCode}`] : []),
     "",
     "Special requests",
     message || "No special requests",

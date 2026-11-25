@@ -6,6 +6,7 @@ import { BOOKING_CODE_EVENT } from "@/lib/booking-code";
 import { BRAND, OFFER } from "@/lib/constants";
 import { buildEnquiryBody, buildEnquirySubject, stayNights } from "@/lib/enquiry";
 import { todayISO } from "@/lib/motion-utils";
+import { withBase } from "@/lib/paths";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 type FormState = {
@@ -66,6 +67,8 @@ export function BookingFinale() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [method, setMethod] = useState<"email" | "whatsapp">("whatsapp");
   const [sentVia, setSentVia] = useState<"email" | "whatsapp" | null>(null);
+  const [policyAccepted, setPolicyAccepted] = useState(false);
+  const [policyError, setPolicyError] = useState(false);
   const minDate = useMemo(() => todayISO(), []);
   const checkOutMin = values.checkIn ? nextDayISO(values.checkIn) : minDate;
 
@@ -96,9 +99,14 @@ export function BookingFinale() {
     e.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
+    setPolicyError(!policyAccepted);
     if (Object.keys(nextErrors).length > 0) {
       const first = Object.keys(nextErrors)[0];
       document.getElementById(first)?.focus();
+      return;
+    }
+    if (!policyAccepted) {
+      document.getElementById("policy-accepted")?.focus();
       return;
     }
 
@@ -399,6 +407,44 @@ export function BookingFinale() {
                     setValues((v) => ({ ...v, message: e.target.value }))
                   }
                 />
+              </div>
+
+              <div className="border-t border-gold/25 pt-6">
+                <label htmlFor="policy-accepted" className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ivory/90">
+                  <input
+                    id="policy-accepted"
+                    name="policyAccepted"
+                    type="checkbox"
+                    required
+                    checked={policyAccepted}
+                    aria-invalid={policyError}
+                    aria-describedby={policyError ? "policy-error" : "policy-hint"}
+                    onChange={(e) => {
+                      setPolicyAccepted(e.target.checked);
+                      setPolicyError(false);
+                    }}
+                    className="mt-1 h-5 w-5 shrink-0 accent-gold"
+                  />
+                  <span>
+                    I have read and agree to the{" "}
+                    <a
+                      href={withBase("/refund-cancellation-policy/")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold underline underline-offset-4 hover:text-champagne"
+                    >
+                      Refund, Cancellation and Booking Policy
+                    </a>.
+                  </span>
+                </label>
+                <p id="policy-hint" className="field-hint mt-2 pl-8">
+                  Sending an enquiry does not confirm a reservation or collect payment.
+                </p>
+                {policyError && (
+                  <p id="policy-error" className="field-error pl-8" role="alert">
+                    Please read and accept the policy before sending your enquiry.
+                  </p>
+                )}
               </div>
 
               <button

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBase } from "@/lib/paths";
 import { ASSETS, BRAND, FACEBOOK_REELS } from "@/lib/constants";
 
 export function Footer() {
@@ -72,6 +73,9 @@ export function Footer() {
             </a>
             <a href="#book" className="tap-link transition hover:text-gold">
               Book
+            </a>
+            <a href={withBase("/refund-cancellation-policy/")} className="tap-link transition hover:text-gold">
+              Refund & Cancellation Policy
             </a>
           </nav>
           <p className="caption sm:text-right">
